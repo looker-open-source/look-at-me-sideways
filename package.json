@@ -1,0 +1,44 @@
+{
+  "name": "look-at-me-sideways",
+  "version": "0.0.0",
+  "description": "A judgmental little LookML linter >_>",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "bin": {
+    "lams": "./index.js"
+  },
+  "scripts": {
+    "test": "jest --watchAll --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/looker-open-source/look-at-me-sideways.git"
+  },
+  "keywords": [
+    "looker",
+    "lookml",
+    "lint",
+    "linter"
+  ],
+  "author": "Fabio Beltramini",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/looker-open-source/look-at-me-sideways/issues"
+  },
+  "homepage": "https://github.com/looker-open-source/look-at-me-sideways#readme",
+  "dependencies": {
+    "dot": "^1.1.2",
+    "lookml-parser": "^3.4.0",
+    "minimist": "^1.2.0",
+    "require-from-string": "^2.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0",
+    "eslint-plugin-jest": "^21.24.1",
+    "jest": "^23.6.0",
+    "jest-extended": "^0.11.0"
+  }
+}

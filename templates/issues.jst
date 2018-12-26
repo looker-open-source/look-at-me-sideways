@@ -1,0 +1,78 @@
+{{! /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
+	let summaries = {
+		count: (total,msg) => (total||0)+1,
+		errors: (total,msg) => (total||0)+(msg.level=="error"),
+		warnings: (total,msg) => (total||0)+(msg.level=="warning")
+	};
+	let ruleGrouping = msg => (
+		(msg.rule.match(/^[a-zA-Z][0-9]+$/)
+			? `<a href="https://looker-open-source.github.io/look-at-me-sideways/rules.html#${msg.rule.toLowerCase()}">${msg.rule}</a>`
+			: msg.rule
+		)
+		+ ". "
+		+ ctx.fns.ruleName(msg.rule)
+	);
+	let subset = ctx.messages.filter(msg=>(msg.level=="warning"||msg.level=="error"));
+	let issues = subset.filter(msg=>!msg.exempt)
+		.reduce(ctx.fns.groupBy({grouping:[ruleGrouping],summaries}),null);
+	let exempt = subset.filter(msg=> msg.exempt)
+		.reduce(ctx.fns.groupBy({grouping:[ruleGrouping,"exempt"],summaries}),null);
+	let lamsMessages = ctx.messages.filter(msg=>(msg.level=="lams-warning"||msg.level=="lams-error"));
+	}}---
+title: {{?issues && issues.summaries.count}}Issues - {{=issues.summaries.errors||"0"}}⛔ {{=issues.summaries.warnings||"0"}}⚠️  {{??}}No Issues{{?}}
+navigation: true
+---
+<p style="text-align:right;color:#cccs">
+	Generated {{=(new Date()).toUTCString()}}
+	{{?ctx.jobURL}}<br><a href="{{=ctx.jobURL}}">Build Log</a>{{?}}
+</p>
+{{?lamsMessages.length}}
+<b>LAMS Issues</b>
+<ul>
+	{{* lamsMessages :msg}}
+	<li>{{?msg.level=='lams-warning'}}⚠️{{?}}{{?msg.level=='lams-error'}}⛔{{?}}{{=msg.message}}</li>
+	{{*}}
+</ul>
+{{?}}
+{{?issues}}
+{{= renderRecursive(issues,{rootName:"Issues"}) }}
+{{??}}
+<p>No issues to report</p>
+{{?}}
+
+{{?exempt}}
+{{= renderRecursive(exempt,{rootName:"Exemptions",open:false}) }}
+{{?}}
+
+{{! function renderRecursive(group,{lvl=0,rootName,open=true}){var out="";}}
+	<details style="margin-left: 3em" {{?open}}open="open"{{?}}>
+		<summary style="margin-left:-1em;border-bottom:solid 1px #333;">
+			<b>{{=rootName||group.key}}</b>
+			(
+			{{?group.summaries.errors}}   {{=group.summaries.errors}}⛔ {{?}}
+			{{?group.summaries.warnings}} {{=group.summaries.warnings}}⚠️ {{?}}
+			)
+		</summary>
+		{{?group.data}}
+			<table style="border:solid 1px #ccc">
+			<thead style="background-color:darkblue;color:white"><tr>
+				<th>Level</th>
+				<th>Location</th>
+				<th>Description</th>
+			</tr></thead>
+			<tbody>
+			{{*group.data :data:d }}
+			<tr>
+				<td>{{={error:"⛔",warning:"⚠️"}[data.level]||data.level}}</td>
+				<td>{{&data.location}} {{?data.path}}<a href="{{&data.path}}" style="text-decoration: none">⧉</a>{{?}}</td>
+				<td>{{=data.description}}</td>
+			</tr>
+			{{*}}
+			</tbody>
+			</table>
+		{{?}}
+		{{*Object.values(group.subgroups).sort((a,b)=>a.key.localeCompare(b.key)) :subgroup:sg}}
+			{{=renderRecursive(subgroup,{lvl:lvl+1})}}
+		{{*}}
+	</details>
+	{{! return out;} }}

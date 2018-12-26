@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <description>Run LAMS on the LookML files in the branch that triggered the build and commit the resulting .md files to that branch. Commits authored by LAMS are ignored.</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.3">
+      <projectUrl>https://github.com/${ACCOUNT_OWNER}/${REPO_NAME}/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.9.1">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>git@github.com:${ACCOUNT_OWNER}/${REPO_NAME}.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>$trigger_branch</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions>                                                                                                                                                                   
+      <hudson.plugins.git.extensions.impl.IgnoreNotifyCommit/> 
+      <hudson.plugins.git.extensions.impl.WipeWorkspace/>                                                                                                                           
+      <hudson.plugins.git.extensions.impl.UserExclusion>                                                                                                                
+        <excludedUsers>Jenkins</excludedUsers>
+      </hudson.plugins.git.extensions.impl.UserExclusion>                                                                                                                           
+    </extensions>  
+  </scm>
+  <quietPeriod>0</quietPeriod>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <org.jenkinsci.plugins.gwt.GenericTrigger plugin="generic-webhook-trigger@1.48">
+      <spec></spec>
+      <genericVariables>
+        <org.jenkinsci.plugins.gwt.GenericVariable>
+          <expressionType>JSONPath</expressionType>
+  	  <key>committer_name</key>
+  	  <value>$.commits[0].committer.name</value>
+  	  <regexpFilter></regexpFilter>
+  	  <defaultValue></defaultValue>
+        </org.jenkinsci.plugins.gwt.GenericVariable>
+      	<org.jenkinsci.plugins.gwt.GenericVariable>
+	  <expressionType>JSONPath</expressionType>
+	  <key>trigger_branch</key>
+          <value>$.ref</value>
+	  <regexpFilter></regexpFilter>
+	  <defaultValue></defaultValue>
+        </org.jenkinsci.plugins.gwt.GenericVariable>
+      </genericVariables> 
+      <regexpFilterText>author $committer_name, branch $trigger_branch</regexpFilterText>  
+      <regexpFilterExpression>^author (?!Jenkins).+, branch refs/heads/(?!master).+$</regexpFilterExpression>     
+      <printPostContent>false</printPostContent>
+      <printContributedVariables>false</printContributedVariables>
+      <causeString>$committer_name committed to $trigger_branch</causeString>
+      <token>lams</token>
+      <silentResponse>false</silentResponse>
+    </org.jenkinsci.plugins.gwt.GenericTrigger>
+    <hudson.triggers.SCMTrigger>
+      <spec></spec>
+      <ignorePostCommitHooks>true</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>                                                     
+  <command>git clone git@github.com:looker-open-source/look-at-me-sideways lams/                                                  
+cd lams &amp;&amp; git checkout release/1.0                                                                      
+npm install --production                                                                                         
+cd ..                                                                                                            
+node lams/index.js --reporting=$reporting --report-license-key=$license_key --reporting-user=$reporting_user --allow-custom-rules --jenkins
+      </command>   
+    </hudson.tasks.Shell>                                   
+  </builders>
+  <publishers>
+    <hudson.plugins.postbuildtask.PostbuildTask plugin="postbuild-task@1.8">
+      <tasks>          
+        <hudson.plugins.postbuildtask.TaskProperties>
+          <logTexts>                                               
+            <hudson.plugins.postbuildtask.LogProperties>
+              <logText>BUILD PASSED</logText>
+              <operator>OR</operator>
+            </hudson.plugins.postbuildtask.LogProperties>
+            <hudson.plugins.postbuildtask.LogProperties>
+              <logText>BUILD FAILED</logText>
+              <operator>AND</operator>
+            </hudson.plugins.postbuildtask.LogProperties>                       
+          </logTexts>           
+          <EscalateStatus>false</EscalateStatus>
+          <RunIfJobSuccessful>false</RunIfJobSuccessful>      
+          <script>git checkout -b temp
+git status
+git add issues.md developer.md
+git commit -am &quot;LAMS&quot;
+DEST_BRANCH=$(echo ${trigger_branch} | cut -f 3 -d /);
+git push --set-upstream origin temp:${DEST_BRANCH}
+/usr/local/bin/set-commit-status.sh</script>                 
+        </hudson.plugins.postbuildtask.TaskProperties>                  
+      </tasks>           
+    </hudson.plugins.postbuildtask.PostbuildTask>
+    </publishers>
+<buildWrappers/>
+</project>

@@ -1,0 +1,47 @@
+{{! /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
+	let viewIndex = ctx.messages
+		.filter(msg=>msg.primaryKey!==undefined)
+		.reduce(ctx.fns.groupBy({
+			grouping:["primaryKey"],
+			summaries:{
+				count: (total,msg) => (total||0)+1
+				}
+			}),null);
+	}}---
+title: Developer Index
+navigation: true
+---
+{{? viewIndex }}
+{{= renderRecursive(viewIndex,{rootName:"Views by Primary Key"}) }}
+{{?}}
+
+{{! function renderRecursive(group,{lvl=0,rootName}){var out="";}}
+	<details style="margin-left: {{=2*lvl}}em" {{? lvl==0}}open="open"{{?}}>
+		<summary style="margin-left:-2em;border-bottom:solid 1px #333;">
+			<div style="display:inline-flex;width:90%;justify-content:space-between">
+			<b>{{&ctx.fns.format(rootName||group.key)}} {{?lvl>0}}({{=group.summaries.count}}){{?}}</b>
+			</div>
+		</summary>
+		{{?group.data}}
+			<table style="border:solid 1px #ccc">
+			<thead style="background-color:darkblue;color:white"><tr>
+				<th>View</th>
+				<th>All PKs</th>
+				<th>Description</th>
+			</tr></thead>
+			<tbody>
+			{{*group.data :data:d }}
+			<tr>
+				<td>{{&data.view}} {{?data.path}}<a href="{{&data.path}}" style="text-decoration: none">⧉</a>{{?}}</td>
+				<td>{{&data.primaryKeys}}</td>
+				<td>{{&data.description}}</td>
+			</tr>
+			{{*}}
+			</tbody>
+			</table>
+		{{?}}
+		{{*Object.values(group.subgroups).sort((a,b)=>a.key.localeCompare(b.key)) :subgroup:sg}}
+			{{=renderRecursive(subgroup,{lvl:lvl+1})}}
+		{{*}}
+	</details>
+	{{! return out;} }}
