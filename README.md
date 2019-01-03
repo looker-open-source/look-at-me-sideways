@@ -12,6 +12,15 @@ See a video of LAMS in action:
 
 ### Deployment
 
+##### Interactive Usage
+
+To use LAMS with the least setup overhead for simple interactive local use and testing, simply install it from NPM, clone your LookML repo, and run `lams`
+
+	npm install -g look-at-me-sideways
+	git clone <your-repo-url>
+	cd <your-repo>
+	lams
+
 ##### Docker
 
 Although LAMS can be deployed manually using your CI tool of choice, we have provided a Docker image to simplify the deployment. Documentation can be found [here](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md).
