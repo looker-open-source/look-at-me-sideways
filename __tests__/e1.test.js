@@ -14,14 +14,14 @@ describe('Rules', () => {
 
 		it('should pass if there are no models', () => {
 			let result = rule(parse(`view: foo{}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
 
 		it('should pass if there are no explores', () => {
 			let result = rule(parse(`model: foo {}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -30,7 +30,7 @@ describe('Rules', () => {
 			let result = rule(parse(`model: foo {
 				explore: orders {}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -44,7 +44,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -58,7 +58,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -74,7 +74,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -88,13 +88,13 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
 
 		it('should pass for joins where all (at least one) field references use ${} in sql', () => {
-			//Note: This users/_users stuff is due to a limitation in Looker and reflect actual usage
+			// Note: This users/_users stuff is due to a limitation in Looker and reflect actual usage
 			let result = rule(parse(`model: foo {
 				explore: orders {
 					join: _users {
@@ -105,7 +105,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -120,7 +120,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...warning});
+			expect(result).toContainMessage({...e1, ...warning});
 		});
 
 		it('should warn for joins with bare field references in sql', () => {
@@ -134,7 +134,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...warning});
+			expect(result).toContainMessage({...e1, ...warning});
 		});
 
 		it('should pass if bare references are found inside liquid', () => {
@@ -150,7 +150,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -170,11 +170,11 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...warning});
+			expect(result).toContainMessage({...e1, ...warning});
 		});
 
 		it('should not warn for `SAFE.*` field-like strings', () => {
-			//Note: In BigQuery, these are functions, not fields. Example function only, actual usage may be different
+			// Note: In BigQuery, these are functions, not fields. Example function only, actual usage may be different
 			let result = rule(parse(`model: foo {
 				explore: orders {
 					join: _users {
@@ -185,7 +185,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e1,...info});
+			expect(result).toContainMessage({...e1, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});

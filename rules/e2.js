@@ -42,7 +42,7 @@ module.exports = function(
 						reducedSql = reducedSql.replace(parensRegex, '');
 					}
 				}
-				if(join.sql !== undefined && !reducedSql.match(/\bJOIN\b/)){
+				if (join.sql !== undefined && !reducedSql.match(/\bJOIN\b/)) {
 					// joins using 'sql' that do not actually result in a SQL JOIN, e.g. for field-only views
 					continue;
 				}

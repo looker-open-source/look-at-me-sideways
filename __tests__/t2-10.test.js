@@ -138,23 +138,6 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...error, ...r.pkColumnsFirst});
 		});
 
-
-		it('should error for a transformation containing correct pk columns', () => {
-			let result = rule(parse(`file: f {
-				view: foo { derived_table: { sql:
-					SELECT
-						pk2_tenant_id, 
-						pk2_user_id,
-						---
-						MAX(start) as last_login
-					FROM sessions
-					GROUP BY 1,2
-				;; } }
-			}`));
-			expect(result).not.toContainMessage({...warning});
-			expect(result).not.toContainMessage({...error});
-		});
-
 		it('should warn for a derived table missing the pk separator', () => {
 			let result = rule(parse(`file: f {
 				view: foo { derived_table: { sql:

@@ -84,7 +84,7 @@ module.exports = function(
 				let badDims = pkDimensions.filter((dim)=>!dim.hidden);
 				if (badDims.length) {
 					let exempt = badDims.every((d)=>getExemption(d, rule)) && getExemption(badDims[0], rule)
-						|| getExemption(view, rule) 
+						|| getExemption(view, rule)
 						|| getExemption(file, rule);
 					let dimNames = badDims.map((dim)=>dim._dimension).join(', ');
 					messages.push({

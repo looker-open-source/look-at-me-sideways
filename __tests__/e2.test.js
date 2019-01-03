@@ -13,14 +13,14 @@ describe('Rules', () => {
 
 		it('should pass if there are no models', () => {
 			let result = rule(parse(`view: foo{}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
 
 		it('should pass if there are no explores', () => {
 			let result = rule(parse(`model: foo {}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -29,7 +29,7 @@ describe('Rules', () => {
 			let result = rule(parse(`model: m {
 				explore: orders {}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -42,7 +42,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -56,7 +56,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -72,7 +72,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -87,7 +87,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -101,7 +101,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a many_to_one join uses PK dimensions, but not on the "one" view', () => {
@@ -113,7 +113,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a many_to_one join has mismatched column numbers on the "one" view', () => {
@@ -126,7 +126,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a many_to_one join does not reference enough PK dimensions on the "one" view', () => {
@@ -138,7 +138,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a many_to_one join does not reference all unique PK dimensions from the "one" view', () => {
@@ -151,7 +151,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a many_to_one does not involve PK dimensions on the "one" view in an equality constraint', () => {
@@ -164,7 +164,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 
@@ -179,7 +179,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 
@@ -192,7 +192,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -207,7 +207,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
@@ -222,7 +222,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a one_to_one join uses PK dimensions, but not on the "left"/"explore" side', () => {
@@ -234,7 +234,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a one_to_one join uses PK dimensions, but not on the "right"/"join" side', () => {
@@ -246,7 +246,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a one_to_one join has mismatched column numbers on the  "left"/"explore" side', () => {
@@ -259,7 +259,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a one_to_one join does not reference enough PK dimensions on the "left"/"explore" view', () => {
@@ -272,7 +272,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should error if a one_to_one join does not reference enough PK dimensions on the "right"/"join" view', () => {
@@ -285,7 +285,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...error});
+			expect(result).toContainMessage({...e2, ...error});
 		});
 
 		it('should pass if a one_to_one join does not actually result in a SQL JOIN', () => {
@@ -297,10 +297,9 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...e2,...info});
+			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
-
 	});
 });
