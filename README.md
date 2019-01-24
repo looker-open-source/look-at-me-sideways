@@ -8,7 +8,9 @@ LAMS is a LookML style guide and linter that can help your team produce more mai
 - The linter can be configured to enforce the style guide as a part of all pull requests, thought it currently only enforces a subset of the rules.
 - In addition to linting, LAMS adds informative markdown files to your instance that help you navigate your project.
 
-See a video of LAMS in action:
+Interested? See a video of LAMS in action!
+
+[![LAMS video](docs/img/video-cover.png)](https://drive.google.com/file/d/1N5N26n52O2i95tz5vUZpoG1Ic3b3nNAQ/view)
 
 ### Deployment
 
