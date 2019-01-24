@@ -4,7 +4,7 @@
   <keepDependencies>false</keepDependencies>
   <properties>
     <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.3">
-      <projectUrl>https://github.com/${ACCOUNT_OWNER}/${REPO_NAME}/</projectUrl>
+      <projectUrl>https://github.com/${ACCOUNT_NAME}/${REPO_NAME}/</projectUrl>
       <displayName></displayName>
     </com.coravy.hudson.plugins.github.GithubProjectProperty>
   </properties>
@@ -12,7 +12,7 @@
     <configVersion>2</configVersion>
     <userRemoteConfigs>
       <hudson.plugins.git.UserRemoteConfig>
-        <url>git@github.com:${ACCOUNT_OWNER}/${REPO_NAME}.git</url>
+        <url>git@github.com:${ACCOUNT_NAME}/${REPO_NAME}.git</url>
       </hudson.plugins.git.UserRemoteConfig>
     </userRemoteConfigs>
     <branches>
