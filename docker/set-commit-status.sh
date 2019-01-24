@@ -20,13 +20,15 @@ ERRORS=$(cat $RESULTS | jq '.errors')
 LAMS_ERRORS=$(cat $RESULTS | jq '.lamsErrors')
 
 # Update commit statuses
-curl "https://api.github.com/repos/${ACCOUNT_OWNER}/${REPO_NAME}/statuses/$GIT_COMMIT?access_token=$GIT_TOKEN" \
+echo "Setting commit status to ${STATUS}, with ${ERRORS} errors, ${WARNINGS} warnings and ${LAMS_ERRORS} tool errors."
+
+curl "https://api.github.com/repos/${ACCOUNT_NAME}/${REPO_NAME}/statuses/$GIT_COMMIT?access_token=$GIT_TOKEN" \
   -H "Content-Type: application/json" \
   -X POST \
   -d "{\"state\": \"$STATUS\", \"description\": \"${ERRORS} errors, ${WARNINGS} warnings and ${LAMS_ERRORS} tool errors found.\", \"target_url\": \"$BUILD_URL\", \"context\":\"LAMS\"}"
 
 LAST_COMMIT_SHA=$(git rev-parse HEAD)
-curl "https://api.github.com/repos/${ACCOUNT_OWNER}/${REPO_NAME}/statuses/$LAST_COMMIT_SHA?access_token=$GIT_TOKEN" \
+curl "https://api.github.com/repos/${ACCOUNT_NAME}/${REPO_NAME}/statuses/$LAST_COMMIT_SHA?access_token=$GIT_TOKEN" \
   -H "Content-Type: application/json" \
   -X POST \
   -d "{\"state\": \"$STATUS\", \"description\": \"${ERRORS} errors, ${WARNINGS} warnings and ${LAMS_ERRORS} tool errors found.\", \"target_url\": \"$BUILD_URL\", \"context\":\"LAMS\"}"

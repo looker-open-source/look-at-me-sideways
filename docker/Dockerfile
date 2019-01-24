@@ -106,6 +106,14 @@ RUN \
 RUN chown -R ${user} $JENKINS_HOME && chown -R ${user} /usr/share/jenkins/ref
 RUN chgrp -R ${group} $JENKINS_HOME && chgrp -R ${group} /usr/share/jenkins/ref
 
+# Temporarily solution: Install LAMS as a global package from the repo
+RUN git clone https://github.com/looker-open-source/look-at-me-sideways.git /usr/local/bin/lams
+RUN cd /usr/local/bin/lams \
+    &&  npm config set unsafe-perm true \
+    && npm install --global --production \
+    && npm config set unsafe-perm false
+RUN chown -R ${user} /usr/local/bin/lams && chgrp -R ${group} /usr/local/bin/lams
+
 USER ${user}
 RUN git config --global user.name "Jenkins"
 RUN git config --global user.email "lams@host.com"
