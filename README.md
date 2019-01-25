@@ -6,7 +6,8 @@ LAMS is a LookML style guide and linter that can help your team produce more mai
 
 - The [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html) alone can help your project, even without enforcement by the linter.
 - The linter can be configured to enforce the style guide as a part of all pull requests, thought it currently only enforces a subset of the rules.
-- In addition to linting, LAMS adds informative markdown files to your instance that help you navigate your project.
+- In addition to linting, the linter adds informative markdown files to your instance that help you navigate your project.
+- Finally, the linter also allows you to conveniently specify custom rules to enforce
 
 Interested? See a video of LAMS in action!
 
