@@ -138,10 +138,16 @@
 			fs.writeFileSync('results.json', json, 'utf8');
 		}
 
+		let dateGenerated = true;
+		if (cliArgs['date-generated'] === false) {
+			// in the case of undefined the default should be true
+			dateGenerated = false
+		}
 		console.log('Writing summary files...');
 		fs.writeFileSync('developer.md', templates.developer({messages, fns: templateFunctions}).replace(/\n\t+/g, '\n'));
 		console.log('> Developer index done');
-		fs.writeFileSync('issues.md', templates.issues({messages, jobURL, fns: templateFunctions}).replace(/\n\t+/g, '\n'));
+		fs.writeFileSync('issues.md', templates.issues({
+			messages, jobURL, dateGenerated: dateGenerated, fns: templateFunctions}).replace(/\n\t+/g, '\n'));
 		console.log('> Issue summary done');
 
 		console.log('> Summary files done!');

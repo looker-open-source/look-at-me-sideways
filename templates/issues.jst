@@ -23,7 +23,7 @@ title: {{?issues && issues.summaries.count}}Issues - {{=issues.summaries.errors|
 navigation: true
 ---
 <p style="text-align:right;color:#cccs">
-	Generated {{=(new Date()).toUTCString()}}
+	{{?ctx.dateGenerated}}Generated {{=(new Date()).toUTCString()}}{{?}}
 	{{?ctx.jobURL}}<br><a href="{{=ctx.jobURL}}">Build Log</a>{{?}}
 </p>
 {{?lamsMessages.length}}
