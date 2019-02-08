@@ -1,4 +1,6 @@
-# ![>_>](docs/img/logo.png) Look At Me Sideways (LAMS)
+![>_>](docs/img/logo.png)
+
+# Look At Me Sideways (LAMS)
 
 LAMS is a style guide and linter for [Looker](https://looker.com/)'s LookML data modeling language. It is designed to help a team of developers to produce more maintainable LookML projects.
 
