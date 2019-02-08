@@ -2,8 +2,9 @@
 <!-- Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt -->
 <html>
 <head>
-	<title>Fabio's Opinionated SQL & LookML Rules</title>
+	<title>LAMS Style Guide</title>
 	<meta charset="utf8" />
+	<link rel="shortcut icon" type="image/png" href="img/logo.png"/>
 </head>
 <body>
 <style>
@@ -13,6 +14,7 @@
 	li{margin-bottom: 0.5em;}
 	details {padding-left:3em;}
 	summary {margin-left:-3em; cursor: pointer}
+	a {color:#44B;}
 	a.subtle {color:#559; text-decoration: none;}
 	code.block {display:block; white-space: pre-wrap; max-width:90%;margin:1em 0 1.5em 0; tab-size:2em;}
 	code.good.block {background-color: #EFE; box-shadow: 2px 2px 10px 0px #9C9;}
@@ -25,11 +27,12 @@
 	code.bad.block::before {content:"# BAD:"}
 	code.bad.block.sql::before {content:"-- BAD:"}
 </style>
+<p style="font-size: 0.8em"><a href="https://github.com/looker-open-source/look-at-me-sideways">Look At Me Sideways</a> > </p>
 <h1>LAMS Style Guide</h1>
-<p>This Look At Me Sideways (LAMS) Style Guide, as well as the associated <a href="https://github.com/looker-open-source/look-at-me-sideways">linter</a>, are designed to help make your LookML project more maintainable.</p>
-<p>These rules are quite opinionated, and some people won't like them. We've tried to provide rationales throughout so you can come to your own conclusions. However, at their core, these rules are about making your LookML and SQL reusable, self-explanatory, and reliable.</p>
+<p>This is a style guide for <a href="https://www.looker.com/">Looker</a>'s LookML data modeling language. This style guide, as well as the associated <a href="https://github.com/looker-open-source/look-at-me-sideways">linter</a>, are designed to help make your LookML project more maintainable.</p>
+<p>These rules are opinionated, and might imply significant changes to a LookML project that has been developed organically. We've tried to provide rationales throughout so you can come to your own conclusions. However, at their core, these rules are about making your LookML and SQL reusable, self-explanatory, and reliable.</p>
 <p>Whenever a rule says something "must" be done, there shouldn't be any exceptions within your project. These are rules that need to be followed consistently since others will rely upon them being followed in their work elsewhere. </p>
-<p>Whenever a rule says that something "should" be done, there may be reasons to deviate from these rules, and doing so will not break any assumptions elsewhere. Whenever the rule is not followed, a comment must be used to indicate the rationale to future readers of the code (Ideally, using the LAMS rule_exemptions syntax).</p>
+<p>Whenever a rule says that something "should" be done, there may be reasons to deviate from these rules, and doing so will not break any assumptions elsewhere. Whenever the rule is not followed, a comment must be used to indicate the rationale to future readers of the code. When using the linter, this should be done using the <a href="https://github.com/looker-open-source/look-at-me-sideways#rule-exemption">LAMS rule_exemptions syntax</a>.</p>
 
 <nav><ul>
 <li> <a href="#key-dimensions">Key Dimensions</a></li>
@@ -716,18 +719,15 @@
 <p>The following subjects are not in the scope of this ruleset, but are still valuable to know about! These contain links to the most useful resources I could find on these subjects<p>
 <details>
 	<summary>Change management</summary>
-	<p>This is something I really wanted to include, but was not able to this time around. Something like semver. Hopefully a future version will include this. (Pull requests will be considered!)</p>
+	<p>This is a candidate for inclusion into a future version. Something akin to semver, but for data modeling. (Pull requests will be considered!)</p>
 	</details>
 <details>
 	<summary>Defining distribution, sort/cluster keys, indexes, etc</summary>
-	<p>These are super important, but the strategy for these is too broad and complex to fit into this kind of ruleset.</p>
-	<!--However, you can check out some of these useful resources: <ol>
-		<li></li>
-	</ol> -->
+	<p>While these are important, the strategy for these is too broad and complex to fit into this kind of ruleset.</p>
 	</details>
 <details>
 	<summary>Whitespace, capitalization</summary>
-	<p>I don't personally care for rules constraining indentation, capitalization, and the like, but if you do, here's a possible <a href="https://gist.github.com/fredbenenson/7bb92718e19138c20591">SQL style guide</a></p>
+	<p>Looker's IDE makes whitespace variation less of an issue. If you are interested in a style guide that constrains whitespace, here's a possible <a href="https://gist.github.com/fredbenenson/7bb92718e19138c20591">SQL style guide</a></p>
 	</details>
 <details>
 	<summary>EAV Schemas</summary>
@@ -749,16 +749,5 @@
 <details id="glossary-dist-key"><summary>Distribution key</summary> In Redshift, Vertica, MemSQL, MS PDW and possibly some others, data can be distributed according to a particular value. For simplicity, I use the name distribution key, though different dialects may have different names for this.</details>
 <details id="glossary-sort-key"><summary>Sort/cluster key</summary> Sort keys in Redshift, or partition & cluster columns in Big Query, clustered indexes in MS SQL Server or PDW, etc.</details>
 <details><summary>View</summary> I'm exclusively talking about LookML Views. Database views are not covered here</details>
-<h1 id="changelog">Changelog</h1>
-<details><summary>v2.0 (2018-10)</summary>
-	<ul>
-	<li>The naming convention in rules K2, K5, and T3 was changed from <code>{n}pk_...</code> to <code>pk{n}_...</code></li>
-	</ul>
-	</details>
-<details><summary>v2.1 (2018-11)</summary>
-	<ul>
-	<li>Rule F7 was deprecated</li>
-	<li>A specific naming convention was added to K6 to facilitate linter implementation.</li>
-	</ul>
-	</details>
+
 </body></html>

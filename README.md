@@ -1,13 +1,11 @@
-# Look At Me Sideways (LAMS)
+# ![>_>](docs/img/logo.png) Look At Me Sideways (LAMS)
 
-`>_>`
-
-LAMS is a LookML style guide and linter that can help your team produce more maintainable LookML models.
+LAMS is a style guide and linter for [Looker](https://looker.com/)'s LookML data modeling language. It is designed to help a team of developers to produce more maintainable LookML projects.
 
 - The [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html) alone can help your project, even without enforcement by the linter.
 - The linter can be configured to enforce rules from the style guide for all commits to your master branch.
 - The linter also allows you to conveniently specify custom rules to enforce.
-- In addition to enforcing rules, the linter also produces markdown files to help you navigate your project.
+- In addition to enforcing rules, the linter also produces markdown files to help developers navigate the project.
 
 Interested? See a video of LAMS in action!
 
@@ -91,7 +89,7 @@ See [here](https://github.com/looker-open-source/look-at-me-sideways/blob/master
 LAMS respects user privacy. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 
 ##### License
-LAMS is Copyright (c) 2018 Looker Data Sciences, Inc. See [LICENSE.txt](https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt) for license details.
+LAMS is Copyright (c) 2018 Looker Data Sciences, Inc. and is licensed under the MIT License. See [LICENSE.txt](https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt) for license details.
 
 ##### Support
 LAMS is NOT officially supported by Looker. Please do not contact Looker support for issues with LAMS. Issues may be reported via https://github.com/looker-open-source/look-at-me-sideways/issues , but no SLA or warranty exists that they will be resolved.
@@ -106,3 +104,6 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/looker
 This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the
 [Contributer Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct). Concerns or
 incidents may be reported confidentially to fabio@looker.com.
+
+
+`>_>`
