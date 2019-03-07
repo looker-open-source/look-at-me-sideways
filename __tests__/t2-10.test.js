@@ -68,7 +68,7 @@ describe('Rules', () => {
 			}`));
 			expect(result).toContainMessage({...error, ...r.pkColumnsRequired});
 		});
-		
+
 
 		it('should exempt bad derived_table-based transformations with view exemptions', () => {
 			let result = rule(parse(`file: f {
@@ -82,7 +82,7 @@ describe('Rules', () => {
 			}`));
 			expect(result).toContainMessage({...exempt, ...r.pkColumnsRequired});
 		});
-		
+
 
 		it('should exempt bad derived_table-based transformations with project exemptions', () => {
 			let result = rule(parse(`file: f {

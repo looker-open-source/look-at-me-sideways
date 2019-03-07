@@ -46,9 +46,9 @@ describe('Rules', () => {
 					dimension: qux {}
 				}
 			}`));
-			expect(result).toContainMessage({...failMessageK1, exempt:expect.any(String)});
+			expect(result).toContainMessage({...failMessageK1, exempt: expect.any(String)});
 		});
-		
+
 
 		it('should not error if no pk is found and project is exempt from the rule', () => {
 			let result = rule(parse(`file: f {

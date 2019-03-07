@@ -7,18 +7,21 @@ module.exports = function(
 	let messages = [];
 	let globalExemptions = {};
 	let allExempted = true;
-	for(let rule of ['K1','K2','K3','K4']){
-		globalExemptions[rule] = getExemption(project.file && project.file.manifest, rule)
-		if (globalExemptions[rule]){
+	for (let rule of ['K1', 'K2', 'K3', 'K4']) {
+		globalExemptions[rule] = getExemption(project.file && project.file.manifest, rule);
+		if (globalExemptions[rule]) {
 			messages.push({
-				rule, level: 'info', location:"project",
-				exempt:globalExemptions[rule],
-				path: `/projects/${project.name}/files/manifest.lkml`
+				rule, level: 'info', location: 'project',
+				exempt: globalExemptions[rule],
+				path: `/projects/${project.name}/files/manifest.lkml`,
 			});
+		} else {
+			allExempted = false;
 		}
-		else{allExempted = false;}
 	}
-	if(allExempted){return messages}
+	if (allExempted) {
+		return messages;
+	}
 	const pkNamingConvention = (d)=>d._dimension.match(/^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/);
 	const unique = (x, i, arr) => arr.indexOf(x)===i;
 	let files = project.files || [];
@@ -32,7 +35,9 @@ module.exports = function(
 			{/* Field-only view exemption */
 				if (!view.derived_table && !view.sql_table_name && !view.extends) {
 					for (let rule of ['K1', 'K2', 'K3', 'K4']) {
-						if(globalExemptions[rule]){continue}
+						if (globalExemptions[rule]) {
+							continue;
+						}
 						messages.push({
 							location, path, rule, level: 'info',
 							description: `Field-only view ${view._view} is not subject to Primary Key Dimension rules`,
@@ -42,7 +47,7 @@ module.exports = function(
 				}
 			}
 			rule = 'K1';
-			if(!globalExemptions[rule]){
+			if (!globalExemptions[rule]) {
 				let exempt = getExemption(view, rule) || getExemption(file, rule);
 				if (!pkDimensions.length) {
 					messages.push({
@@ -56,8 +61,8 @@ module.exports = function(
 					description: '1 or more Primary Key Dimensions found in '+view._view,
 				});
 			}
-			rule = 'K2'
-			if(!globalExemptions[rule]){
+			rule = 'K2';
+			if (!globalExemptions[rule]) {
 				let declaredNs = pkDimensions.map(pkNamingConvention).map((match)=>match[1].replace('pk', '')).filter(unique);
 				let rule = 'K2';
 				let exempt = getExemption(view, rule) || getExemption(file, rule);
@@ -81,8 +86,8 @@ module.exports = function(
 					description: `Primary Key Dimensions found in ${view._view} are appropriately numbered`,
 				});
 			}
-			rule = 'K3'
-			if(!globalExemptions[rule]){
+			rule = 'K3';
+			if (!globalExemptions[rule]) {
 				let exempt = getExemption(view, rule) || getExemption(file, rule);
 				if (pkDimensions.reduce(((min, x)=>x._n<min?x._n:min), 99) !== 0 ||
 					pkDimensions.reduce(((max, x)=>x._n>max?x._n:max), 0) !== pkDimensions.length-1 ) {
@@ -96,8 +101,8 @@ module.exports = function(
 					description: `Primary Key Dimensions found in ${view._view} are declared before other dimensions`,
 				});
 			}
-			rule = 'K4'
-			if(!globalExemptions[rule]){
+			rule = 'K4';
+			if (!globalExemptions[rule]) {
 				let badDims = pkDimensions.filter((dim)=>!dim.hidden);
 				if (badDims.length) {
 					let exempt = badDims.every((d)=>getExemption(d, rule)) && getExemption(badDims[0], rule)

@@ -7,10 +7,10 @@ module.exports = function(
 	let messages = [];
 	let rule = 'E2';
 	let exempt;
-	if (exempt = getExemption(project.file && project.file.manifest, rule)){
+	if (exempt = getExemption(project.file && project.file.manifest, rule)) {
 		return [{
-			rule, exempt, level: 'info', location:"project",
-			path: `/projects/${project.name}/files/manifest.lkml`
+			rule, exempt, level: 'info', location: 'project',
+			path: `/projects/${project.name}/files/manifest.lkml`,
 		}];
 	}
 	let ok = true;
