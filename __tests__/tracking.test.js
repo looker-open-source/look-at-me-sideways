@@ -18,6 +18,7 @@ describe('CLI', () => {
 		fs: {
 			writeFileSync: (path, contents) => (fs[path]=contents, true),
 			readFileSync: (path) => fs[path],
+			mkdirSync: (path) => {},
 		},
 		https: {
 			request: ()=>{
