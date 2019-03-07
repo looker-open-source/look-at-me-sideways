@@ -46,7 +46,31 @@ describe('Rules', () => {
 					dimension: qux {}
 				}
 			}`));
-			failMessageK1.exempt = expect.any(String);
+			expect(result).toContainMessage({...failMessageK1, exempt:expect.any(String)});
+		});
+		
+
+		it('should not error if no pk is found and project is exempt from the rule', () => {
+			let result = rule(parse(`file: f {
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: baz {}
+					dimension: qux {}
+				}
+			}
+			file: manifest {rule_exemptions: {K1: "It's ok, exempt"}}`));
+			expect(result).toContainMessage({exempt: expect.any(String)});
+		});
+
+		it('should error if no pk is found and project is exempt from another rule', () => {
+			let result = rule(parse(`file: f {
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: baz {}
+					dimension: qux {}
+				}
+			}
+			file: manifest {rule_exemptions: {X1: "Different exemption"}}`));
 			expect(result).toContainMessage(failMessageK1);
 		});
 		it('should not error if there is no sql_table_name', () => {

@@ -6,6 +6,13 @@ module.exports = function(
 ) {
 	let messages = [];
 	let rule = 'E2';
+	let exempt;
+	if (exempt = getExemption(project.file && project.file.manifest, rule)){
+		return [{
+			rule, exempt, level: 'info', location:"project",
+			path: `/projects/${project.name}/files/manifest.lkml`
+		}];
+	}
 	let ok = true;
 	let models = project.models || [];
 	const pkRegex = /^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/;

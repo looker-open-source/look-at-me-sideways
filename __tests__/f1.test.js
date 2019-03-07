@@ -158,6 +158,32 @@ describe('Rules', () => {
 			expect(result).toContainMessage(failMessageF1);
 		});
 
+		it('should not error for an F1 exempted project', () => {
+			let result = rule(parse(`file: f {
+				view: foo {
+					extends: [bar]
+					dimension: baz { 
+						sql: \${abc.xyz} ;; 
+					}
+				}
+			}
+			file: manifest {rule_exemptions: {F1: "It is okay, this is extended"}}`));
+			expect(result).not.toContainMessage(failMessageF1);
+		});
+
+		it('should error for an otherwise exempted project', () => {
+			let result = rule(parse(`file: f {
+				view: foo {
+					extends: [bar]
+					dimension: baz {
+						sql: \${abc.xyz} ;;
+					}
+				}
+			}
+			file: manifest {rule_exemptions: {X1: "Different exemption"}}`));
+			expect(result).toContainMessage(failMessageF1);
+		});
+
 		it('should error for a field with a non-special-case 2-part reference in sql {{}}', () => {
 			let result = rule(parse(`file: f {
 				view: foo {

@@ -5,6 +5,20 @@ module.exports = function(
 	project
 ) {
 	let messages = [];
+	let globalExemptions = {};
+	let allExempted = true;
+	for(let rule of ['T2','T3','T4','T5','T6','T7','T8','T9','T10']){
+		globalExemptions[rule] = getExemption(project.file && project.file.manifest,rule)
+		if (globalExemptions[rule]){
+			messages.push({
+				rule, level: 'info', location:"project",
+				exempt:globalExemptions[rule],
+				path: `/projects/${project.name}/files/manifest.lkml`
+			});
+		}
+		else{allExempted = false;}
+	}
+	if(allExempted){return messages}
 	let files = project.files || [];
 	let pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);
 	let unique = (x, i, arr) => arr.indexOf(x) == i;
@@ -178,6 +192,7 @@ module.exports = function(
 			}
 		}
 	}
+	messages = messages.filter((msg) => !globalExemptions[msg.rule] || msg.location == 'project')
 	return {
 		messages,
 	};

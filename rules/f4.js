@@ -6,6 +6,13 @@ module.exports = function(
 ) {
 	let messages = [];
 	let rule = 'F4';
+	let exempt;
+	if (exempt = getExemption(project.file && project.file.manifest, rule)){
+		return [{
+			rule, exempt, level: 'info', location:"project",
+			path: `/projects/${project.name}/files/manifest.lkml`
+		}];
+	}
 	let ok = true;
 	let files = project.files || [];
 	for (let file of files) {

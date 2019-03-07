@@ -10,6 +10,7 @@ describe('Rules', () => {
 		let info = {level: 'info'};
 		let error = {level: 'error'};
 		let warning = {level: 'warning'};
+		let exempt = {exempt: expect.any(String)};
 		let r = {
 			pkColumnsRequired: {rule: 'T2'},
 			pkColumnNaming: {rule: 'T3'},
@@ -66,6 +67,34 @@ describe('Rules', () => {
 				;; } }
 			}`));
 			expect(result).toContainMessage({...error, ...r.pkColumnsRequired});
+		});
+		
+
+		it('should exempt bad derived_table-based transformations with view exemptions', () => {
+			let result = rule(parse(`file: f {
+				view: foo { 
+					rule_exemptions: {T2: "Forget PKs"}
+					derived_table: { sql:
+					SELECT account_id, COUNT(*)
+					FROM users
+					GROUP BY 1
+				;; } }
+			}`));
+			expect(result).toContainMessage({...exempt, ...r.pkColumnsRequired});
+		});
+		
+
+		it('should exempt bad derived_table-based transformations with project exemptions', () => {
+			let result = rule(parse(`file: f {
+				view: foo { 
+					derived_table: { sql:
+					SELECT account_id, COUNT(*)
+					FROM users
+					GROUP BY 1
+				;; } }
+			}
+			file: manifest {rule_exemptions: {T2: "Forget PKs"}}`));
+			expect(result).toContainMessage({...exempt, ...r.pkColumnsRequired});
 		});
 
 		it('should info and not warn/error for single-column transformations', () => {

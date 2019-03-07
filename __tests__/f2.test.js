@@ -105,6 +105,19 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(warnMessageF2);
 		});
 
+		it('should not error for an F2 exempted project', () => {
+			let result = rule(parse(`file: f {
+				view: foo {
+					dimension: bar {
+						rule_exemptions: {F2: "foo"}
+						view_label: "Foo2"
+					}
+				}
+			}
+			file: manifest {rule_exemptions: {F2: "It's okay, this is exempt"}}`));
+			expect(result).not.toContainMessage(warnMessageF2);
+		});
+
 		it('should warn for an F2 exempted field if no reason is specified', () => {
 			let result = rule(parse(`file: f {
 				view: foo {
@@ -136,6 +149,18 @@ describe('Rules', () => {
 					}
 				}
 			}`));
+			expect(result).toContainMessage(warnMessageF2);
+		});
+
+		it('should error for an otherwise exempted project', () => {
+			let result = rule(parse(`file: f {
+				view: foo {
+					dimension: bar {
+						view_label: "Foo2"
+					}
+				}
+			}
+			file: manifest {rule_exemptions: {X1: "Different exemption"}}`));
 			expect(result).toContainMessage(warnMessageF2);
 		});
 	});
