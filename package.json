@@ -10,7 +10,8 @@
     "lams": "./index.js"
   },
   "scripts": {
-    "test": "jest --watchAll --verbose"
+    "test": "jest --watchAll --verbose",
+	"lint-fix": "node node_modules/.bin/eslint {index,__tests__/*,rules/*,lib/*}.js"
   },
   "repository": {
     "type": "git",
