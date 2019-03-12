@@ -8,10 +8,11 @@ module.exports = function(
 	let rule = 'E1';
 	let exempt;
 	if (exempt = getExemption(project.file && project.file.manifest, rule)) {
-		return [{
+		messages.push({
 			rule, exempt, level: 'info', location: 'project',
 			path: `/projects/${project.name}/files/manifest.lkml`,
-		}];
+		});
+		return {messages};
 	}
 	let ok = true;
 	let models = project.models || [];

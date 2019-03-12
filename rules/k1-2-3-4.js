@@ -20,7 +20,7 @@ module.exports = function(
 		}
 	}
 	if (allExempted) {
-		return messages;
+		return {messages};
 	}
 	const pkNamingConvention = (d)=>d._dimension.match(/^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/);
 	const unique = (x, i, arr) => arr.indexOf(x)===i;

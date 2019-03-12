@@ -20,7 +20,7 @@ module.exports = function(
 		}
 	}
 	if (allExempted) {
-		return messages;
+		return {messages};
 	}
 	let files = project.files || [];
 	let pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);
