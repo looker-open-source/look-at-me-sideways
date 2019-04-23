@@ -61,7 +61,9 @@ view: rollup {
     sql: SELECT ...
 ```
 
-We also suggest starting these reasons with the Y-M-D formatted date on which they were added, for even easier auditing in case your project has many exemptions.
+If you want to entirely opt-out of checking a particular rule, you can specify the exemptions in your project's manifest.lkml file.
+
+Note: For large projects with many exemptions, we suggest starting the reasons with the Y-M-D formatted date on which they were added, for easier review in your issue report.
 
 ##### Generated Markdown Files
 One of the primary ways that LAMS gives developers feedback, in addition to passing/failing pull requests, is by adding its findings to markdown files in your project. Here is an example of a resulting markdown file as displayed in Looker:
