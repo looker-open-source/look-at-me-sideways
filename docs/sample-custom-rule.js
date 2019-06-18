@@ -10,19 +10,20 @@ module.exports = function(
 	project,
 ) {
 	let messages = [];
-	let rule = 'sample-custom-rule'; // Note that each custom rule script may implement multiple "rules" if desired
-	// Rule names of the form [A-WY-Z][0-9]+ are reserved for future LAMS usage
-	let models = project.models || [];
-	for (let model of models) {
+	for (let model of project.models || []) {
 		if (model.connection && model.connection.match(/_dev$/)) {
-			let location = `model:${model._model}`;
-			let path = `/projects/${project.name}/files/${model._model}.model.lkml`;
+			// ^ Sample rule logic
 			messages.push({
-				location, // The logical location within the project/model
-				path, // The URL path to link to the error (as closely as possible)
-				rule,
-				exempt: false, // Pass either false, or a non-empty string with the exemption reason.
-				// Truthy exemptions will prevent warnings& errors from failing the build
+				rule: 'sample-custom-rule',
+				// ^ Note that each custom rule script may implement multiple "rules" if desired
+				//   Rule names of the form [A-WY-Z][0-9]+ are reserved for future LAMS usage
+				location: `model:${model._model}`,
+				// ^ The logical location within the project/model to show to your developers
+				path: `/projects/${project.name}/files/${model._model}.model.lkml`,
+				// ^The URL path to link to the error (as closely as possible)
+				exempt: false,
+				// ^ Pass either false, or a non-empty string with the exemption reason.
+				//   Truthy exemptions will prevent warnings & errors from failing the build
 				level: 'error', // info | warning | error
 				description: `${model._model} utilises staging connection, ${model.connection}.`,
 			});
@@ -34,17 +35,16 @@ module.exports = function(
 	};
 
 	/* Sample flow for "per-model" / "per-explore" rules
-	let models = project.models || [];
-	for (let model of models) {
-		let explores = model.explores || [];
-		for (let explore of explores) {
-			let joins = explore.joins || [];
-			for (let join of joins) {
-				let location = `model:${model._model}/explore:${explore._explore}/join:${join._join}`;
-				let path = `/projects/${project.name}/files/${model._model}.model.lkml`;
+	for (let model of project.models || []) {
+		for (let explore of model.explores || []) {
+			for (let join of explore.joins || []) {
 				if ( ...condition... ) {
 					messages.push({
-						location, path, rule, exempt:false, level: 'error',
+						rule: '...',
+						location: `model:${model._model}/explore:${explore._explore}/join:${join._join}`,
+						path: `/projects/${project.name}/files/${model._model}.model.lkml`,
+						exempt: false,
+						level: 'error',
 						description: `...`,
 					});
 				}
@@ -54,17 +54,16 @@ module.exports = function(
 	*/
 
 	/* Sample flow for "per-file" or "per-view" rules
-	let files = project.files || [];
-	for (let file of files) {
-		let views = file.views || [];
-		for (let view of views) {
-			let fields = view.measures||[];
-			for (let field of fields) {
-				let location = `view:${view._view}/field:${field._measure}`;
-				let path = `/projects/${project.name}/files/${file._file_path}#${location}`;
+	for (let file of project.files || []) {
+		for (let view of file.views || []) {
+			for (let measure of view.measures || []) {
 				if ( ...condition... ) {
 					messages.push({
-						location, path, rule, exempt:false, level: 'error',
+						rule: '...',
+						location: `view:${view._view}/field:${field._measure}`,
+						path: `/projects/${project.name}/files/${file._file_path}`,
+						exempt: false,
+						level: 'error',
 						description: `...`,
 					});
 				}
