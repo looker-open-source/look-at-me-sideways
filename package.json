@@ -11,7 +11,7 @@
   },
   "scripts": {
     "test": "jest --watchAll --verbose",
-	"lint-fix": "node node_modules/.bin/eslint --fix {index,__tests__/*,rules/*,lib/*}.js"
+    "lint-fix": "node node_modules/.bin/eslint --fix {index,__tests__/*,rules/*,lib/*}.js"
   },
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   "homepage": "https://github.com/looker-open-source/look-at-me-sideways#readme",
   "dependencies": {
     "dot": "^1.1.2",
-    "lookml-parser": "^3.4.0",
+    "lookml-parser": "^4.0.0",
     "minimist": "^1.2.0",
     "require-from-string": "^2.0.2"
   },
@@ -39,7 +39,7 @@
     "eslint": "^5.6.1",
     "eslint-config-google": "^0.10.0",
     "eslint-plugin-jest": "^21.24.1",
-    "jest": "^23.6.0",
-    "jest-extended": "^0.11.0"
+    "jest": "^24.8.0",
+    "jest-extended": "^0.11.1"
   }
 }
