@@ -42,6 +42,9 @@
 				warn: (msg) => lamsMessages.push({message: msg&&msg.message||msg, level: 'lams-warning'}), // LAMS warnings should not abort the deploy
 				error: (msg) => lamsMessages.push({message: msg&&msg.message||msg, level: 'lams-error'}), // LAMS errors should abort the deploy
 			},
+			globOptions: {
+				matchBase: true
+			}
 		});
 		if (project.errors) {
 			console.log(project.errors);
