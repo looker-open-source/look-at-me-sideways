@@ -18,15 +18,15 @@ module.exports = function(
 	let ok = true;
 	let files = project.files || [];
 	for (let file of files) {
-		let views = file.views || [];
+		let views = Object.values(file.view||{});
 		for (let view of views) {
 			let fields = []
-				.concat(view.dimensions||[])
-				.concat(view.measures||[])
-				.concat(view.filters||[])
-				.concat(view.parameters||[]);
+				.concat(Object.values(view.dimension||{}))
+				.concat(Object.values(view.measure||{}))
+				.concat(Object.values(view.filter||{}))
+				.concat(Object.values(view.parameter||{}));
 			for (let field of fields) {
-				let location = `view:${view._view}/field:${field._dimension||field._measure}`;
+				let location = `view:${view._view}/field:${field._dimension||field._measure||field._filter||field._parameter}`;
 				let path = `/projects/${project.name}/files/${file._file_path}#${location}`;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
 				if ( !field.hidden && !field.description) {

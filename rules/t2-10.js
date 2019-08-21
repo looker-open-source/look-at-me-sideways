@@ -26,7 +26,7 @@ module.exports = function(
 	let pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);
 	let unique = (x, i, arr) => arr.indexOf(x) == i;
 	for (let file of files) {
-		let views = file.views || [];
+		let views = Object.values(file.view||{});
 		for (let view of views) {
 			let location = 'view: '+view._view;
 			let path = '/projects/'+project.name+'/files/'+file._file_path+'#view:'+view._view;

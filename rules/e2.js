@@ -16,7 +16,7 @@ module.exports = function(
 		return {messages};
 	}
 	let ok = true;
-	let models = project.models || [];
+	let models = Object.values(project.model || {});
 	const pkRegex = /^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/;
 	const isFieldRef = (ref) => !ref.match(/^TABLE$|^SUPER$|^EXTENDED$|\.SQL_TABLE_NAME$/);
 	const unique = (x, i, arr) => arr.indexOf(x)===i;
@@ -24,10 +24,10 @@ module.exports = function(
 	const max = (a, b) => a>b?a:b;
 	const aliasFromRef = (ref) => ref.split('.')[0];
 	for (let model of models) {
-		let explores = model.explores || [];
+		let explores = Object.values(model.explore || {});
 		for (let explore of explores) {
 			let path = `/projects/${project.name}/files/${model._model}.model.lkml`;
-			let joins = explore.joins || [];
+			let joins = Object.values(explore.join || {});
 			for (let join of joins) {
 				let location = `model:${model._model}/explore:${explore._explore}/join:${join._join}`;
 				let exempt = getExemption(join, rule) || getExemption(explore, rule) || getExemption(model, rule);

@@ -15,12 +15,12 @@ module.exports = function(
 		return {messages};
 	}
 	let ok = true;
-	let models = project.models || [];
+	let models = Object.values(project.model || {});
 	for (let model of models) {
-		let explores = model.explores || [];
+		let explores = Object.values(model.explore || {});
 		for (let explore of explores) {
 			let path = `/projects/${project.name}/files/${model._model}.model.lkml`;
-			let joins = explore.joins || [];
+			let joins = Object.values(explore.join || {});
 			for (let join of joins) {
 				let location = `model:${model._model}/explore:${explore._explore}/join:${join._join}`;
 				let exempt = getExemption(join, rule) || getExemption(explore, rule) || getExemption(model, rule);

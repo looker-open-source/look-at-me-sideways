@@ -27,11 +27,11 @@ module.exports = function(
 	let files = project.files || [];
 	for (let file of files) {
 		let rule;
-		let views = file.views || [];
+		let views = Object.values(file.view||{});
 		for (let view of views) {
 			let location = 'view: '+view._view;
 			let path = '/projects/'+project.name+'/files/'+file._file_path+'#view:'+view._view;
-			let pkDimensions = (view.dimensions||[]).filter(pkNamingConvention);
+			let pkDimensions = (Object.values(view.dimension||{})).filter(pkNamingConvention);
 			{/* Field-only view exemption */
 				if (!view.derived_table && !view.sql_table_name && !view.extends) {
 					for (let rule of ['K1', 'K2', 'K3', 'K4']) {

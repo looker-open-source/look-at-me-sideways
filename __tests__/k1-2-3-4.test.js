@@ -17,7 +17,7 @@ describe('Rules', () => {
 		};
 
 		it('should pass if any pk is defined using [0-9]pk_.* or pk[0-9]_.*', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: pk2_baz {}
@@ -28,7 +28,7 @@ describe('Rules', () => {
 		});
 
 		it('should error if any pk is defined incorrectly using [0-9]pk[0-9]_.*', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 2pk2_baz {}
@@ -38,7 +38,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error if no pk is found and file is exempt from rule', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					rule_exemptions: {K1: "Who cares about primary keys"}
@@ -51,7 +51,7 @@ describe('Rules', () => {
 
 
 		it('should not error if no pk is found and project is exempt from the rule', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: baz {}
@@ -63,7 +63,7 @@ describe('Rules', () => {
 		});
 
 		it('should error if no pk is found and project is exempt from another rule', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: baz {}
@@ -74,7 +74,7 @@ describe('Rules', () => {
 			expect(result).toContainMessage(failMessageK1);
 		});
 		it('should not error if there is no sql_table_name', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					dimension: bar {}
 					dimension: baz {}
@@ -98,7 +98,7 @@ describe('Rules', () => {
 		};
 
 		it('should pass if all pks are prefixed with the same {n}pk|pk{n} in a given view', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 1pk_baz {}
@@ -109,7 +109,7 @@ describe('Rules', () => {
 		});
 
 		it('should pass if number of pks matches {n} in {n}pk', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 2pk_baz {}
@@ -121,7 +121,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error if pks are defined using different prefixes in a given view', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 2pk_baz {}
@@ -133,7 +133,7 @@ describe('Rules', () => {
 		});
 
 		it('should error if number of pks does not match {n} in {n}pk', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 3pk_baz {}
@@ -157,7 +157,7 @@ describe('Rules', () => {
 		};
 
 		it('should pass if pks are defined first in view file', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 1pk_baz {}
@@ -168,7 +168,7 @@ describe('Rules', () => {
 		});
 
 		it('should warn if pks are not defined first in view file', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: baz {}
@@ -192,7 +192,7 @@ describe('Rules', () => {
 		};
 
 		it('should pass if all pks are hidden', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 1pk_baz { hidden: yes }
@@ -203,7 +203,7 @@ describe('Rules', () => {
 		});
 
 		it('should warn if any pk is not hidden', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 2pk_baz { hidden: yes }

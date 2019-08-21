@@ -37,6 +37,7 @@
 		const project = await parser.parseFiles({
 			source: cliArgs.input || cliArgs.i,
 			conditionalCommentString: 'LAMS',
+			fileOutput:"array",
 			console: {
 				log: (msg) => {},
 				warn: (msg) => lamsMessages.push({message: msg&&msg.message||msg, level: 'lams-warning'}), // LAMS warnings should not abort the deploy

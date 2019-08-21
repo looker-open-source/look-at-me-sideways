@@ -18,7 +18,7 @@ describe('Rules', () => {
 		};
 
 		it('should pass if datagroup_trigger or persist_for is used', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					derived_table: {
 						sql: SELECT * 
@@ -29,7 +29,7 @@ describe('Rules', () => {
 			}`));
 			expect(result).toContainMessage(passMessageT1);
 
-			result = rule(parse(`file: f {
+			result = rule(parse(`files:{} files:{
 				view: foo {
 					derived_table: {
 						sql: SELECT * 
@@ -42,7 +42,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error on DTs', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					derived_table: {
 						sql: SELECT * 
@@ -54,7 +54,7 @@ describe('Rules', () => {
 		});
 
 		it('should error if sql_trigger_value is used', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo {
 					derived_table: {
 						sql: SELECT * 

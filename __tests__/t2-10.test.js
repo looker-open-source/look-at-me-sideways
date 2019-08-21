@@ -29,26 +29,26 @@ describe('Rules', () => {
 		});
 
 		it('should not error if there are no views', () => {
-			let result = rule(parse(`file: f {}`));
+			let result = rule(parse(`files:{} files:{}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should not error for a view with no table', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { dimension: foo {} }
 			}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should not error for plain table-reference sql_table_name', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { sql_table_name: my_schema.tbl ;; }
 			}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should error for bad sql_table_name-based transformations', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { sql_table_name: (
 					SELECT account_id, COUNT(*)
 					FROM users
@@ -59,7 +59,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for bad derived_table-based transformations', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT account_id, COUNT(*)
 					FROM users
@@ -71,7 +71,7 @@ describe('Rules', () => {
 
 
 		it('should exempt bad derived_table-based transformations with view exemptions', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { 
 					rule_exemptions: {T2: "Forget PKs"}
 					derived_table: { sql:
@@ -85,7 +85,7 @@ describe('Rules', () => {
 
 
 		it('should exempt bad derived_table-based transformations with project exemptions', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { 
 					derived_table: { sql:
 					SELECT account_id, COUNT(*)
@@ -98,7 +98,7 @@ describe('Rules', () => {
 		});
 
 		it('should info and not warn/error for single-column transformations', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT MAX(id)
 					FROM sessions
@@ -110,7 +110,7 @@ describe('Rules', () => {
 		});
 
 		it('should info and not warn/error for single-table SELECT *+ transformations', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT *, DATE_DIFF(seconds, start, end) as duration
 					FROM sessions
@@ -122,7 +122,7 @@ describe('Rules', () => {
 		});
 
 		it('should not warn/error for a transformation containing correct pk columns', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						pk2_tenant_id, 
@@ -138,7 +138,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a transformation containing misnumbered pk columns', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						pk1_tenant_id, 
@@ -153,7 +153,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a transformation where pk columns aren\'t first', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						pk2_tenant_id,
@@ -168,7 +168,7 @@ describe('Rules', () => {
 		});
 
 		it('should warn for a derived table missing the pk separator', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						pk2_tenant_id, 
@@ -182,7 +182,7 @@ describe('Rules', () => {
 		});
 
 		it('should warn (and suggest an exemption) for ungrouped trasformations that it can\'t enforce', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						session.id as pk2_session_id, 
@@ -199,7 +199,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for grouped transformations that don\'t use a group as the first PK', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						ROW_NUMBER() OVER (PARTITION BY pk2_session_id) AS pk2_session_sequence,
@@ -217,7 +217,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for grouped transformations that don\'t use all groupings in PK and don\'t continue', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						sessions.user_id as pk1_user_id,
@@ -231,7 +231,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for grouped transformations that don\'t use all groupings in PK and continue with a non-window column', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						sessions.user_id as pk2_user_id,
@@ -246,7 +246,7 @@ describe('Rules', () => {
 		});
 
 		it('should not warn/error for ordinal-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						user_id as pk2_user_id,
@@ -262,7 +262,7 @@ describe('Rules', () => {
 		});
 
 		it('should not warn/error for expression-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
 						user_id as pk2_user_id,
@@ -278,7 +278,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for each sequential subquery in a transformation', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					WITH missing AS (
 						SELECT account_id, COUNT(*)
@@ -302,7 +302,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for each nested subquery in a transformation', () => {
-			let result = rule(parse(`file: f {
+			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT "foo" as bar
 					FROM (

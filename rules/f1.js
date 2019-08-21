@@ -18,26 +18,26 @@ module.exports = function(
 	let ok = true;
 	let files = project.files || [];
 	for (let file of files) {
-		let views = file.views || [];
+		let views = Object.values(file.view || {});
 		for (let view of views) {
 			if (!view.sql_table_name && !view.derived_table && !view.extends) {
 				continue;
 			}
 			let fields = []
-				.concat(view.dimensions||[])
-				.concat(view.measures||[])
-				.concat(view.filters||[]);
+				.concat(Object.values(view.dimension||{}))
+				.concat(Object.values(view.measure||{}))
+				.concat(Object.values(view.filter||{}));
 			for (let field of fields) {
-				let location = `view:${view._view}/field:${field._dimension||field._measure}`;
+				let location = `view:${view._view}/field:${field._dimension||field._measure||field._filter}`;
 				let path = `/projects/${project.name}/files/${file._file_path}#${location}`;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
 				// TODO: Doublecheck the below matches the actual LookML parameters... I wrote the below without internet connectivity -FB
 				[field.sql,
 					field.html,
 					field.label_from_parameter,
-					field.links && field.links.map && field.links.map((o)=>o.url).join(''),
-					field.links && field.links.map && field.links.map((o)=>o.url).join(''),
-					field.filters && field.filters.map && field.filters.map((o)=>'{{'+o.field+'}}').join(''),
+					field.link && Object.values(field.link).map((o)=>o.url).join(''),
+					field.link && Object.values(field.link).map((o)=>o.url).join(''),
+					field.filter && Object.values(field.filter).map((o)=>'{{'+o.field+'}}').join(''),
 				].forEach((value) => {
 					if (!value || !value.replace) {
 						return;
