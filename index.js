@@ -1,41 +1,60 @@
 #! /usr/bin/env node
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
-!async function() {
-	let messages = []; let lamsMessages = []; let tracker = {};
+const defaultConsole = console
+const defaultProcess = process
+/**
+ * LAMS main function
+ *
+ * @param {object}	options - options
+ * @param {string=}	options.reporting - One of yes, no, save-yes, or save-no. Program terminates with a warning if omitted. See PRIVACY.md for details
+ * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
+ * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
+ * @param {string=}	options.source - An optional glob specifying which files to read
+ * @param {string=}	options.projectName - An optional name for the project, used to generate links back to the project in mardown output
+ * @param {*=}		options.allowCustomRules - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules
+ * @param {*=}		options.jenkins - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
+ * @param {object=} io - IO overrides, primarily for testing
+ * @param {object=} io.console
+ * @param {object=} io.console.log
+ * @param {object=} io.console.warn
+ * @param {object=} io.console.error
+ * @param {object=} io.fs
+ * @param {object=} io.tracker
+ * @param {object=} io.process
+ * @param {function=} io.get 
+ * @return Returns undefined or calls process.exit
+ */
+
+module.exports = async function(
+	options,
+	{
+		console = defaultConsole,
+		process = defaultProcess,
+		fs,
+		get,
+		tracker
+	}={}
+	){
+	let messages = [];		// These are for the LookML developer who has attempted to lint a project
+	let lamsMessages = [];	// These are for the administrator who has invoked LAMS
 	try {
-		const cliArgs = require('minimist')(process.argv.slice(
-			process.argv[0]=='lams'
-				? 1 // e.g. lams --bla
-				: 2 // e.g. node index.js --bla
-		));
-		const fs = require('fs');
-		const path = require('path');
-		const tracker = require('./lib/tracking')({
-			cliArgs,
+		fs = fs || require('fs');
+		get = get || require('./lib/https-get.js');
+		tracker = tracker || require('./lib/tracking')({
+			cliArgs:{
+				reporting: options.reporting,
+				reportLicenseKey: options.reportLicenseKey,
+				reportUser: options.reportUser
+			},
 			gaPropertyId: 'UA-96247573-2',
 		});
+		const path = require('path');
 		const parser = require('lookml-parser');
-		const dot = require('dot');
-		const templateFunctions = require('./lib/template-functions.js');
-
-		dot.templateSettings = {
-			...dot.templateSettings,
-			evaluate: /\{\{!([\s\S]+?)\}\}/g,
-			interpolate: /\{\{=([\s\S]+?)\}\}/g,
-			encode: /\{\{&([\s\S]+?)\}\}/g,
-			conditional: /\{\{\?(\?)?\s*([\s\S]*?)\s*\}\}/g,
-			iterate: /\{\{\*\s*(?:\}\}|([\s\S]+?)\s*:\s*([\w$]+)\s*(?::\s*([\w$]+))?\s*\}\})/g,
-			varname: 'ctx',
-			strip: false,
-		};
-		dot.process({path: path.join(__dirname, 'templates')});
-		const templates = {
-			developer: require('./templates/developer'),
-			issues: require('./templates/issues'),
-		};
+		const templates = require('./lib/templates.js');
+		
 		console.log('Parsing project...');
 		const project = await parser.parseFiles({
-			source: cliArgs.input || cliArgs.i,
+			source: options.source,
 			conditionalCommentString: 'LAMS',
 			fileOutput:"array",
 			console: {
@@ -57,7 +76,7 @@
 		}
 		project.name = false
 			|| project.file && project.file.manifest && project.file.manifest.project_name
-			|| cliArgs['project-name']
+			|| options.projectName
 			|| (''+process.cwd()).split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
 			|| 'unknown_project';
 		if (project.name === 'look-at-me-sideways') {
@@ -76,11 +95,18 @@
 		console.log('> Rules done!');
 		if (project.file && project.file.manifest && project.file.manifest.custom_rules) {
 			console.log('Checking custom rules...');
-			if (cliArgs['allow-custom-rules'] !== undefined) {
+			let requireFromString = require('require-from-string');
+			let get = require('./lib/https-get.js');
+			let rules =  coerceArray(project.file && project.file.manifest && project.file.manifest.custom_rules) 
+			for (let rule of rules){
+				
+			
+			}
+			if (options.allowCustomRules !== undefined) {
 				let requireFromString = require('require-from-string');
-				let get = require('./lib/https-get.js');
 				let customRuleRequests = [];
 				project.file.manifest.custom_rules.forEach(async (url, u) => {
+					
 					try {
 						let request = get(url);
 						customRuleRequests.push(request);
@@ -124,7 +150,7 @@
 		console.log(`BUILD ${buildStatus}: ${errors.length} errors and ${warnings.length} warnings found. Check .md files for details.`);
 
 		let jobURL;
-		if (cliArgs.jenkins) {
+		if (options.jenkins) {
 			try {
 				jobURL = process.env.BUILD_URL;
 			} catch (e) {
@@ -140,9 +166,9 @@
 		}
 
 		console.log('Writing summary files...');
-		fs.writeFileSync('developer.md', templates.developer({messages, fns: templateFunctions}).replace(/\n\t+/g, '\n'));
+		fs.writeFileSync('developer.md', templates.developer({messages}).replace(/\n\t+/g, '\n'));
 		console.log('> Developer index done');
-		fs.writeFileSync('issues.md', templates.issues({messages, jobURL, fns: templateFunctions}).replace(/\n\t+/g, '\n'));
+		fs.writeFileSync('issues.md', templates.issues({messages, jobURL}).replace(/\n\t+/g, '\n'));
 		console.log('> Issue summary done');
 
 		console.log('> Summary files done!');
@@ -156,9 +182,9 @@
 
 		if (errors.length) {
 			process.exit(1);
-		} else {
-			process.exit(0);
 		}
+		
+		return messages;
 	} catch (e) {
 		try {
 			console.error(e);
@@ -177,4 +203,10 @@
 		}
 		process.exit(1);
 	}
-}();
+};
+
+function coerceArray(maybeArray){
+	if(maybeArray === undefined){return [];}
+	if(Array.isArray(maybeArray)){return maybeArray;}
+	return [maybeArray];
+}

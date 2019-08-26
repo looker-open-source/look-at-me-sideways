@@ -1,5 +1,5 @@
 node_modules
-templates/*.js
+lib/templates/*.js
 developer.md
 issues.md
 *.lkml

@@ -182,7 +182,7 @@ describe('CLI', () => {
 	it('should send a payload', () => {
 		let {console, process, fs, https, spies} = mocks({fs: initFs});
 		const tracker = tracking({
-			cliArgs: {'reporting': 'yes', 'report-user': 'foo@test.com'},
+			cliArgs: {reporting: 'yes', reportUser: 'foo@test.com'},
 			gaPropertyId: 'test',
 			console,
 			process,

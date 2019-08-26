@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "bin": {
-    "lams": "./index.js"
+    "lams": "./cli.js"
   },
   "scripts": {
     "test": "jest --watchAll --verbose",
