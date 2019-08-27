@@ -6,6 +6,7 @@ const defaultProcess = process
  * LAMS main function
  *
  * @param {object}	options - options
+ * @param {object}	options.cwd - Override the current working directory
  * @param {string=}	options.reporting - One of yes, no, save-yes, or save-no. Program terminates with a warning if omitted. See PRIVACY.md for details
  * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
  * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
@@ -19,9 +20,9 @@ const defaultProcess = process
  * @param {object=} io.console.warn
  * @param {object=} io.console.error
  * @param {object=} io.fs
- * @param {object=} io.tracker
- * @param {object=} io.process
- * @param {function=} io.get 
+ * @param {object=} io.tracker Object compatible with ./lib/tracking.js
+ * @param {object=} io.process Object with cwd() and exit()
+ * @param {function=} io.get function that takes a URL and returns the contents
  * @return Returns undefined or calls process.exit
  */
 
@@ -57,6 +58,7 @@ module.exports = async function(
 			source: options.source,
 			conditionalCommentString: 'LAMS',
 			fileOutput:"array",
+			cwd:options.cwd||process.cwd(),
 			console: {
 				log: (msg) => {},
 				warn: (msg) => lamsMessages.push({message: msg&&msg.message||msg, level: 'lams-warning'}), // LAMS warnings should not abort the deploy
@@ -77,7 +79,7 @@ module.exports = async function(
 		project.name = false
 			|| project.file && project.file.manifest && project.file.manifest.project_name
 			|| options.projectName
-			|| (''+process.cwd()).split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
+			|| (options.cwd||process.cwd()||'').split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
 			|| 'unknown_project';
 		if (project.name === 'look-at-me-sideways') {
 			lamsMessages.push({level: 'lams-warning', message: 'Consider adding a manifest.lkml file to your project to identify the project_name'});

@@ -3562,9 +3562,9 @@
       "dev": true
     },
     "lookml-parser": {
-      "version": "6.0.1",
-      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.0.1.tgz",
-      "integrity": "sha512-WtQ6i9l48VOWz6C7TNDPZHi08KGO4WuNuTHeM/J+Oe8n0YBHMymeosxWQ0hchW8Cxg3FmJUgaL+BVhQew3N6Gw==",
+      "version": "6.1.0",
+      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.1.0.tgz",
+      "integrity": "sha512-kca3tzwNc8mSIx2gNMj2VK64FhGrie8vt5aL+5rTyJ+UgB/sZiZjRoSBzqdCQNuKSnLQLmxJM6LKMiqwNNX1tA==",
       "requires": {
         "bluebird": "^3.5.1",
         "deep-object-diff": "^1.1.0",

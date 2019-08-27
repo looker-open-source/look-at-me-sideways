@@ -2,5 +2,4 @@ node_modules
 lib/templates/*.js
 developer.md
 issues.md
-*.lkml
 .DS_Store
