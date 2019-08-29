@@ -52,6 +52,7 @@ module.exports = async function(
 		const path = require('path');
 		const parser = require('lookml-parser');
 		const templates = require('./lib/templates.js');
+		const checkCustomRule = require('./lib/custom-rules.js');
 		
 		console.log('Parsing project...');
 		const project = await parser.parseFiles({
@@ -97,7 +98,7 @@ module.exports = async function(
 		console.log('> Rules done!');
 		
 		if (project.manifest && project.manifest.custom_rules) {
-			console.warn('\x1b[33m%s\x1b[0m', 'Legacy custom rules will be removed in the next major version!');
+			console.warn('\x1b[33m%s\x1b[0m', 'Legacy (Javascript) custom rules may be removed in a future major version!');
 			console.log('Checking legacy custom rules...');
 			let requireFromString = require('require-from-string');
 			let get = options.get || require('./lib/https-get.js');
@@ -136,12 +137,12 @@ module.exports = async function(
 		}
 		
 		if(project.manifest && project.manifest.rule){
-			console.log('Checking legacy custom rules...');
-			for(let [r,rule] of Object.entries(project.manifest.rule)){
-				console.log('> '+r.toUpperCase());
-				let match = rule.match || "$"
+			console.log('Checking custom rules...');
+			for(let rule of Object.values(project.manifest.rule)){
+				console.log('> '+rule._rule);
+				messages = messages.concat(checkCustomRule(rule, project));
 			}
-			
+			console.log('> Custom rules done!');
 		}
 
 		let errors = messages.filter((msg) => {
