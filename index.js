@@ -135,8 +135,12 @@ module.exports = async function(
 			}
 		}
 		
-		if(project.manifest && project.manifest.rules){
-			
+		if(project.manifest && project.manifest.rule){
+			console.log('Checking legacy custom rules...');
+			for(let [r,rule] of Object.entries(project.manifest.rule)){
+				console.log('> '+r.toUpperCase());
+				let match = rule.match || "$"
+			}
 			
 		}
 

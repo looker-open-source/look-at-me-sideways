@@ -1420,6 +1420,14 @@
         "eslint-visitor-keys": "^1.0.0"
       }
     },
+    "espression": {
+      "version": "1.2.0",
+      "resolved": "https://registry.npmjs.org/espression/-/espression-1.2.0.tgz",
+      "integrity": "sha512-JIpnhUmiUxXI6xCt25JZlKnmSc8S306uCnnYmxdHQapL64axiTm7DWIGHfS9BPJWhQ0YyUfhvl5hzViYr7FE0g==",
+      "requires": {
+        "tslib": "^1.10.0"
+      }
+    },
     "esprima": {
       "version": "4.0.1",
       "resolved": "https://registry.npmjs.org/esprima/-/esprima-4.0.1.tgz",
@@ -3527,6 +3535,11 @@
         "type-check": "~0.3.2"
       }
     },
+    "liyad": {
+      "version": "0.1.3",
+      "resolved": "https://registry.npmjs.org/liyad/-/liyad-0.1.3.tgz",
+      "integrity": "sha512-5q9YCDZ3PyxFM4FJbKABvD3v2mpJmDB7E+nFA84jnRlrzp6WM2zaXHjU1mCZybORSOebMeeYlRGHS2K0nen4Qw=="
+    },
     "load-json-file": {
       "version": "4.0.0",
       "resolved": "https://registry.npmjs.org/load-json-file/-/load-json-file-4.0.0.tgz",
@@ -5113,8 +5126,7 @@
     "tslib": {
       "version": "1.10.0",
       "resolved": "https://registry.npmjs.org/tslib/-/tslib-1.10.0.tgz",
-      "integrity": "sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==",
-      "dev": true
+      "integrity": "sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ=="
     },
     "tunnel-agent": {
       "version": "0.6.0",
