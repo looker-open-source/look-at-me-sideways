@@ -1,0 +1,1 @@
+connection: "dev" # This should error our custom rule

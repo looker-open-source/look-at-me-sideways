@@ -52,6 +52,7 @@ module.exports = async function(
 		const path = require('path');
 		const parser = require('lookml-parser');
 		const templates = require('./lib/templates.js');
+		const checkCustomRule = require('./lib/custom-rules.js');
 		
 		console.log('Parsing project...');
 		const project = await parser.parseFiles({
@@ -95,20 +96,17 @@ module.exports = async function(
 			messages = messages.concat(result.messages.map((msg)=>({rule: r, ...msg})));
 		}
 		console.log('> Rules done!');
-		if (project.file && project.file.manifest && project.file.manifest.custom_rules) {
-			console.log('Checking custom rules...');
+		
+		if (project.manifest && project.manifest.custom_rules) {
+			console.warn('\x1b[33m%s\x1b[0m', 'Legacy (Javascript) custom rules may be removed in a future major version!');
+			console.log('Checking legacy custom rules...');
 			let requireFromString = require('require-from-string');
-			let get = require('./lib/https-get.js');
+			let get = options.get || require('./lib/https-get.js');
 			let rules =  coerceArray(project.file && project.file.manifest && project.file.manifest.custom_rules) 
-			for (let rule of rules){
-				
-			
-			}
 			if (options.allowCustomRules !== undefined) {
 				let requireFromString = require('require-from-string');
 				let customRuleRequests = [];
 				project.file.manifest.custom_rules.forEach(async (url, u) => {
-					
 					try {
 						let request = get(url);
 						customRuleRequests.push(request);
@@ -129,13 +127,22 @@ module.exports = async function(
 					}
 				});
 				await Promise.all(customRuleRequests).catch(() => {});
-				console.log('> Custom rules done!');
+				console.log('> Legacy custom rules done!');
 			} else {
 				console.warn([
 					'> Your project specifies custom rules. Run LAMS with `--allow-custom-rules`',
 					'if you want to allow local execution of this remotely-defined Javascript code:',
 				].concat(project.file.manifest.custom_rules).join('\n  '));
 			}
+		}
+		
+		if(project.manifest && project.manifest.rule){
+			console.log('Checking custom rules...');
+			for(let rule of Object.values(project.manifest.rule)){
+				console.log('> '+rule._rule);
+				messages = messages.concat(checkCustomRule(rule, project));
+			}
+			console.log('> Custom rules done!');
 		}
 
 		let errors = messages.filter((msg) => {
