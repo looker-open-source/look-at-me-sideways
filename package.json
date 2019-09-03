@@ -31,6 +31,7 @@
   "homepage": "https://github.com/looker-open-source/look-at-me-sideways#readme",
   "dependencies": {
     "dot": "^1.1.2",
+    "fromentries": "^1.2.0",
     "jsonpath": "^1.0.2",
     "liyad": "^0.2.3",
     "lookml-parser": "^6.2.0",

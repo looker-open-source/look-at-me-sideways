@@ -2,7 +2,8 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
 const minimist = require('minimist')
 const lams = require('./index.js')
-const cliArgs = Object.fromEntries(
+const fromEntries = require('fromentries')
+const cliArgs = fromEntries( // ponyfill for Object.fromEntries
 	Object.entries(
 		minimist(
 			process.argv.slice(
