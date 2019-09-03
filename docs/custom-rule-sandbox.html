@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://unpkg.com/lookml-parser@^6/parse/index.js"></script>
+<style>
+	.row {display: flex; flex-direction:row }
+	.col {display: flex; flex-direction:column }
+	textarea {width:100%; flex-grow:1}
+	input {flex-grow:0}
+</style>
+<script>
+	
+</script>
+</head>
+<body>
+	<select>
+		<option value="blank">Pick a pre-built example...</option>
+		<option value="model-bool">Simple boolean check on all models</option>
+		</select>
+	<div class="row">
+		<div class="col">
+			<h2>LookML</h2>
+			<textarea id="lkml"></textarea>
+			</div>
+		<div class="col">
+			<h2>Rule</h2>
+			<input id="match" type="text" placeholder="Match jsonpath" />
+			<textarea id="rule"></textarea>
+			</div>
+		</div>
+	
+</body>
+</html>
