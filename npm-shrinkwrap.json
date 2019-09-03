@@ -3538,9 +3538,9 @@
       }
     },
     "liyad": {
-      "version": "0.1.3",
-      "resolved": "https://registry.npmjs.org/liyad/-/liyad-0.1.3.tgz",
-      "integrity": "sha512-5q9YCDZ3PyxFM4FJbKABvD3v2mpJmDB7E+nFA84jnRlrzp6WM2zaXHjU1mCZybORSOebMeeYlRGHS2K0nen4Qw=="
+      "version": "0.2.3",
+      "resolved": "https://registry.npmjs.org/liyad/-/liyad-0.2.3.tgz",
+      "integrity": "sha512-SfpC73hSx3t8swuKt9Pr58ZiJ87pOP+miFqC4+F/7cwhGgfImmbWQonezx0n9YZG4/lwHKnCKWVnoUBx8zpuNg=="
     },
     "load-json-file": {
       "version": "4.0.0",

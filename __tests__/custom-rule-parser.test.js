@@ -38,19 +38,26 @@ describe('Custom Rule Parser', () => {
 		expect(rule({a:2,b:2})).toEqual(false)
 		expect(rule({a:1,b:2})).toEqual(true)		
 	});
-	// TODO: Will be handled by https://github.com/shellyln/liyad/issues/1
-	// it('Prototype unassignable 1', () => {
-	// 	let rule = parse(`( -> (match) 
-	// 		(::match:constructor:prototype:foo= 1)
-	// 	)`);
-	// 	rule({})
-	// 	expect(({}).foo).toBeUndefined()		
-	// });
-	// it('Prototype unassignable 2', () => {
-	// 	let rule = parse(`( -> (match) 
-	// 		(::match:constructor@assign ::match:constructor:prototype (# ("bar" 2)) )
-	// 	)`);
-	// 	rule({})
-	// 	expect(({}).bar).toBeUndefined()		
-	// });
+	// FYI, below tests are addressed by https://github.com/shellyln/liyad/issues/1
+	it('Prototype unassignable 1', () => {
+		let rule = parse(`( -> (match) 
+			(::match:constructor:prototype:foo= 1)
+		)`);
+		expect(() => rule({})).toThrow()
+		expect(({}).foo).toBeUndefined()		
+	});
+	it('Prototype unassignable 2', () => {
+		let rule = parse(`( -> (match) 
+			(::match:constructor@assign ::match:constructor:prototype (# ("bar" 2)) )
+		)`);
+		expect(() => rule({})).toThrow()
+		expect(({}).bar).toBeUndefined()		
+	});
+	
+	it('Can\'t Function.call(untrusted code)', () => {
+		let rule = parse(`( -> (match) 
+			((::match:toString:constructor@call null "return this" ) ())
+		)`);
+		expect(() => rule({})).toThrow()
+	});
 });
