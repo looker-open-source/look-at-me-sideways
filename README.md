@@ -26,7 +26,7 @@ To use LAMS with the least overhead for simple interactive local use and testing
 	cd ..
 	git clone <your-lookml-repo-url>
 	cd <your-lookml-repo>
-	node ../look-at-me-sideways
+	node ../look-at-me-sideways/cli.js
 
 (We will be publishing LAMS to NPM shortly after its release to simplify the above)
 
