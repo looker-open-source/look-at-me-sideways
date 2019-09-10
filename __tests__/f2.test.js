@@ -114,7 +114,7 @@ describe('Rules', () => {
 					}
 				}
 			}
-			file: manifest {rule_exemptions: {F2: "It's okay, this is exempt"}}`));
+			manifest: {rule_exemptions: {F2: "It's okay, this is exempt"}}`));
 			expect(result).not.toContainMessage(warnMessageF2);
 		});
 
@@ -160,7 +160,7 @@ describe('Rules', () => {
 					}
 				}
 			}
-			file: manifest {rule_exemptions: {X1: "Different exemption"}}`));
+			manifest: {rule_exemptions: {X1: "Different exemption"}}`));
 			expect(result).toContainMessage(warnMessageF2);
 		});
 	});

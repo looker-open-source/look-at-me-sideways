@@ -93,7 +93,7 @@ describe('Rules', () => {
 					GROUP BY 1
 				;; } }
 			}
-			file: manifest {rule_exemptions: {T2: "Forget PKs"}}`));
+			manifest: {rule_exemptions: {T2: "Forget PKs"}}`));
 			expect(result).toContainMessage({...exempt, ...r.pkColumnsRequired});
 		});
 

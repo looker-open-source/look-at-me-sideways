@@ -7,7 +7,7 @@ module.exports = function(
 	let messages = [];
 	let rule = 'F3';
 	let exempt;
-	if (exempt = getExemption(project.file && project.file.manifest, rule)) {
+	if (exempt = getExemption(project.manifest, rule)) {
 		messages.push({
 			rule, exempt, level: 'info', location: 'project',
 			path: `/projects/${project.name}/files/manifest.lkml`,

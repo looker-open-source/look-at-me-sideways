@@ -167,7 +167,7 @@ describe('Rules', () => {
 					}
 				}
 			}
-			file: manifest {rule_exemptions: {F1: "It is okay, this is extended"}}`));
+			manifest: {rule_exemptions: {F1: "It is okay, this is extended"}}`));
 			expect(result).not.toContainMessage(failMessageF1);
 		});
 
