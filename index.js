@@ -78,7 +78,7 @@ module.exports = async function(
 			throw (project.error);
 		}
 		project.name = false
-			|| project.file && project.file.manifest && project.file.manifest.project_name
+			|| project.manifest && project.manifest.project_name
 			|| options.projectName
 			|| (options.cwd||process.cwd()||'').split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
 			|| 'unknown_project';
@@ -102,11 +102,11 @@ module.exports = async function(
 			console.log('Checking legacy custom rules...');
 			let requireFromString = require('require-from-string');
 			let get = options.get || require('./lib/https-get.js');
-			let rules =  coerceArray(project.file && project.file.manifest && project.file.manifest.custom_rules) 
+			let rules =  coerceArray(project.manifest && project.manifest.custom_rules) 
 			if (options.allowCustomRules !== undefined) {
 				let requireFromString = require('require-from-string');
 				let customRuleRequests = [];
-				project.file.manifest.custom_rules.forEach(async (url, u) => {
+				project.manifest.custom_rules.forEach(async (url, u) => {
 					try {
 						let request = get(url);
 						customRuleRequests.push(request);
@@ -132,7 +132,7 @@ module.exports = async function(
 				console.warn([
 					'> Your project specifies custom rules. Run LAMS with `--allow-custom-rules`',
 					'if you want to allow local execution of this remotely-defined Javascript code:',
-				].concat(project.file.manifest.custom_rules).join('\n  '));
+				].concat(project.manifest.custom_rules).join('\n  '));
 			}
 		}
 		

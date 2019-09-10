@@ -8,7 +8,7 @@ module.exports = function(
 	let globalExemptions = {};
 	let allExempted = true;
 	for (let rule of ['K1', 'K2', 'K3', 'K4']) {
-		globalExemptions[rule] = getExemption(project.file && project.file.manifest, rule);
+		globalExemptions[rule] = getExemption(project.manifest, rule);
 		if (globalExemptions[rule]) {
 			messages.push({
 				rule, level: 'info', location: 'project',

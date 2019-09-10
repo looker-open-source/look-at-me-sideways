@@ -58,7 +58,7 @@ describe('Rules', () => {
 					dimension: qux {}
 				}
 			}
-			file: manifest {rule_exemptions: {K1: "It's ok, exempt"}}`));
+			manifest: {rule_exemptions: {K1: "It's ok, exempt"}}`));
 			expect(result).toContainMessage({exempt: expect.any(String)});
 		});
 
@@ -70,7 +70,7 @@ describe('Rules', () => {
 					dimension: qux {}
 				}
 			}
-			file: manifest {rule_exemptions: {X1: "Different exemption"}}`));
+			manifest: {rule_exemptions: {X1: "Different exemption"}}`));
 			expect(result).toContainMessage(failMessageK1);
 		});
 		it('should not error if there is no sql_table_name', () => {

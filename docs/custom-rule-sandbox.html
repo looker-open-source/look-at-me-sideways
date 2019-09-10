@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://unpkg.com/lookml-parser@^6/parse/index.js"></script>
+<!-- So I need to make ^this work (probably via ES6 imports to not bloat the package...) -->
+
+<style>
+	.row {display: flex; flex-direction:row }
+	.row>* {flex-grow: 1}
+	.col {display: flex; flex-direction:column }
+	.bar {height:24px; margin-top: 4px; margin-bottom: 4px; padding:0px; box-sizing: border-box }
+	textarea {width:100%; box-sizing: border-box; height:20em}
+</style>
+<script>
+	
+</script>
+</head>
+<body>
+	<select>
+		<option value="blank">Pick a pre-built example...</option>
+		<option value="model-bool">Simple boolean check on all models</option>
+		</select>
+	<div class="row">
+		<div class="col">
+			<h2>LookML</h2>
+			<div class="bar"></div>
+			<textarea id="lkml"></textarea>
+			</div>
+		<div class="col">
+			<h2>Rule</h2>
+			<input id="match" type="text" class="bar" placeholder="Match jsonpath" />
+			<textarea id="rule"></textarea>
+			</div>
+		</div>
+	
+</body>
+</html>
