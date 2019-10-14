@@ -67,7 +67,7 @@ One of the primary ways that LAMS gives developers feedback, in addition to pass
 
 ##### Customizing LAMS
 
-In addition to linting against its style guide, LAMS also lets you diable rules or specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) .
+In addition to linting against its style guide, LAMS also lets you disable rules or specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) .
 
 ### About
 
