@@ -19,14 +19,9 @@ Interested? See a video of LAMS in action!
 
 To use LAMS with the least overhead for simple interactive local use and testing:
 
-	cd <directory where you keep your projects>
-	git clone https://github.com/looker-open-source/look-at-me-sideways.git
-	cd look-at-me-sideways
-	npm install
-	cd ..
-	git clone <your-lookml-repo-url>
-	cd <your-lookml-repo>
-	node ../look-at-me-sideways/cli.js
+	npm install -g @looker/look-at-me-sideways
+	cd <your-lookml-project>
+	lams
 
 (We will be publishing LAMS to NPM shortly after its release to simplify the above)
 
@@ -61,7 +56,7 @@ view: rollup {
     sql: SELECT ...
 ```
 
-If you want to entirely opt-out of checking a particular rule, you can specify the exemptions in your project's manifest.lkml file.
+If you want to entirely opt-out of checking a particular rule, you can specify the exemptions in your project's manifest.lkml file. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
 
 Note: For large projects with many exemptions, we suggest starting the reasons with the Y-M-D formatted date on which they were added, for easier review in your issue report.
 
@@ -70,22 +65,9 @@ One of the primary ways that LAMS gives developers feedback, in addition to pass
 
 ![Markdown example](docs/img/markdown-example.png)
 
-##### Custom Rules
+##### Customizing LAMS
 
-In addition to linting against the rules from the style guide, LAMS also has
-experimental support for calling custom rules:
-
-```lkml
-# in your manifest.lkml
-
-project_name: "my_project"
-# LAMS
-# custom_rules: [
-#  "https://path/to/your/script.js"
-# ]
-```
-
-See [here](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docs/sample-custom-rule.js) for an example implementation of a custom rule script.
+In addition to linting against its style guide, LAMS also lets you diable rules or specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) .
 
 ### About
 

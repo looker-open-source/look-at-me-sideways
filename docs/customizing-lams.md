@@ -1,5 +1,3 @@
-TODO: Make this html to style it similarly to rules.html?
-
 # Customizing LAMS
 
 LAMS comes pre-bundled with a number of rules that reflect our opinionated best practices. However, sometimes these rules will not be right for your organization, or you may want to implement your own rules that may be highly specific to your project/model.
@@ -54,10 +52,10 @@ Here is what each part does:
 		- `path`: An array containing the path to the matched LookML. For example, `['$','model','my_model']`
 		- `project`: The entire LookML project, in case you need to further reference any data from it within each match 
 	- **Return value**
-		- **true** - If your expression returns true, the test will be passed.
+		- **true** - If your expression returns true, the test will be passed
 		- **false** - If your expression returns false, the test will be failed
 		- **string** - (Beta) If your expression returns a string, your test will be failed, and the string will be used as a description/message
-		- **object** - (Beta) An object can be returned, specifying any of the following properties: level (info|warn|error), exempt, path, location, description, rule.
+		- **object** - (Beta) An object can be returned, specifying any of the following properties: level (info/warn/error), exempt, path, location, description, rule
 		- **array of objects** - (Beta) Like the above, but in case you need to emit multiple messages per match
 		- The return formats marked Beta are not expected to change, but are currently untested and may change slightly for compatibility reasons without a major semver update
 	- **Language functions** - LAMS includes a command-line script, `rule-functions-doc.js`, that you can call for a comprehensive list of available functions. But, see [expression examples below](#expression-examples) for some common and useful ones!
