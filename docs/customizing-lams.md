@@ -86,10 +86,10 @@ Not all examples below have been tested, so if you find an issue, please submit 
 
 **String matching**, e.g. does the label start with "Is" or "Has"? (Note that `$match` is a function, and `match` is the matched value)
 ```
-($match
+($boolean ($match
 	"^Is |^Has "
 	::match:label
-)
+))
 ```
 
 **Boolean And**
