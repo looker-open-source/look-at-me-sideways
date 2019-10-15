@@ -69,7 +69,7 @@ Not all examples below have been tested, so if you find an issue, please submit 
 | JSONpath                | Description |
 |-------------------------|-------------|
 | `$.model.*`             | All models
-| `$.file.*.view.*`       | All views across all files (once per declaration)
+| `$.files[*].view.*`     | All views across all files (once per declaration)
 | `$.model.*.view.*`      | All views included in models (once per inclusion)
 | `$.model.*.explore.*`   | All explores across all models
 | `$.model.foo.explore.*` | All explores in the foo model
