@@ -25,8 +25,6 @@ To opt-out of a rule for your entire project, just use the rule_exemption syntax
 
 ## Expression Rules
 
-Expression evaluation is powered by the [Liyad](https://github.com/shellyln/liyad) library. It both intends to prevent and unlike Javascript evaluation theoretically *can* prevent escalation of privileges. However, it is still a very new project, so evaluate it accordingly
-
 Expression-based rules (available as of version 1.0) can be declared within your LookML, and consist of four parts. By way of example:
 
 ```
@@ -59,6 +57,9 @@ Here is what each part does:
 		- **array of objects** - (Beta) Like the above, but in case you need to emit multiple messages per match
 		- The return formats marked Beta are not expected to change, but are currently untested and may change slightly for compatibility reasons without a major semver update
 	- **Language functions** - LAMS includes a command-line script, `rule-functions-doc.js`, that you can call for a comprehensive list of available functions. But, see [expression examples below](#expression-examples) for some common and useful ones!
+
+	
+Disclaimer: Expression evaluation is powered by the [Liyad](https://github.com/shellyln/liyad) library. It both intends to prevent escalation of privleges, and, unlike Javascript evaluation, theoretically *can* prevent it. ([See my writeup on this](https://fabio-looker.github.io/data/2019-10-15-lams-customization-update/)). However, it is still a very new project, so evaluate it accordingly.
 		
 ### Match Examples
 
