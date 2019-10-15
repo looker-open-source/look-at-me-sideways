@@ -144,7 +144,6 @@ module.exports = async function(
 			}
 			console.log('> Custom rules done!');
 		}
-
 		let errors = messages.filter((msg) => {
 			return msg.level==='error' && !msg.exempt;
 		});
@@ -181,7 +180,6 @@ module.exports = async function(
 		console.log('> Issue summary done');
 
 		console.log('> Summary files done!');
-
 		if (tracker.enabled) {
 			await Promise.race([
 				tracker.track({messages, errors: lamsMessages}),
