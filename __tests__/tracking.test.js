@@ -3,28 +3,28 @@ const tracking = require('../lib/tracking');
 require('../lib/expect-to-contain-message');
 
 describe('CLI', () => {
-	const mocks = ({fs={}, spies={}}={}) => ({
+	const mocks = ({fs = {}, spies = {}} = {}) => ({
 		process: {
-			exit: jest.fn(()=>{}),
+			exit: jest.fn(() => { }),
 		},
 		console: {
-			log: jest.fn(()=>{}),
-			warn: jest.fn(()=>{}),
-			debug: (x)=>console.debug(x),
+			log: jest.fn(() => { }),
+			warn: jest.fn(() => { }),
+			debug: (x) => console.debug(x),
 		},
-		os:	{
-			homedir: ()=>'~',
+		os: {
+			homedir: () => '~',
 		},
 		fs: {
-			writeFileSync: (path, contents) => (fs[path]=contents, true),
+			writeFileSync: (path, contents) => (fs[path] = contents, true),
 			readFileSync: (path) => fs[path],
-			mkdirSync: (path) => {},
+			mkdirSync: (path) => { },
 		},
 		https: {
-			request: ()=>{
+			request: () => {
 				let req = {
-					write: (body)=>{},
-					end: () => {},
+					write: (body) => { },
+					end: () => { },
 				};
 				spies.httpsRequestWrite = jest.spyOn(req, 'write');
 				return req;
@@ -208,7 +208,7 @@ describe('CLI', () => {
 			level: 'warning',
 		}];
 		tracker.track({messages, errors});
-		expect(spies.httpsRequestWrite).toHaveBeenCalledWith(`v=1&an=LAMS&av=0.0.0&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&cd1=834b0d7807e798000493db52fd650814e534a8f742a1c5a58cbb7b42879696e0&cd2=&ec=Run&ea=End
+		expect(spies.httpsRequestWrite).toHaveBeenCalledWith(`v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&cd1=834b0d7807e798000493db52fd650814e534a8f742a1c5a58cbb7b42879696e0&cd2=&ec=Run&ea=End
 			v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&ec=Rule%20Result&ea=foo%20error&el=false&ev=2&cd3=foo&ni=1
 			v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&ec=Rule%20Result&ea=baz%20info&el=false&ev=1&cd3=baz&ni=1
 			v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&ec=Rule%20Result&ea=bat%20warning&el=My%20reason&ev=1&cd3=bat&ni=1`.replace(/\t+/g, ''));

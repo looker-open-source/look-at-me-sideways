@@ -24,20 +24,20 @@ module.exports = function(
 				continue;
 			}
 			let fields = []
-				.concat(Object.values(view.dimension||{}))
-				.concat(Object.values(view.measure||{}))
-				.concat(Object.values(view.filter||{}));
+				.concat(Object.values(view.dimension || {}))
+				.concat(Object.values(view.measure || {}))
+				.concat(Object.values(view.filter || {}));
 			for (let field of fields) {
-				let location = `view:${view._view}/field:${field._dimension||field._measure||field._filter}`;
+				let location = `view:${view._view}/field:${field._dimension || field._measure || field._filter}`;
 				let path = `/projects/${project.name}/files/${file._file_path}#${location}`;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
 				// TODO: Doublecheck the below matches the actual LookML parameters... I wrote the below without internet connectivity -FB
 				[field.sql,
 					field.html,
 					field.label_from_parameter,
-					field.link && Object.values(field.link).map((o)=>o.url).join(''),
-					field.link && Object.values(field.link).map((o)=>o.url).join(''),
-					field.filter && Object.values(field.filter).map((o)=>'{{'+o.field+'}}').join(''),
+					field.link && Object.values(field.link).map((o) => o.url).join(''),
+					field.link && Object.values(field.link).map((o) => o.url).join(''),
+					field.filter && Object.values(field.filter).map((o) => '{{' + o.field + '}}').join(''),
 				].forEach((value) => {
 					if (!value || !value.replace) {
 						return;
@@ -45,12 +45,12 @@ module.exports = function(
 					let match = value
 						.replace(/\b\d+\.\d+\b/g, '') // Remove dedimals
 						.match(/(^|\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*($|%\}|\})/);
-					let parts = ((match||[])[2]||'').split('.').filter(Boolean);
+					let parts = ((match || [])[2] || '').split('.').filter(Boolean);
 					if (!parts.length) {
 						return;
 					}
 					// Don't treat references to TABLE or to own default alias as cross-view
-					if (parts[0] === 'TABLE' || parts[0] === view._view ) {
+					if (parts[0] === 'TABLE' || parts[0] === view._view) {
 						parts.shift();
 					}
 					// Don't treat references to special properties as cross-view
@@ -63,15 +63,15 @@ module.exports = function(
 						'_filters',
 						'_parameter_value',
 						'_label',
-					].includes(parts[parts.length-1])
+					].includes(parts[parts.length - 1])
 					) {
 						parts.pop();
 					}
-					if ( parts.length > 1 ) {
+					if (parts.length > 1) {
 						ok = false;
 						messages.push({
 							location, path, rule, exempt, level: 'error',
-							description: `${field._dimension||field._measure} references another view, ${parts[0]},  via ${match[0]}`,
+							description: `${field._dimension || field._measure} references another view, ${parts[0]},  via ${match[0]}`,
 						});
 					}
 				});
