@@ -11,7 +11,7 @@ LAMS is a style guide and linter for [Looker](https://looker.com/)'s LookML data
 
 Interested? See a video of LAMS in action!
 
-[![LAMS video](docs/img/video-cover.png)](https://drive.google.com/file/d/1N5N26n52O2i95tz5vUZpoG1Ic3b3nNAQ/view)
+[![LAMS video](docs/img/video-cover.png)](https://drive.google.com/file/d/1SYZxcbMs-NbT1iaThbz_CNjDXKhn3Wrt/view)
 
 ### Deployment
 
