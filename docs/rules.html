@@ -46,7 +46,7 @@
 <h1 id="key-dimensions">Key Dimensions</h1>
 <p><b>Summary:</b> Implement consistent dimensions to communicate information about views' keys to developers who use the view</p>
 <details id="k1"> <!-- Primary keys required -->
-	<summary><b>K1.</b> Views based on tables must define 1 or more Primary Key Dimensions.</summary>
+	<summary><b><a href="#k1">K1.</a></b> Views based on tables must define 1 or more Primary Key Dimensions.</summary>
 	<p><b>Note:</b> "based on a table" could be either through a `sql_table_name`, `derived_table`, or implicit table name. Essentially, it's any view that's not a "field-only view" which will be joined using `join: {sql ;;}`</p>
 
 	<code class="block good">
@@ -62,7 +62,7 @@
 
 	</details>
 <details id="k2"> <!-- Primary key naming -->
-	<summary><b>K2.</b> Primary Key Dimensions must be named like <code>pk{n}_{key_name}</code>...</summary>
+	<summary><b><a href="#k2">K2.</a></b> Primary Key Dimensions must be named like <code>pk{n}_{key_name}</code>...</summary>
 	<p>..., where n is the total number of columns that form the primary key, and which may be omitted if it is 1, and key_name is any descriptive name.</p>
 	<p><b>Rationale:</b> With this naming convention, anyone creating a join can conclusively find the correct logic without having to investigate:</p>
 
@@ -110,23 +110,23 @@
 	</ul>
 	</details>
 <details id="k3"> <!-- Primary key location -->
-	<summary><b>K3.</b> Primary Key Dimensions should be defined immediately following the table definition...</summary>
+	<summary><b><a href="#k3">K3.</a></b> Primary Key Dimensions should be defined immediately following the table definition...</summary>
 	<p>... and the table definition should be defined before any other dimensions.</p>
 	<p><b>Rationale:</b> By placing primary keys immediately below a derived table definition, users viewing the view file can more easily verify that the Primary Key Dimensions match the derived table's actual primary keys.</p>
 	</details>
 <details id="k4"> <!-- Primary key hidden -->
-	<summary><b>K4.</b> Primary Keys Dimensions should be hidden</summary>
+	<summary><b><a href="#k4">K4.</a></b> Primary Keys Dimensions should be hidden</summary>
 	<p><b>Rationale:</b> The audience for PK information is developers. They use it to inform how to join and consume tables, and they can do so equally well with a hidden field.</p>
 	<p><b>Note:</b> If a column that is a primary key should be user facing, you may want to expose it via a separate dimension.</p>
 	</details>
 <details id="k5"> <!-- Distribution dimensions -->
-	<summary><b>K5.</b> Views based on tables with a <a class="subtle" href="#glossary-dist-key">distribution key</a> should define a Distribution Key Dimension...</summary>
+	<summary><b><a href="#k5">K5.</a></b> Views based on tables with a <a class="subtle" href="#glossary-dist-key">distribution key</a> should define a Distribution Key Dimension...</summary>
 	<p>...named like <code>pkd_{key_name}</code></p>
 	<p><b>Rationale:</b> By naming it similarly to Primary Keys, it will be suggested to anyone joining on a view as a possible join key. At the same time, the use of a `d` instead of a number allows it to be differentiated from a primary key</p>
 	<p><b>Note:</b> If your database supports multiple projections of data, you may want to come up with a more sophisticated naming scheme instead.</p>
 	</details>
 <details id="k6"> <!-- Sort/cluster dimensions -->
-	<summary><b>K6.</b> Views based on tables with a <a class="subtle" href="#glossary-sort-key">sort/cluster key</a> should define one or more Sort/Cluster Key Dimensions</summary>
+	<summary><b><a href="#k6">K6.</a></b> Views based on tables with a <a class="subtle" href="#glossary-sort-key">sort/cluster key</a> should define one or more Sort/Cluster Key Dimensions</summary>
 	<p>...named like <code>pkc_{key_name}</code></p>
 	<p><b>Rationale:</b> By naming it similarly to Primary Keys, it will be suggested to anyone joining on a view as a possible join key. At the same time, the use of a `c` instead of a number allows it to be differentiated from a primary key</p>
 	<p><b>Note:</b> The name for this concept varies greatly from database to database. "pkc" was chosen for cluster, in favor of "pks" which could be read as a "surrogate key".</p>
@@ -136,7 +136,7 @@
 <h1 id="other-fields">Other Fields</h1>
 <p><b>Summary:</b> Implement fields in ways which (a) maximize the ability of developers to reuse them in the future, and (b) maximize the usability of explores for end users</p>
 <details id="f1"> <!-- No inter-view dependencies -->
-	<summary><b>F1.</b> Fields in a view should not reference other views...</summary>
+	<summary><b><a href="#f1">F1.</a></b> Fields in a view should not reference other views...</summary>
 	<p>... unless this is (A) a field-only view, or (B) a tightly coupled view (provide a base explore too!)</p>
 	<p><b>Rationale:</b> Inter-view dependencies interfere with the re-use of the view<p>
 	<code class="block bad">
@@ -172,11 +172,11 @@
 	</code>
 	</details>
 <details id="f2"> <!-- No view-labeled fields -->
-	<summary><b>F2.</b> Fields should not contain a view_label.</summary>
+	<summary><b><a href="#f2">F2.</a></b> Fields should not contain a view_label.</summary>
 	<p><b>Rationale:</b> Field-level view labels can't be overridden by a join. Prefer view-level view labels.</p>
 	</details>
 <details id="f3"> <!-- Count fields filtered -->
-	<summary><b>F3.</b> All type:count measures must specify a filter</summary>
+	<summary><b><a href="#f3">F3.</a></b> All type:count measures must specify a filter</summary>
 	<p>"Plain" count fields can/should specify a filter of "primary key dimensions (or any non-nullable field) are not null"</p>
 	<p><b>Rationale:</b> By default Looker will implement any non-filtered & non-distinct count field as a `COUNT(*)`. Filtering such "plain" counts on PK IS NOT NULL ensures correct counts in all of the following uses of the field: Counting just that table, counting that table when joined on as a one-to-one-or-zero table, counting that table with symmetric aggregates when joined on as a many_to_one table, and counting that table in explores with join paths.</b>
 	<code class="block good">
@@ -191,18 +191,18 @@
 	<p><b>Note:</b> The <a href="https://docs.looker.com/reference/filter-expressions">LookML filter syntax</a> for "is not null" varies depending on the type of the field. For strings, use <code>-NULL</code>. For numbers, use <code>NOT NULL</code>.</p>
 	</details>
 <details id="f4"> <!-- Description or hidden -->
-	<summary><b>F4.</b> Non-hidden fields should have descriptions</summary>
+	<summary><b><a href="#f4">F4.</a></b> Non-hidden fields should have descriptions</summary>
 	<p><b>Rationale:</b> User experience. Just do it.</p>
 	<p><b>Note:</b> Think about the audience when you write a description. Information for end users can go in the description, whereas information for other developers can go in a LookML comment</p>
 	</details>
 <details id="f5"> <!-- ID fields hidden -->
-	<summary><b>F5.</b> ID fields that do not have a business usage should be hidden</summary>
+	<summary><b><a href="#f5">F5.</a></b> ID fields that do not have a business usage should be hidden</summary>
 	<code class="good block">
 	view: order_items { ... pk1_order_item_id {hidden:yes}}
 	</code>
 	</details>
 <details id="f6"> <!-- FK ID fields hidden -->
-	<summary><b>F6.</b> ID fields that DO have a business usage should still be hidden when they are a foreign key</summary>
+	<summary><b><a href="#f6">F6.</a></b> ID fields that DO have a business usage should still be hidden when they are a foreign key</summary>
 	<p><b>Rationale:</b> The ID field will make most sense for end users when they are exposed under the view for which they are a primary key.</p>
 	<code class="bad block">
 	view: order_items { ... dimension: order_id { ... description: "..." } }
@@ -218,11 +218,11 @@
 <p><b>Summary:</b> Restrict the ways in which you write the SQL for derived tables in order to make them more modular and their results more realiable and understandable.</p>
 <p><b>Note:</b> These rules in particular use a lot of "must" statements. This is for a reason. If they seem hard to comply with at first, they're trying to tell you something :)</p>
 <details id="t1"> <!-- Triggers use datagroups -->
-	<summary><b>T1.</b> Triggered PDTs should use datagroups</summary>
+	<summary><b><a href="#t1">T1.</a></b> Triggered PDTs should use datagroups</summary>
 	<p><b>Rationale:</b> <code>sql_trigger_value</code> is an older construct and can have subtle timing issues when multiple tables interact.</p>
 	</details>
 <details id="t2"> <!-- Primary keys required -->
-	<summary><b>T2.</b> Except for exceptions in T9 & T10, every query, derived table, CTE, or subquery must SELECT a set of primary key columns following rules T3-T8</summary>
+	<summary><b><a href="#t2">T2.</a></b> Except for exceptions in T9 & T10, every query, derived table, CTE, or subquery must SELECT a set of primary key columns following rules T3-T8</summary>
 	<p><b>Rationale:</b> Primary keys define a contract that allows anyone reviewing the logic of a query to evaluate it modularly.
 	Without them, any attempt to troubleshoot a query requires an arbitrarily deep investigation of related subqueries.
 	With them, each query and subquery can be evaluated independently against their declared PK and the declared PK's of the participating tables.</p>
@@ -265,7 +265,7 @@
 	</code>
 	</details>
 <details id="t3"> <!-- Primary key naming -->
-	<summary><b>T3.</b> Primary key columns must be aliased AS pk{n}_{column_name}...</summary>
+	<summary><b><a href="#t3">T3.</a></b> Primary key columns must be aliased AS pk{n}_{column_name}...</summary>
 	<p>...where {n} is the total number of columns in the primary key</p>
 	<code class="good block">
 	view: events_rollup {derived_table: {sql:
@@ -303,7 +303,7 @@
 	</code>
 	</details>
 <details id="t4"> <!-- Primary key positioning -->
-	<summary><b>T4.</b> Primary key columns must be the first columns in the SELECT clause</summary>
+	<summary><b><a href="#t4">T4.</a></b> Primary key columns must be the first columns in the SELECT clause</summary>
 	<code class="bad block">
 	derived_table: {sql:
 		SELECT
@@ -314,7 +314,7 @@
 	</code>
 	</details>
 <details id="t5"> <!-- Grouped PK starts... -->
-	<summary><b>T5.</b> For grouped queries, the PK must start with one, more, or all of the grouped columns</summary>
+	<summary><b><a href="#t5">T5.</a></b> For grouped queries, the PK must start with one, more, or all of the grouped columns</summary>
 	<h5>Notes</h5>
 	<ul>
 	<li>In most cases, unless you <i>intend</i> to use a window function to create sequence numbers within a partition, the primary key should simply be ALL of the grouped by fields.</li>
@@ -379,7 +379,7 @@
 
 	</details>
 <details id="t6"> <!-- Ungrouped PK starts... -->
-	<summary><b>T6.</b> For ungrouped queries, the PK must start with one, more, or all of the PK's from the many-joined tables</summary>
+	<summary><b><a href="#t6">T6.</a></b> For ungrouped queries, the PK must start with one, more, or all of the PK's from the many-joined tables</summary>
 	<p><b>Note:</b> This rule requires some reasoning to evaluate, but with proper PK information, can be done within the context of the current query. For example, the 1-to-1 full outer join example coalesces the PK's from the two sides of the join to come up with the effective primary key of the join.</p>
 	<code class="good block">
 	SELECT
@@ -427,7 +427,7 @@
 	</code>
 	</details>
 <details id="t7"> <!-- PK continues with window -->
-	<summary><b>T7.</b> The PK must continue with a ROW_NUMBER, if...</summary>
+	<summary><b><a href="#t7">T7.</a></b> The PK must continue with a ROW_NUMBER, if...</summary>
 	<p>... T5/T6 did not use ALL available columns. The window function must have a PARTITION BY of the preceding PK columns (at least one required)</p>
 	<p><b>Note:</b> Actually, any window function that produces unique values for each row is acceptable, but this is almost always <code>ROW_NUMBER()</code>.
 	Make sure not to use a <code>RANK</code>-like window function instead of <code>ROW_NUMBER</code>. The former yields duplicate ranks when two rows match. (For example, "Monday, Monday, Tuesday" would have ranks of 1,1,3)</p>
@@ -456,7 +456,7 @@
 	<p>I only mention the above example because I've actually seen it used. The primary key for this is simply site,date,source. The ROW_NUMBER added as an afterthough is not a primary key. (In this ruleset, it is disallowed by rules T5/T6 which require one or more columns to precede the window function, if any)</p>
 	</details>
 <details id="t8"> <!-- PK ends with - - - -->
-	<summary><b>T8.</b> Primary key columns end with "---" on its own line</summary>
+	<summary><b><a href="#t8">T8.</a></b> Primary key columns end with "---" on its own line</summary>
 	<code class="good block">
 	view: user_lifetime {derived_table: {sql:
 		SELECT
@@ -470,7 +470,7 @@
 	<p><b>Note:</b> This does not strictly need to immediately follow the columns required by rules T5 - T7. After, such columns, the PK may continue with 0, 1, or more aggregates, but this is rare, and in most cases such aggregates would not need to be in a primary key.</p>
 	</details>
 <details id="t9"> <!-- SELECT 1 col allowed -->
-	<summary><b>T9.</b> Exception - Subqueries may SELECT a single column without declaring PKs</summary>
+	<summary><b><a href="#t9">T9.</a></b> Exception - Subqueries may SELECT a single column without declaring PKs</summary>
 	<p><b>Rationale:</b> Often, short subqueries are desired for existence or scalar logic that are (a) not reused outside of the current query, and (b) simple enough to read and understand that they can be analyzed in the context of the containing query with little added complexity</p>
 	<code class="good block">
 	view: new_orders {derived_table:{sql:
@@ -493,7 +493,7 @@
 
 	</details>
 <details id="t10"><!-- SELECT * from one table allowed -->
-	<summary><b>T10.</b> Exception - Queries may SELECT &#42;, plus any non-PK columns, FROM a single table/subquery</summary>
+	<summary><b><a href="#t10">T10.</a></b> Exception - Queries may SELECT &#42;, plus any non-PK columns, FROM a single table/subquery</summary>
 	<p><b>Rationale:</b> Since this style of query/subquery simply passes on the PK attributes of the referenced table/query, it's reasonable to save time writing this query and for readers of your query to go find that PK information in that single other table/query.</p>
 	<code class="good block">
 	view: customers {derived_table: {sql:
@@ -505,7 +505,7 @@
 	<p>
 	</details>
 <details id="t11"><!-- Asserted uniques -->
-	<summary><b>T11.</b> Aggregates which should produce a single value must be asserted</summary>
+	<summary><b><a href="#t11">T11.</a></b> Aggregates which should produce a single value must be asserted</summary>
 	<p><b>Rationale:</b> Rather than trusting/hoping the data will be what you want, we can ensure it and prevent bad data from propagating upstream</p>
 	<p><b>Note:</b> In a dialect where dividing by zero throws an error, this is a good approach. If done in a PDT, the building of the new PDT will fail.</p>
 	<code class="block good">
@@ -536,12 +536,12 @@
 	</code>
 	</details>
 <details id="t12"><!-- No order by-->
-	<summary><b>T12.</b> Queries should not have an ORDER BY clause</summary>
+	<summary><b><a href="#t12">T12.</a></b> Queries should not have an ORDER BY clause</summary>
 		<p>...unless a limit is also used (which should itself be unusual)</p>
 		<p><b>Rationale:</b> We often order data when querying directly, but make sure to remove this ORDER BY clause when saving the query as a derived table, as the sort order does not ultimately affect the table, but does cause the query to use more resources.</p>
 	</details>
 <details id="t13"><!-- First/last via aggregates, not sorts -->
-	<summary><b>T13.</b> First/last values should be selected via an aggregate function, not an ORDER BY</summary>
+	<summary><b><a href="#t13">T13.</a></b> First/last values should be selected via an aggregate function, not an ORDER BY</summary>
 	<p><b>Rationale:</b> Sorting is much more resource intensive than a simple MIN/MAX (or FIRST/LAST if your dialect supports it).</p>
 	<code class="bad block">
 	derived_table: user_first_order {derived_table: {sql:
@@ -573,19 +573,19 @@
 	<p><b>Note:</b> If you want to select the min/max based on a different column, like date, see <a href="https://discourse.looker.com/t/only-measuring-the-latest-values/6719">this guide</a></p>
 	</details>
 <details id="t14"><!-- No dynamic persisted tables -->
-	<summary><b>T14.</b> Persisted derived tables must not use liquid or "dynamic SQL"</summary>
+	<summary><b><a href="#t14">T14.</a></b> Persisted derived tables must not use liquid or "dynamic SQL"</summary>
 	<p>To clarify, liquid/dynamic SQL in non-persisted, aka ephemeral, derived tables is fine.</p>
 	<p><b>Rationale:</b> Triggered persistent tables usually don't have the necessary explore context to correctly evaluate the dynamic logic. And even persists_for derived tables do not work as expected with dynamic SQL (confirmed as of v5.14)</p>
 	<p><b>Note:</b> One possible exception may be {{_model._name}}, but still be careful.</p>
 	</details>
 <details id="t15"><!-- UNION ALL -->
-	<summary><b>T15.</b>UNION should not be used where UNION ALL is needed or sufficient</summary>
-	<p><b>Rationale:</b> More often than not, developers use UNION instead of UNION ALL unintentionally, with terrible performance implications. Therefore, if you actually need a plain UNION, make that explicit in an accompanying comment.</p> 
+	<summary><b><a href="#t15">T15.</a></b>UNION should not be used where UNION ALL is needed or sufficient</summary>
+	<p><b>Rationale:</b> More often than not, developers use UNION instead of UNION ALL unintentionally, with terrible performance implications. Therefore, if you actually need a plain UNION, make that explicit in an accompanying comment.</p>
 	</details>
 <h1 id="explores">Explores</h1>
 
 <details id="e1">
-	<summary><b>E1.</b> All join fields should be referenced using the substitution operator, <code>${view_name.field_name}</code></summary>
+	<summary><b><a href="#e1">E1.</a></b> All join fields should be referenced using the substitution operator, <code>${view_name.field_name}</code></summary>
 	<code class="good block">
 	explore: orders {
 		join: users {
@@ -605,7 +605,7 @@
 	<p><b>Note:</b> Sometimes you may want to make joins dynamic using <code>_in_query</code>. This requires you to reference fields to join on IF the view is <code>_in_query</code> but NOT use the substitution operator since that forces the view to be in the query.</p>
 </details>
 <details id="e2"> <!-- Primary keys used -->
-	<summary><b>E2.</b> The "one" table in any join should be joined on equality constraints on all of the Primary Key Dimensions</summary>
+	<summary><b><a href="#e2">E2.</a></b> The "one" table in any join should be joined on equality constraints on all of the Primary Key Dimensions</summary>
 	<p> This is relevant for any 1:1, 1:m, m:1, 1:0or1 joins. In otherwords, any non-many-to-many join (which you should only be using with great caution)</p>
 	<code class="good block">
 	join: users {
@@ -631,7 +631,7 @@
 
 	</details>
 <details id="e3"> <!-- Join on dist key and sort/cluster keys when possible -->
-	<summary><b>E3.</b> Joins should use <a class="subtle" href="#glossary-dist-key">distribution keys</a> and <a class="subtle" href="#glossary-sort-key">sort/cluster keys</a> when possible</summary>
+	<summary><b><a href="#e3">E3.</a></b> Joins should use <a class="subtle" href="#glossary-dist-key">distribution keys</a> and <a class="subtle" href="#glossary-sort-key">sort/cluster keys</a> when possible</summary>
 	<code class="good block">
 	explore: order_items {
 		join: orders {
@@ -665,7 +665,7 @@
 	<p><b>Note:</b> In the EAV example, even though the first part of the primary key, the distribution key, and the sort/cluster key all result in `entity_id`, writing them out multiple times with the different key dimensions communicates what they do to anyone reading the join, and should have negligible performance impact.</p>
 	</details>
 <details id="e4"> <!-- always_filter on sortkey -->
-	<summary><b>E4.</b> Explores should declare `always_filter` on the base table's sort key / parition column / clustered index</summary>
+	<summary><b><a href="#e4">E4.</a></b> Explores should declare `always_filter` on the base table's sort key / parition column / clustered index</summary>
 	<p>For small tables, this won't matter much, but for big tables it will make a big difference, so it's good to be in the habit.<p>
 	<code class="good block">
 	explore: events {
@@ -677,7 +677,7 @@
 	<p><b>Note:</b> This is all that's needed if the filtered table is the base of an explore with only left or inner joins. Otherwise, you can push the filter down into the sql_table_name (or derived table) using <code>{% condition view.always_filtered_field %} table.column {% endcondition %}</code></p>
 	</details>
 <details id="e5"> <!-- avoid multiplicative fanout -->
-	<summary><b>E5.</b> Explores' joins must not cause multiplicative fanout or spurious relationships</summary>
+	<summary><b><a href="#e5">E5.</a></b> Explores' joins must not cause multiplicative fanout or spurious relationships</summary>
 	<code class="bad block">
 	explore: users {
 		join: orders {
