@@ -53,7 +53,7 @@ module.exports = async function(
 		const parser = require('lookml-parser');
 		const templates = require('./lib/templates.js');
 		const checkCustomRule = require('./lib/custom-rules.js');
-		
+
 		console.log('Parsing project...');
 		const project = await parser.parseFiles({
 			source: options.source,
@@ -96,13 +96,13 @@ module.exports = async function(
 			messages = messages.concat(result.messages.map((msg)=>({rule: r, ...msg})));
 		}
 		console.log('> Rules done!');
-		
+
 		if (project.manifest && project.manifest.custom_rules) {
 			console.warn('\x1b[33m%s\x1b[0m', 'Legacy (Javascript) custom rules may be removed in a future major version!');
 			console.log('Checking legacy custom rules...');
 			let requireFromString = require('require-from-string');
 			let get = options.get || require('./lib/https-get.js');
-			let rules =  coerceArray(project.manifest && project.manifest.custom_rules) 
+			let rules =  coerceArray(project.manifest && project.manifest.custom_rules)
 			if (options.allowCustomRules !== undefined) {
 				let requireFromString = require('require-from-string');
 				let customRuleRequests = [];
@@ -135,7 +135,7 @@ module.exports = async function(
 				].concat(project.manifest.custom_rules).join('\n  '));
 			}
 		}
-		
+
 		if(project.manifest && project.manifest.rule){
 			console.log('Checking custom rules...');
 			for(let rule of Object.values(project.manifest.rule)){
@@ -156,6 +156,21 @@ module.exports = async function(
 
 		const buildStatus = (errors.length || warnings.length || lamsErrors.length) ? 'FAILED' : 'PASSED';
 		console.log(`BUILD ${buildStatus}: ${errors.length} errors and ${warnings.length} warnings found. Check .md files for details.`);
+
+		if (options.outputToCli) {
+			if (errors.length) {
+				console.log('Errors:');
+				console.log(errors);
+			}
+			if (warnings.length) {
+				console.log('Warnings:');
+				console.log(warnings);
+			}
+			if (lamsErrors.length) {
+				console.log('LAMS Errors:');
+				console.log(lamsErrors);
+			}
+		}
 
 		let jobURL;
 		if (options.jenkins) {
@@ -190,7 +205,7 @@ module.exports = async function(
 		if (errors.length) {
 			process.exit(1);
 		}
-		
+
 		return messages;
 	} catch (e) {
 		try {
