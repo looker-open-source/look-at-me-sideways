@@ -18,9 +18,9 @@ module.exports = function(
 	let ok = true;
 	let files = project.files || [];
 	for (let file of files) {
-		let views = Object.values(file.view||{});
+		let views = Object.values(file.view || {});
 		for (let view of views) {
-			let fields = Object.values(view.measure||{});
+			let fields = Object.values(view.measure || {});
 			for (let field of fields) {
 				let location = `view:${view._view}/field:${field._measure}`;
 				let path = `/projects/${project.name}/files/${file._file_path}#${location}`;
