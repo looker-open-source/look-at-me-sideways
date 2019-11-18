@@ -26,10 +26,10 @@ module.exports = function(
 	let pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);
 	let unique = (x, i, arr) => arr.indexOf(x) == i;
 	for (let file of files) {
-		let views = Object.values(file.view||{});
+		let views = Object.values(file.view || {});
 		for (let view of views) {
-			let location = 'view: '+view._view;
-			let path = '/projects/'+project.name+'/files/'+file._file_path+'#view:'+view._view;
+			let location = 'view: ' + view._view;
+			let path = '/projects/' + project.name + '/files/' + file._file_path + '#view:' + view._view;
 			let sql = view.sql_table_name || view.derived_table && view.derived_table.sql;
 			if (!sql) {
 				continue;
@@ -56,7 +56,7 @@ module.exports = function(
 				const innermostParens = remaining.match(/(^[\s\S]*)(\([^()]*\))([\s\S]*)/);
 				if (innermostParens) {
 					current = innermostParens[2].slice(1, -1);
-					remaining = innermostParens[1]+'[paren]'+innermostParens[3];
+					remaining = innermostParens[1] + '[paren]' + innermostParens[3];
 				} else {
 					current = remaining;
 					remaining = false;
@@ -82,28 +82,28 @@ module.exports = function(
 					});
 					continue;
 				}
-				const aliasRegexpStr ='('+[
+				const aliasRegexpStr = '(' + [
 					'[a-zA-Z0-9_$]+',
 					'`[^`\\\\n]+`',
 					'"[^"\\\\n]+"',
 					'\'[^\'\\\\n]+\'',
-				].join('|')+')\\s*$';
+				].join('|') + ')\\s*$';
 				const selections = current
 					.replace(/^\s*SELECT\s+/, '').replace(/\s*FROM[\s\S]*$/, '')
 					.split(',')
-					.map((part)=>part.trim().toLowerCase().replace(/\s+/, ' '))
+					.map((part) => part.trim().toLowerCase().replace(/\s+/, ' '))
 					.filter(Boolean)
 					.map((selection) => ({
-						expression: selection.replace(new RegExp('\\s+as\\s+'+aliasRegexpStr, 'i'), ''),
-						alias: (selection.match(new RegExp(aliasRegexpStr, 'i'))||[''])[0],
+						expression: selection.replace(new RegExp('\\s+as\\s+' + aliasRegexpStr, 'i'), ''),
+						alias: (selection.match(new RegExp(aliasRegexpStr, 'i')) || [''])[0],
 					}));
 				const groupings = current
 					.replace(/^[\s\S]*?(GROUP\s+BY\s+|$)/, '')
 					.replace(/\s+(WHERE|HAVING|ORDER\s+BY|LIMIT|WINDOW|$)[\s\S]*$/, '')
 					.split(',')
-					.map((part)=>part.trim().toLowerCase().replace(/\s+/, ' '))
+					.map((part) => part.trim().toLowerCase().replace(/\s+/, ' '))
 					.filter(Boolean);
-				const pks = selections.filter((s)=>pkNamingConvention(s.alias));
+				const pks = selections.filter((s) => pkNamingConvention(s.alias));
 				const actualPkCount = pks.length;
 				if (actualPkCount === 0) {
 					messages.push({
@@ -115,9 +115,9 @@ module.exports = function(
 				const pkCountDeclarations = pks
 					.map((p) => parseInt(p.alias.match(/\d+/)[0]))
 					.filter(unique);
-				if (pkCountDeclarations.length>1) {
+				if (pkCountDeclarations.length > 1) {
 					messages.push({
-						location, path, rule: 'T3', level: 'error', exempt: exempt('T3')||exempt('T2'),
+						location, path, rule: 'T3', level: 'error', exempt: exempt('T3') || exempt('T2'),
 						description: `Primary Key columns in "${snippet}"  in ${view._view} have mismatching numbers (${pkCountDeclarations.join(', ')})`,
 					});
 					continue;
@@ -125,36 +125,36 @@ module.exports = function(
 				const declaredPkCount = pkCountDeclarations[0];
 				if (actualPkCount !== declaredPkCount) {
 					messages.push({
-						location, path, rule: 'T3', level: 'error', exempt: exempt('T3')||exempt('T2'),
+						location, path, rule: 'T3', level: 'error', exempt: exempt('T3') || exempt('T2'),
 						description: `Primary Key columns in "${snippet}"  in ${view._view} declare ${declaredPkCount} column(s), but there are ${actualPkCount}`,
 					});
 					continue;
 				}
-				if (!selections.slice(0, pks.length).every((s)=>pkNamingConvention(s.alias))) {
+				if (!selections.slice(0, pks.length).every((s) => pkNamingConvention(s.alias))) {
 					messages.push({
-						location, path, rule: 'T4', level: 'error', exempt: exempt('T4')||exempt('T2'),
+						location, path, rule: 'T4', level: 'error', exempt: exempt('T4') || exempt('T2'),
 						description: `Primary Key columns in "${snippet}" in ${view._view} are not first`,
 					});
 					continue;
 				}
 
-				if (selections[actualPkCount].expression!=='[sep]') {
+				if (selections[actualPkCount].expression !== '[sep]') {
 					messages.push({
-						location, path, rule: 'T8', level: 'warning', exempt: exempt('T8')||exempt('T2'),
+						location, path, rule: 'T8', level: 'warning', exempt: exempt('T8') || exempt('T2'),
 						description: `Primary Key columns/selectAliases in ${view._view} should finish with ---`,
 					});
 					// no `continue;` Allow further rule checks to proceed
 				}
 				if (!groupings.length) {
 					messages.push({
-						location, path, rule: 'T6', level: 'warning', exempt: exempt('T6')||exempt('T2'),
+						location, path, rule: 'T6', level: 'warning', exempt: exempt('T6') || exempt('T2'),
 						description: `LAMS cannot currently enforce rule T6. Please use a T6 exemption in ${view._view} to communicate whether/how the rule is followed in "${snippet}..."`,
 					});
 					continue;
 				}
 				let firstPksThatAreGroups = [];
-				for (let p=0; p < pks.length; p++) {
-					if (groupings.some((g) => parseInt(g) && g-1===p || g === pks[p].expression)) {
+				for (let p = 0; p < pks.length; p++) {
+					if (groupings.some((g) => parseInt(g) && g - 1 === p || g === pks[p].expression)) {
 						firstPksThatAreGroups.push(pks[p]);
 					} else {
 						break;
@@ -162,19 +162,19 @@ module.exports = function(
 				}
 				if (!firstPksThatAreGroups.length) {
 					messages.push({
-						location, path, rule: 'T5', level: 'error', exempt: exempt('T5')||exempt('T2'),
+						location, path, rule: 'T5', level: 'error', exempt: exempt('T5') || exempt('T2'),
 						description: `Transformation with GROUP BY (${snippet}...) in ${view._view} does not begin with at least 1 grouped column as part of a primary key"`,
 					});
 					continue;
 				}
 				const allGroupsUsed = groupings.every((g) =>
-					parseInt(g) && g<=pks.length
-					|| pks.some((p)=>p.expression===g)
+					parseInt(g) && g <= pks.length
+					|| pks.some((p) => p.expression === g)
 				);
 				if (!allGroupsUsed) {
 					if (!pks[firstPksThatAreGroups.length]) {
 						messages.push({
-							location, path, rule: 'T7', level: 'error', exempt: exempt('T7')||exempt('T2'),
+							location, path, rule: 'T7', level: 'error', exempt: exempt('T7') || exempt('T2'),
 							description: `Transformation with GROUP BY (${snippet}...) in ${view._view} did not use all grouped columns in the pk, and does not continue with additional columns in the pk"`,
 						});
 						continue;
@@ -182,7 +182,7 @@ module.exports = function(
 					let nextCol = pks[firstPksThatAreGroups.length].expression;
 					if (!nextCol.match(/\brow_number\s*\[paren]\s+over\s+\[paren]/)) {
 						messages.push({
-							location, path, rule: 'T7', level: 'error', exempt: exempt('T7')||exempt('T2'),
+							location, path, rule: 'T7', level: 'error', exempt: exempt('T7') || exempt('T2'),
 							description: `Transformation with GROUP BY (${snippet}...) in ${view._view} did not use all grouped columns in the pk, and the next column is not a ROW_NUMBER window"`,
 						});
 						continue;

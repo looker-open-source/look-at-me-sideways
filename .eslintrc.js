@@ -10,7 +10,7 @@ module.exports = {
         "ecmaFeatures": {
             "jsx": true
         },
-        "sourceType": "module"    
+        "sourceType": "module"
     },
     "extends": ["eslint:recommended", "google"],
     "rules": {

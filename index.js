@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
-const defaultConsole = console
-const defaultProcess = process
+const defaultConsole = console;
+const defaultProcess = process;
 /**
  * LAMS main function
  *
@@ -34,19 +34,19 @@ module.exports = async function(
 		process = defaultProcess,
 		fs,
 		get,
-		tracker
-	}={}
-	){
+		tracker,
+	} = {}
+) {
 	let messages = [];		// These are for the LookML developer who has attempted to lint a project
 	let lamsMessages = [];	// These are for the administrator who has invoked LAMS
 	try {
 		fs = fs || require('fs');
 		get = get || require('./lib/https-get.js');
 		tracker = tracker || require('./lib/tracking')({
-			cliArgs:{
+			cliArgs: {
 				reporting: options.reporting,
 				reportLicenseKey: options.reportLicenseKey,
-				reportUser: options.reportUser
+				reportUser: options.reportUser,
 			},
 			gaPropertyId: 'UA-96247573-2',
 		});
@@ -54,23 +54,23 @@ module.exports = async function(
 		const parser = require('lookml-parser');
 		const templates = require('./lib/templates.js');
 		const checkCustomRule = require('./lib/custom-rules.js');
-		
+
 		console.log('Parsing project...');
 		const project = await parser.parseFiles({
 			source: options.source,
 			conditionalCommentString: 'LAMS',
-			fileOutput:"array",
-			cwd:options.cwd||process.cwd(),
+			fileOutput: 'array',
+			cwd: options.cwd || process.cwd(),
 			console: {
-				log: (msg) => {},
-				warn: (msg) => lamsMessages.push({message: msg&&msg.message||msg, level: 'lams-warning'}), // LAMS warnings should not abort the deploy
-				error: (msg) => lamsMessages.push({message: msg&&msg.message||msg, level: 'lams-error'}), // LAMS errors should abort the deploy
+				log: (msg) => { },
+				warn: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-warning'}), // LAMS warnings should not abort the deploy
+				error: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-error'}), // LAMS errors should abort the deploy
 			},
 		});
 		if (project.errors) {
 			console.log(project.errors);
 			lamsMessages = lamsMessages.concat(project.errors.map((e) =>
-				({message: e&&e.message||e, level: 'lams-error'})
+				({message: e && e.message || e, level: 'lams-error'})
 			));
 			if (options.onParserError === 'fail') {
 				const parserErrorMessage = 'The LookML Parser is unable to parse this file.';
@@ -95,7 +95,7 @@ module.exports = async function(
 		project.name = false
 			|| project.manifest && project.manifest.project_name
 			|| options.projectName
-			|| (options.cwd||process.cwd()||'').split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
+			|| (options.cwd || process.cwd() || '').split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
 			|| 'unknown_project';
 		if (project.name === 'look-at-me-sideways') {
 			lamsMessages.push({level: 'lams-warning', message: 'Consider adding a manifest.lkml file to your project to identify the project_name'});
@@ -105,19 +105,17 @@ module.exports = async function(
 		console.log('Checking rules... ');
 		let rules = fs.readdirSync(path.join(__dirname, 'rules')).map((fileName) => fileName.match(/^(.*)\.js$/)).filter(Boolean).map((match) => match[1]);
 		for (let r of rules) {
-			console.log('> '+r.toUpperCase());
-			let rule = require('./rules/'+r+'.js');
+			console.log('> ' + r.toUpperCase());
+			let rule = require('./rules/' + r + '.js');
 			let result = rule(project);
-			messages = messages.concat(result.messages.map((msg)=>({rule: r, ...msg})));
+			messages = messages.concat(result.messages.map((msg) => ({rule: r, ...msg})));
 		}
 		console.log('> Rules done!');
-		
+
 		if (project.manifest && project.manifest.custom_rules) {
 			console.warn('\x1b[33m%s\x1b[0m', 'Legacy (Javascript) custom rules may be removed in a future major version!');
 			console.log('Checking legacy custom rules...');
-			let requireFromString = require('require-from-string');
 			let get = options.get || require('./lib/https-get.js');
-			let rules =  coerceArray(project.manifest && project.manifest.custom_rules) 
 			if (options.allowCustomRules !== undefined) {
 				let requireFromString = require('require-from-string');
 				let customRuleRequests = [];
@@ -126,22 +124,22 @@ module.exports = async function(
 						let request = get(url);
 						customRuleRequests.push(request);
 						let ruleSrc = await request;
-						console.log('> #'+u);
+						console.log('> #' + u);
 						let rule = requireFromString(ruleSrc, {
 							prependPaths: path.resolve(__dirname, './rules'),
 						});
 						let result = rule(project);
-						messages = messages.concat(result.messages.map((msg)=>({rule: `Custom Rule ${u}`, ...msg})));
+						messages = messages.concat(result.messages.map((msg) => ({rule: `Custom Rule ${u}`, ...msg})));
 					} catch (e) {
-						let msg = `URL #${u}: ${e&&e.message||e}`;
-						console.error('> '+msg);
+						let msg = `URL #${u}: ${e && e.message || e}`;
+						console.error('> ' + msg);
 						lamsMessages.push({
 							level: 'lams-error',
 							message: `An error occurred while checking custom rule in ${msg}`,
 						});
 					}
 				});
-				await Promise.all(customRuleRequests).catch(() => {});
+				await Promise.all(customRuleRequests).catch(() => { });
 				console.log('> Legacy custom rules done!');
 			} else {
 				console.warn([
@@ -150,23 +148,23 @@ module.exports = async function(
 				].concat(project.manifest.custom_rules).join('\n  '));
 			}
 		}
-		
-		if(project.manifest && project.manifest.rule){
+
+		if (project.manifest && project.manifest.rule) {
 			console.log('Checking custom rules...');
-			for(let rule of Object.values(project.manifest.rule)){
-				console.log('> '+rule._rule);
+			for (let rule of Object.values(project.manifest.rule)) {
+				console.log('> ' + rule._rule);
 				messages = messages.concat(checkCustomRule(rule, project));
 			}
 			console.log('> Custom rules done!');
 		}
 		let errors = messages.filter((msg) => {
-			return msg.level==='error' && !msg.exempt;
+			return msg.level === 'error' && !msg.exempt;
 		});
 		let warnings = messages.filter((msg) => {
-			return msg.level==='warning' && !msg.exempt;
+			return msg.level === 'warning' && !msg.exempt;
 		});
 		let lamsErrors = messages.filter((msg) => {
-			return msg.level==='lams-errors' && !msg.exempt;
+			return msg.level === 'lams-errors' && !msg.exempt;
 		});
 
 		const buildStatus = (errors.length || warnings.length || lamsErrors.length) ? 'FAILED' : 'PASSED';
@@ -205,7 +203,7 @@ module.exports = async function(
 		if (errors.length) {
 			process.exit(1);
 		}
-		
+
 		return messages;
 	} catch (e) {
 		try {
@@ -226,9 +224,3 @@ module.exports = async function(
 		process.exit(1);
 	}
 };
-
-function coerceArray(maybeArray){
-	if(maybeArray === undefined){return [];}
-	if(Array.isArray(maybeArray)){return maybeArray;}
-	return [maybeArray];
-}
