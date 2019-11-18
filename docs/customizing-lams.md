@@ -65,15 +65,15 @@ Note that while you can use unrooted paths to match things a bit more concisely 
 
 Not all examples below have been tested, so if you find an issue, please submit an issue!
 
-| JSONpath                                | Description                                       |
-| --------------------------------------- | ------------------------------------------------- |
-| `$.model.*`                             | All models                                        |
-| `$.files[*].view.*`                     | All views across all files (once per declaration) |
-| `$.model.*.view.*`                      | All views included in models (once per inclusion) |
-| `$.model.*.explore.*`                   | All explores across all models                    |
-| `$.model.foo.explore.*`                 | All explores in the foo model                     |
-| `$.model.*.view.*[dimension,measure].*` | All dimensions and all measures across all models |
-| `$.model[?(@.persist_for)]`             | All models that declare persist_for               |
+| JSONpath                                    | Description                                       |
+| ------------------------------------------- | ------------------------------------------------- |
+| `$.model.*`                                 | All models                                        |
+| `$.files[*].view.*`                         | All views across all files (once per declaration) |
+| `$.model.*.view.*`                          | All views included in models (once per inclusion) |
+| `$.model.*.explore.*`                       | All explores across all models                    |
+| `$.model.foo.explore.*`                     | All explores in the foo model                     |
+| `$.model.*.view.*['dimension','measure'].*` | All dimensions and all measures across all models |
+| `$.model[?(@.persist_for)]`                 | All models that declare persist_for               |
 
 ## Expression Examples
 
