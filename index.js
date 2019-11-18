@@ -170,6 +170,21 @@ module.exports = async function(
 		const buildStatus = (errors.length || warnings.length || lamsErrors.length) ? 'FAILED' : 'PASSED';
 		console.log(`BUILD ${buildStatus}: ${errors.length} errors and ${warnings.length} warnings found. Check .md files for details.`);
 
+		if (options.outputToCli) {
+			if (errors.length) {
+				console.log('Errors:');
+				console.log(errors);
+			}
+			if (warnings.length) {
+				console.log('Warnings:');
+				console.log(warnings);
+			}
+			if (lamsErrors.length) {
+				console.log('LAMS Errors:');
+				console.log(lamsErrors);
+			}
+		}
+
 		let jobURL;
 		if (options.jenkins) {
 			try {
