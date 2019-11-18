@@ -9,6 +9,7 @@ const defaultProcess = process
  * @param {object}	options.cwd - Override the current working directory
  * @param {string=}	options.reporting - One of yes, no, save-yes, or save-no. Program terminates with a warning if omitted. See PRIVACY.md for details
  * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
+ * @param {string=}	options.onParserError - Set to "fail" to indicate that LookML parsing errors should fail the linter. By default, parsing errors are logged and ignored.
  * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
  * @param {string=}	options.source - An optional glob specifying which files to read
  * @param {string=}	options.projectName - An optional name for the project, used to generate links back to the project in mardown output
@@ -71,6 +72,20 @@ module.exports = async function(
 			lamsMessages = lamsMessages.concat(project.errors.map((e) =>
 				({message: e&&e.message||e, level: 'lams-error'})
 			));
+			if (options.onParserError === 'fail') {
+				const parserErrorMessage = 'The LookML Parser is unable to parse this file.';
+				messages = messages.concat(project.errors.map((e) =>
+					({
+							rule: 'LookML Parser Error',
+							description: parserErrorMessage,
+							path: e._file_path,
+							location: e._file_rel,
+							message: e && e.message || e,
+							level: 'error',
+						}
+					)
+				));
+			};
 			console.error('> Issues occurred during parsing (containing files will not be considered):');
 			project.errorReport();
 		}
