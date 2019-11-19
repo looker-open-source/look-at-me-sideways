@@ -25,8 +25,6 @@ cd <your-lookml-project>
 lams
 ```
 
-(We will be publishing LAMS to NPM shortly after its release to simplify the above)
-
 ### Docker
 
 Although LAMS can be deployed manually using your CI tool of choice, we have provided a Docker image to simplify the deployment. Documentation can be found [here](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md).
