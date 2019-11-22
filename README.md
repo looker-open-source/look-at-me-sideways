@@ -25,6 +25,8 @@ cd <your-lookml-project>
 lams
 ```
 
+(We will be publishing LAMS to NPM shortly after its release to simplify the above)
+
 ### Docker
 
 Although LAMS can be deployed manually using your CI tool of choice, we have provided a Docker image to simplify the deployment. Documentation can be found [here](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md).
@@ -91,6 +93,15 @@ LAMS has primarily been developed by [Joseph Axisa](https://github.com/josephaxi
 ### Contributing
 
 Bug reports and pull requests are welcome on GitHub at [https://github.com/looker-open-source/look-at-me-sideways](https://github.com/looker-open-source/look-at-me-sideways).
+
+Trying to install LAMS for development?
+
+```bash
+git clone git@github.com:looker-open-source/look-at-me-sideways.git
+cd look-at-me-sideways
+mv npm-shrinkwrap.dev.json npm-shrinkwrap.json 
+npm install
+```
 
 ### Code of Conduct
 
