@@ -14,6 +14,7 @@ Also, this example is still a work in progress: it will run LAMS and add the mar
 - Inside your Github-connected LookML repo, add the following file at `.github/workflows/main.yml`
 - Populate the parameters within the "Run LAMS" step & uncomment
 
+<!-- {% raw %} -->
 ```yaml
 name: LookML CI
 
@@ -53,3 +54,4 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{github.ref}}
 ```
+<!-- {% endraw %}) -->
