@@ -15,7 +15,7 @@ Interested? See a video of LAMS in action!
 
 ## Contents
 
-- [Functionality & Features](#functionality-features)
+- [Functionality & Features](#functionality--features)
 	- [Predefined Linter Rules](#predefined-linter-rules)
 	- [Rule Exemptions](#rule-exemptions)
 	- [Generated Markdown Output](#generated-markdown-output)
@@ -26,7 +26,7 @@ Interested? See a video of LAMS in action!
 	- [Dockerized Jenkins Server](#dockerized-jenkins-server)
 - [Configuration](#configuration)
 	- [Command-line arguments](#command-line-arguments)
-	- [Manifest.lkml arguments](#manifest-lkml-arguments)
+	- [Manifest.lkml arguments](#manifestlkml-arguments)
 - [About](#about)
 
 ## Functionality & Features

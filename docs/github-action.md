@@ -1,8 +1,11 @@
+---
+favicon: img/logo.png
+---
 # Running LAMS via Github Actions
 
 This example shows how to run LAMS with Github Actions.
 
-Note: As compared to our docker Jenkins configuration, Github Actions is a quicker way to get set up, but may be slower since the former does not require as much set-up per run (Node.js installation, LAMS installation), and which can run on a pre-allocated instance. 
+Note: As compared to our dockerized Jenkins configuration, Github Actions is a quicker way to get set up, but may be slower since the former does not require as much set-up per run (Node.js installation, LAMS installation), and can run on a dedicated instance. 
 
 Also, this example is still a work in progress: it will run LAMS and add the markdown files back to your project, but does not yet set commit statuses to hook into the protected branches feature. Pull requests very welcome!
 

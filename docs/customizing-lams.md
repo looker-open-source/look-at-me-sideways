@@ -1,3 +1,6 @@
+---
+favicon: img/logo.png
+---
 # Customizing LAMS
 
 LAMS comes pre-bundled with a number of rules that reflect our opinionated best practices. However, sometimes these rules will not be right for your organization, or you may want to implement your own rules that may be highly specific to your project/model.
