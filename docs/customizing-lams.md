@@ -40,10 +40,10 @@ Expression-based rules (available as of version 1.0) can be declared within your
 
 Here is what each part does:
 
-- **Rule name:** Any LookML name for this rule. Note that names of the form [A-WY-Z][0-9]+ are reserved for future LAMS usage. This name is included in LAMS usage reporting, if you have opted in to it.
-- **description:** (Optional) A succint human-readable description, which will be shown to developers in LAMS output
+- **Rule name:** Any LookML name for this rule. This name is included in LAMS usage reporting, if you have opted in to it. Names composed of a single letter followed by a number are reserved for future LAMS usage.
+- **description:** (Optional) A succint human-readable description, which will be shown to developers in LAMS' output
 - **match:** A JSONpath expression that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [below](#match-examples) for example match patterns.
-- **expr_rule:** A Liyad expression that defines the logic of the rule.
+- **expr_rule:** A [Liyad](https://github.com/shellyln/liyad) expression that defines the logic of the rule.
   - **Arguments:** Three arguments are made available to the expression:
     - `match`: The value matched by the match expression. (The expression is invoked once for each time the pattern is matched in your project)
     - `path`: An array containing the path to the matched LookML. For example, `['$','model','my_model']`
@@ -57,13 +57,13 @@ Here is what each part does:
     - The return formats marked Beta are not expected to change, but are currently untested and may change slightly for compatibility reasons without a major semver update
   - **Language functions** - LAMS includes a command-line script, `rule-functions-doc.js`, that you can call for a comprehensive list of available functions. But, see [expression examples below](#expression-examples) for some common and useful ones!
 
-Disclaimer: Expression evaluation is powered by the [Liyad](https://github.com/shellyln/liyad) library. It both intends to prevent escalation of privleges, and, unlike Javascript evaluation, theoretically *can* prevent it. ([See my writeup on this](https://fabio-looker.github.io/data/2019-10-15-lams-customization-update/)). However, it is still a very new project, so evaluate it accordingly.
+Disclaimer: Expression evaluation is powered by the [Liyad](https://github.com/shellyln/liyad) library. It both intends to prevent escalation of privleges, and, unlike Javascript evaluation, theoretically *can* do so. ([See my writeup on this](https://fabio-looker.github.io/data/2019-10-15-lams-customization-update/)). However, it is still a very new project, so evaluate it accordingly.
 
 ### Match Examples
 
 Note that while you can use unrooted paths to match things a bit more concisely (i.e. without the leading $.), using a rooted path means less ambiguity in case a LookML parameter is also valid in another context)
 
-Not all examples below have been tested, so if you find an issue, please submit an issue!
+Not all examples below have been tested, so if you find an issue, please [submit an issue](https://github.com/looker-open-source/look-at-me-sideways/issues/new)!
 
 | JSONpath                                    | Description                                       |
 | ------------------------------------------- | ------------------------------------------------- |
@@ -75,37 +75,43 @@ Not all examples below have been tested, so if you find an issue, please submit 
 | `$.model.*.view.*['dimension','measure'].*` | All dimensions and all measures across all models |
 | `$.model[?(@.persist_for)]`                 | All models that declare persist_for               |
 
-## Expression Examples
+### Expression Examples
 
-### Equality
+#### Equality
 
-```js
+```lisp
  (=== ::match:value_format_name "usd")
 ```
 
-### String matching
+#### Presence
 
-e.g. does the label start with "Is" or "Has"? (Note that `$match` is a function, and `match` is the matched value)
+```lisp
+ (!== ::match:type undefined)
+```
 
-```js
+#### String matching
+
+E.g., does the label start with "Is" or "Has"? (Note that `$match` is a function, and `match` is the matched value)
+
+```lisp
 ($boolean ($match
     "^Is |^Has "
     ::match:label
 ))
 ```
 
-### Boolean And
+#### Boolean And
 
-```js
+```lisp
 ($all
     (=== ::match:hidden true)
     (=== ::match:extension_required true)
 )
 ```
 
-### Boolean Or
+#### Boolean Or
 
-```js
+```lisp
 ($any
     (=== ::match:hidden true)
     (=== ::match:extension_required true)
@@ -113,13 +119,19 @@ e.g. does the label start with "Is" or "Has"? (Note that `$match` is a function,
 )
 ```
 
-### Sequential steps
+#### Sequential steps
 
-```js
+```lisp
 ($let myvar (+ ::match:foo "_bar") )
 (=== myvar "foo_bar")
 ```
 
 ## Javascript Rules
 
-Disclaimer: The use of javascript rules are a security tradeoff. Fundamentally, evaluating Javascript code on your local machine and/or CI server gives that code a lot of access. And, this code can be altered by anyone with access to the server on which it is hosted, as well as any LookML developer with access to develop in the LookML project (even without deploy permissions). For this reason, expression based rules are preferred, and javascript-based rules may become deprecated in the future. If you nevertheless want LAMS to execute Javascript-based custom rules, run LAMS with the `--allow-custom-rules` startup flag. For a sample JS custom rule, see [/docs/sample-custom-rule.js](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docs/sample-custom-rule.js)
+Disclaimer: The use of javascript rules are a security tradeoff. Fundamentally, evaluating Javascript code on your local machine and/or CI server gives that code a lot of access. And, this code can be altered by anyone with access to the server on which it is hosted, as well as any LookML developer with access to develop in the LookML project (even without deploy permissions). For this reason, expression based rules are preferred, and javascript-based rules may be deprecated in the future.
+
+If you nevertheless want LAMS to execute Javascript-based custom rules:
+
+1. Write your rule following this example: [/docs/sample-custom-rule.js](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docs/sample-custom-rule.js)
+2. Host your JS code and provide its URL in your manifest.lkml, as `custom_rules: ["<url>"]` (inside a `#LAMS` comment block) 
+3. Run LAMS with the `--allow-custom-rules` startup flag
