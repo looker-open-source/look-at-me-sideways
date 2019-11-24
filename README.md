@@ -13,39 +13,33 @@ Interested? See a video of LAMS in action!
 
 [![LAMS video](docs/img/video-cover.png)](https://drive.google.com/file/d/1SYZxcbMs-NbT1iaThbz_CNjDXKhn3Wrt/view)
 
-## Deployment
+## Contents
 
-### Interactive Usage
+- [Functionality & Features](#functionality-features)
+	- [Predefined Linter Rules](#predefined-linter-rules)
+	- [Rule Exemptions](#rule-exemptions)
+	- [Generated Markdown Output](#generated-markdown-output)
+- [Deployment Examples](#deployment-examples)
+	- [Local Interactive Usage](#local-interactive-usage)
+	- [Github Action](#github-action)
+	- [Dockerized Jenkins Server](#dockerized-jenkins-server)
+- [Configuration](#configuration)
+	- [Command-line arguments](#command-line-arguments)
+	- [Manifest.lkml arguments](#manifest-lkml-arguments)
+	
+## Functionality & Features
 
-To use LAMS with the least overhead for simple interactive local use and testing:
+### Predefined Linter Rules
 
-```bash
-npm install -g @looker/look-at-me-sideways
-cd <your-lookml-project>
-lams
-```
-
-(We will be publishing LAMS to NPM shortly after its release to simplify the above)
-
-### Docker
-
-Although LAMS can be deployed manually using your CI tool of choice, we have provided a Docker image to simplify the deployment. Documentation can be found [here](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md).
-
-### Manifest.lkml (optional)
-
-If your LookML project doesn't have a manifest.lkml file, you may want to consider adding one! By specifying a 'project_name' in your manifest, LAMS will be able to generate the correct links back to your project files in your instance.
-
-## Linter Features
-
-### Ruleset Support
-
-As of the current release, the Linter enforces rules K1-4, F1-4, E1-2, and T1-10.
+The linter currently enforces rules K1-4, F1-4, E1-2, and T1-10 from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
 
 It currently does not resolve `extends` references, so if you are complying with a rule via extension, use a rule exemption as noted below.
 
-### Rule Exemption
+### Rule Exemptions
 
-One of the best practices required by the style guide is that whenever a rule is not followed, the reason should be documented in a LookML comment. In fact, the linter accepts a specific format for these exemption reasons to allow them to be checked:
+You can opt-out of rules either globally or granularly using `rule_exemptions`.
+
+The rule exemption syntax encourages developer to document the reason for each such exemption:
 
 ```lkml
 view: rollup {
@@ -58,19 +52,68 @@ view: rollup {
     sql: SELECT ...
 ```
 
-If you want to entirely opt-out of checking a particular rule, you can specify the exemptions in your project's manifest.lkml file. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
-
 Note: For large projects with many exemptions, we suggest starting the reasons with the Y-M-D formatted date on which they were added, for easier review in your issue report.
 
-### Generated Markdown Files
+If you want to entirely opt-out of checking a particular rule, you can specify the exemptions in your project's manifest.lkml file. See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for additional details.
 
-One of the primary ways that LAMS gives developers feedback, in addition to passing/failing pull requests, is by adding its findings to markdown files in your project. Here is an example of a resulting markdown file as displayed in Looker:
+### Generated Markdown Output
+
+One of the primary ways that LAMS gives developers feedback, in addition to any integrations with your CI workflow, is by adding its findings to markdown files in your project, so that they can be viewed in Looker's IDE. Here is an example of a resulting markdown file as displayed in Looker:
 
 ![Markdown example](docs/img/markdown-example.png)
 
-### Customizing LAMS
+### Custom Rules
 
-In addition to linting against its style guide, LAMS also lets you disable rules or specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) .
+In addition to linting against its [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html), LAMS also lets you disable rules or specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams).
+
+## Deployment Examples
+
+Although LAMS can be deployed in many ways to fit your specific CI flow, we have put together a few examples and resources to get you up and running quicker. (If you'd like to contribute your configuration, get in touch with an issue!)
+
+### Local Interactive Usage
+
+To use LAMS with the least overhead for simple interactive local use and testing:
+
+```bash
+npm install -g @looker/look-at-me-sideways
+cd <your-lookml-project>
+lams
+```
+
+### Github Action
+
+This option is very quick to get started, and offers a compromise between convenience of setup and per-commit run performance.
+
+See our [sample Github Action configuration](https://looker-open-source.github.io/look-at-me-sideways/github-action)
+
+### Dockerized Jenkins Server
+
+Finally, we have provided a Docker image with an end-to-end configuration including a Jenkins server, LAMS, and Github protected branches & status checks configuration. 
+
+See our [LAMS with Jenkis Docker configuration](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md).
+
+## Configuration
+
+### Command-line arguments
+
+- **reporting** - Required. One of `yes`, `no`, `save-yes`, or `save-no`. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
+- **report-user** - An email address to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
+- **report-license-key** - A Looker license key to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
+- **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory via the globally installed lams command.
+- **source** - A glob specifying which files to read. Defaults to `**/{*.model,*.explore,*.view,manifest}.lkml`.
+- **projectName** - An optional name for the project, used to generate links back to the project in mardown output. Specifying this in manifest.lkml is preferred.
+- **allowCustomRules** - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules.
+- **jenkins** - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output.
+- **output-to-cli** - Primarily intended for debugging. Setting it will output a verbose listing of errors and warnings to stdout.
+- **onParserError - Set to "fail" to indicate that LookML parsing errors should fail the linter. By default, parsing errors are logged and ignored.
+
+### Manifest.lkml arguments
+
+- **name** - Recommended. A name for the project, used to generate links back to the project in mardown output. If the native LookML validator complains about an unnecessary project name, you can use a conditional #LAMS comment to specify it.
+- **rule_exemptions** - Optional. Used to entirely opt out of rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
+- **rule: rule_name** - Optional. Used to specify custom rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
+
+If your LookML project doesn't have a manifest.lkml file, you may want to consider adding one! By specifying a 'project_name' in your manifest, LAMS will be able to generate the correct links back to your project files in your instance.
 
 ## About
 
