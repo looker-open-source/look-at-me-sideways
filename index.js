@@ -76,16 +76,16 @@ module.exports = async function(
 				const parserErrorMessage = 'The LookML Parser is unable to parse this file.';
 				messages = messages.concat(project.errors.map((e) =>
 					({
-							rule: 'LookML Parser Error',
-							description: parserErrorMessage,
-							path: e._file_path,
-							location: e._file_rel,
-							message: e && e.message || e,
-							level: 'error',
-						}
+						rule: 'LookML Parser Error',
+						description: parserErrorMessage,
+						path: e._file_path,
+						location: e._file_rel,
+						message: e && e.message || e,
+						level: 'error',
+					}
 					)
 				));
-			};
+			}
 			console.error('> Issues occurred during parsing (containing files will not be considered):');
 			project.errorReport();
 		}

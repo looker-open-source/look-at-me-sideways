@@ -1,6 +1,6 @@
 {
-  "name": "look-at-me-sideways",
-  "version": "1.1.0",
+  "name": "@looker/look-at-me-sideways",
+  "version": "1.1.2",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
