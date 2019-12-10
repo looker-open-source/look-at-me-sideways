@@ -11,7 +11,8 @@
   },
   "scripts": {
     "test": "jest --watchAll --verbose",
-    "lint-fix": "node node_modules/.bin/eslint --fix {*,__tests__/*,rules/*,lib/*}.js"
+    "lint-fix": "node node_modules/.bin/eslint --fix {*,__tests__/*,rules/*,lib/*}.js",
+    "shrinkwrap": "npm-shrinkwrap"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
     "eslint-config-google": "^0.10.0",
     "eslint-plugin-jest": "^21.27.2",
     "jest": "^24.9.0",
-    "jest-extended": "^0.11.2"
+    "jest-extended": "^0.11.2",
+    "npm-shrinkwrap": "^6.1.0"
   }
 }
