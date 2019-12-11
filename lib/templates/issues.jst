@@ -55,7 +55,7 @@ navigation: true
 
 {{! function renderRecursive(group,{lvl=0,icons=["⛔", "⚠️"],rootName,allCollapsed=false,open=true}){var out="";}}
 	<details style="margin-left: 3em" {{? !allCollapsed}}open="open"{{?}}>
-	<summary style="margin-left:-1em;border-bottom:solid 1px #333;"> {{=rootName||group.key}} ({{?group.summaries.errors}}{{=group.summaries.errors}}{{=icons[0]}}{{?}}{{?group.summaries.warnings}}{{=group.summaries.warnings}}{{=icons[1]}}{{?}})</summary>
+	<summary style="margin-left:-1em;border-bottom:solid 1px #333;font-size:{{=(200-(lvl*30)) + "%"}};">{{=rootName||group.key}} ({{?group.summaries.errors}}{{=group.summaries.errors}}{{=icons[0]}}{{?}}{{?group.summaries.warnings}}{{=group.summaries.warnings}}{{=icons[1]}}{{?}})</summary>
 	{{?group.data}}
 		<table>
 		<thead><tr>
