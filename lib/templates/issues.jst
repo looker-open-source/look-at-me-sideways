@@ -22,57 +22,50 @@
 title: {{?issues && issues.summaries.count}}Issues - {{=issues.summaries.errors||"0"}}⛔ {{=issues.summaries.warnings||"0"}}⚠️  {{??}}No Issues{{?}}
 navigation: true
 ---
+
 <p style="text-align:right;color:#cccs">
 	Generated {{=(new Date()).toUTCString()}}
-	{{?ctx.jobURL}}<br><a href="{{=ctx.jobURL}}">Build Log</a>{{?}}
-</p>
-{{?lamsMessages.length}}
-<b>LAMS Issues</b>
-<ul>
-	{{* lamsMessages :msg}}
-	<li>{{?msg.level=='lams-warning'}}⚠️{{?}}{{?msg.level=='lams-error'}}⛔{{?}}{{=msg.message}}</li>
-	{{*}}
-</ul>
-{{?}}
-{{?issues}}
-{{= renderRecursive(issues,{rootName:"Issues"}) }}
-{{??}}
-<p>No issues to report</p>
-{{?}}
+	{{?ctx.jobURL}}<br><a href="{{=ctx.jobURL}}">Build Log</a>{{?}}</p>{{?lamsMessages.length}}{{?}}{{?issues}}
+{{= renderRecursive(issues,{rootName:"Issues"}) }}{{??}}
+<p>✅ No issues to report ✅</p>
+{{?}}{{?exempt}}{{= renderRecursive(exempt,{rootName:"Exemptions",allCollapsed:true,icons:["🙈","🚧"]}) }}{{?}}
 
-{{?exempt}}
-{{= renderRecursive(exempt,{rootName:"Exemptions",open:false}) }}
-{{?}}
+---
 
-{{! function renderRecursive(group,{lvl=0,rootName,open=true}){var out="";}}
-	<details style="margin-left: 3em" {{?open}}open="open"{{?}}>
-		<summary style="margin-left:-1em;border-bottom:solid 1px #333;">
-			<b>{{=rootName||group.key}}</b>
-			(
-			{{?group.summaries.errors}}   {{=group.summaries.errors}}⛔ {{?}}
-			{{?group.summaries.warnings}} {{=group.summaries.warnings}}⚠️ {{?}}
-			)
-		</summary>
-		{{?group.data}}
-			<table style="border:solid 1px #ccc">
-			<thead style="background-color:darkblue;color:white"><tr>
-				<th>Level</th>
-				<th>Location</th>
-				<th>Description</th>
-			</tr></thead>
-			<tbody>
-			{{*group.data :data:d }}
-			<tr>
-				<td>{{={error:"⛔",warning:"⚠️"}[data.level]||data.level}}</td>
-				<td>{{&data.location}} {{?data.path}}<a href="{{&data.path}}" style="text-decoration: none">⧉</a>{{?}}</td>
-				<td>{{=data.description}}</td>
-			</tr>
-			{{*}}
-			</tbody>
-			</table>
-		{{?}}
-		{{*Object.values(group.subgroups).sort((a,b)=>a.key.localeCompare(b.key)) :subgroup:sg}}
-			{{=renderRecursive(subgroup,{lvl:lvl+1})}}
-		{{*}}
-	</details>
-	{{! return out;} }}
+### Icon Key
+<table>
+	<thead><tr>
+		<th></th>
+		<th>non-exempted</th>
+		<th>exempted</th>
+	</tr></thead>
+	<tbody>
+		<tr>
+		<td>Error</td>
+		<td>⛔</td>
+		<td>🙈</td>
+		</tr>
+		<tr>
+		<td>Warning</td>
+		<td>⚠️</td>
+		<td>🚧</td>
+		</tr>
+	</tbody>
+</table>
+
+{{! function renderRecursive(group,{lvl=0,icons=["⛔", "⚠️"],rootName,allCollapsed=false,open=true}){var out="";}}
+	<details style="margin-left: 3em" {{? !allCollapsed}}open="open"{{?}}>
+	<summary style="margin-left:-1em;border-bottom:solid 1px #333;font-size:{{=(200-(lvl*30)) + "%"}};">{{=rootName||group.key}} ({{?group.summaries.errors}}{{=group.summaries.errors}}{{=icons[0]}}{{?}}{{?group.summaries.warnings}}{{=group.summaries.warnings}}{{=icons[1]}}{{?}})</summary>
+	{{?group.data}}
+		<table>
+		<thead><tr>
+			<th>Level</th>
+			<th>Location</th>
+			<th>Description</th>
+		</tr></thead>
+		<tbody>{{*group.data :data:d }}
+		<tr>
+			<td>{{={error:icons[0],warning:icons[1]}[data.level]||data.level}}</td>
+			<td>{{&data.location}} {{?data.path}}{{?}}</td>
+			<td>{{=data.description}}</td>
+		</tr>{{*}}</tbody></table>{{?}}{{*Object.values(group.subgroups).sort((a,b)=>a.key.localeCompare(b.key)) :subgroup:sg}}{{=renderRecursive(subgroup, {lvl:lvl+1, icons:icons, allCollapsed:allCollapsed})}}{{*}}</details>{{! return out;} }}
