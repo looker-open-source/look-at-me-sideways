@@ -144,7 +144,6 @@ Trying to install LAMS for development?
 ```bash
 git clone git@github.com:looker-open-source/look-at-me-sideways.git
 cd look-at-me-sideways
-mv npm-shrinkwrap.dev.json npm-shrinkwrap.json 
 npm install
 ```
 
