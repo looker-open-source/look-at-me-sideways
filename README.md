@@ -62,7 +62,7 @@ If you want to entirely opt-out of checking a particular rule, you can specify t
 
 One of the primary ways that LAMS gives developers feedback, in addition to any integrations with your CI workflow, is by adding its findings to markdown files in your project, so that they can be viewed in Looker's IDE. Here is an example of a resulting markdown file as displayed in Looker:
 
-![Markdown example](docs/img/markdown-example.png)
+![Markdown example](docs/img/markdown-example.gif)
 
 ### Custom Rules
 

@@ -28,7 +28,9 @@ navigation: true
 	{{?ctx.jobURL}}<br><a href="{{=ctx.jobURL}}">Build Log</a>{{?}}</p>{{?lamsMessages.length}}{{?}}{{?issues}}
 {{= renderRecursive(issues,{rootName:"Issues"}) }}{{??}}
 <p>✅ No issues to report ✅</p>
-{{?}}{{?exempt}}{{= renderRecursive(exempt,{rootName:"Exemptions",icons:["🙈","🚧"],open:false}) }}{{?}}---
+{{?}}{{?exempt}}{{= renderRecursive(exempt,{rootName:"Exemptions",allCollapsed:true,icons:["🙈","🚧"]}) }}{{?}}
+
+---
 
 ### Icon Key
 <table>
@@ -51,8 +53,9 @@ navigation: true
 	</tbody>
 </table>
 
-{{! function renderRecursive(group,{lvl=0,icons=["⛔", "⚠️"],rootName}){var out="";}}
-		{{='#'.repeat(lvl+2)}} {{=rootName||group.key}} ({{?group.summaries.errors}}{{=group.summaries.errors}}{{=icons[0]}}{{?}}{{?group.summaries.warnings}}{{=group.summaries.warnings}}{{=icons[1]}}{{?}})
+{{! function renderRecursive(group,{lvl=0,icons=["⛔", "⚠️"],rootName,allCollapsed=false,open=true}){var out="";}}
+	<details style="margin-left: 3em" {{? !allCollapsed}}open="open"{{?}}>
+	<summary style="margin-left:-1em;border-bottom:solid 1px #333;"> {{=rootName||group.key}} ({{?group.summaries.errors}}{{=group.summaries.errors}}{{=icons[0]}}{{?}}{{?group.summaries.warnings}}{{=group.summaries.warnings}}{{=icons[1]}}{{?}})</summary>
 	{{?group.data}}
 		<table>
 		<thead><tr>
@@ -65,6 +68,4 @@ navigation: true
 			<td>{{={error:icons[0],warning:icons[1]}[data.level]||data.level}}</td>
 			<td>{{&data.location}} {{?data.path}}{{?}}</td>
 			<td>{{=data.description}}</td>
-		</tr>
-		{{*}}</tbody></table>{{?}}{{*Object.values(group.subgroups).sort((a,b)=>a.key.localeCompare(b.key)) :subgroup:sg}}{{=renderRecursive(subgroup,{lvl:lvl+1, icons:icons})}}{{*}}
-	{{! return out;} }}
+		</tr>{{*}}</tbody></table>{{?}}{{*Object.values(group.subgroups).sort((a,b)=>a.key.localeCompare(b.key)) :subgroup:sg}}{{=renderRecursive(subgroup, {lvl:lvl+1, icons:icons, allCollapsed:allCollapsed})}}{{*}}</details>{{! return out;} }}
