@@ -72,9 +72,7 @@ In addition to linting against its [style guide](https://looker-open-source.gith
 
 Although LAMS can be deployed in many ways to fit your specific CI flow, we have put together a few examples and resources to get you up and running quicker. (If you'd like to contribute your configuration, [get in touch](https://github.com/looker-open-source/look-at-me-sideways/issues/new)!)
 
-### Local Interactive Usage
-
-To use LAMS with the least overhead for simple interactive local use and testing:
+- *Local Interactive Usage* - To use LAMS with the least overhead for simple interactive local use and testing:
 
 ```bash
 npm install -g @looker/look-at-me-sideways
@@ -82,17 +80,10 @@ cd <your-lookml-project>
 lams
 ```
 
-### Github Action
+- [*Github Action*](https://looker-open-source.github.io/look-at-me-sideways/github-action) - This option is very quick to get started, and offers a compromise between convenience of setup and per-commit run performance.
+- 
+- [*Dockerized Jenkins Server*](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md) - Finally, we have provided a Docker image with an end-to-end configuration including a Jenkins server, LAMS, and Github protected branches & status checks configuration. 
 
-This option is very quick to get started, and offers a compromise between convenience of setup and per-commit run performance.
-
-See our [sample Github Action configuration](https://looker-open-source.github.io/look-at-me-sideways/github-action)
-
-### Dockerized Jenkins Server
-
-Finally, we have provided a Docker image with an end-to-end configuration including a Jenkins server, LAMS, and Github protected branches & status checks configuration. 
-
-See our [LAMS on Jenkis Docker configuration](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md).
 
 ## Configuration
 
