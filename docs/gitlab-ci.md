@@ -7,7 +7,7 @@ This example shows how to run LAMS with GitLab CI and was contributed by [Pieter
 
 ## Instructions
 
-1. Use the following dockerfile. This image is stored in the registry (e.g., registry.example.com/look-at-me-sideways-bot)
+Use the following dockerfile. This image is stored in the registry (e.g., registry.example.com/look-at-me-sideways-bot)
 
 ```dockerfile
 FROM alpine:edge
@@ -23,7 +23,7 @@ RUN  npm i -g @looker/look-at-me-sideways --unsafe-perm
 CMD ["/bin/sh"]
 ```
 
-2. Add a `gitlab-ci.yml` file to your LookML repo. (Populate the LAMS reporting arguments in the script)
+Add a `gitlab-ci.yml` file to your LookML repo. (Populate the LAMS reporting arguments in the script)
 
 ```yml
 stages:
