@@ -10,8 +10,12 @@
     "lams": "./cli.js"
   },
   "scripts": {
-    "test": "jest --watchAll --verbose",
-    "lint-fix": "node node_modules/.bin/eslint --fix {*,__tests__/*,rules/*,lib/*}.js"
+    "test": "jest",
+    "test-watch": "jest --watchAll --verbose",
+    "lint": "node node_modules/.bin/eslint {*,__tests__/*,rules/*,lib/*}.js",
+    "lint-fix": "node node_modules/.bin/eslint --fix {*,__tests__/*,rules/*,lib/*}.js",
+    "preversion":"npm run lint-fix && npm run test",
+    "prepublishOnly":"npm shrinkwrap && mv npm-shrinkwrap.json npm-shrinkwrap.dev.json && npm prune --prod && npm shrinkwrap"
   },
   "repository": {
     "type": "git",

@@ -148,6 +148,20 @@ mv npm-shrinkwrap.dev.json npm-shrinkwrap.json
 npm install
 ```
 
+Publishing an update? The following hooks will run:
+
+```bash
+npm version {minor|major|patch}
+> Pre-verion: npm run lint-fix
+> Pre-verion: npm run test
+
+npm publish
+> Pre-publish: npm shrinkwrap
+> Pre-publish: mv npm-shrinkwrap.json npm-shrinkwrap.dev.json
+> Pre-publish: npm prune --prod
+> Pre-publish: npm shrinkwrap
+```
+
 ### Code of Conduct
 
 This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the
