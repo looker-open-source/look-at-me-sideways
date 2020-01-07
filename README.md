@@ -21,12 +21,7 @@ Interested? See a video of LAMS in action!
 	- [Generated Markdown Output](#generated-markdown-output)
 	- [Custom Rules](#custom-rules)
 - [Deployment Examples](#deployment-examples)
-	- [Local Interactive Usage](#local-interactive-usage)
-	- [Github Action](#github-action)
-	- [Dockerized Jenkins Server](#dockerized-jenkins-server)
 - [Configuration](#configuration)
-	- [Command-line arguments](#command-line-arguments)
-	- [Manifest.lkml arguments](#manifestlkml-arguments)
 - [About](#about)
 
 ## Functionality & Features
