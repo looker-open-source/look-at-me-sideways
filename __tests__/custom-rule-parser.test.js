@@ -67,14 +67,14 @@ describe('Custom Rule Parser', () => {
 				($object-keys ::match)
 			) "" )
 		))`);
-		expect(rule({a:1,b:2,c:3})).toEqual("abc");
+		expect(rule({a: 1, b: 2, c: 3})).toEqual('abc');
 	});
 
 	it('Object.entries/fromEntries', () => {
 		let rule = parse(`( -> (match) ($last
 			($object-from-entries ($object-entries ::match))
 		))`);
-		expect(JSON.stringify(rule({a:1,b:2,c:3}))).toEqual('{"a":1,"b":2,"c":3}');
+		expect(JSON.stringify(rule({a: 1, b: 2, c: 3}))).toEqual('{"a":1,"b":2,"c":3}');
 		// ^ This is implementation dependent, but good enough for now
 	});
 });
