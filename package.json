@@ -16,7 +16,7 @@
     "lint-fix": "node node_modules/.bin/eslint --fix {*,__tests__/*,rules/*,lib/*}.js",
     "preversion": "npm run lint-fix && npm run test",
     "prepublishOnly": "npm shrinkwrap && mv npm-shrinkwrap.json npm-shrinkwrap.dev.json && npm prune --prod && npm shrinkwrap",
-    "postpublish": "mv npm-shrinkwrap.dev.json npm-shrinkwrap.json && npm install"
+    "postpublish": "cp npm-shrinkwrap.dev.json npm-shrinkwrap.json && npm install"
   },
   "repository": {
     "type": "git",
