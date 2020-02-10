@@ -1,10 +1,11 @@
-# Privacy Policy
+# LAMS Usage Reporting
 
 Thank you for using LAMS. Looker would like to understand the demand for LAMS,
-so that we can continue to support it and develop similar tools in the future.
+so that we can continue to enhance it and develop similar tools in the future.
 
-In order to respect user privacy, we ask LAMS users to opt-in if they would like
-to help us understand LAMS usage, by calling LAMS with the following options:
+If you wish to help us understand the demand for LAMS, we ask that you call
+LAMS with the following options. This is optional.
+
 
 	> lams --reporting=save-yes --report-license-key=AAA...AAA --report-user=bob@acme.com
 
