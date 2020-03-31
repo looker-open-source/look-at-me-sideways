@@ -39,15 +39,15 @@
     "fromentries": "^1.2.0",
     "jsonpath": "^1.0.2",
     "liyad": "^0.2.3",
-    "lookml-parser": "^6.2.0",
-    "minimist": "^1.2.0",
+    "lookml-parser": "^6.3.0",
+    "minimist": "^1.2.5",
     "require-from-string": "^2.0.2"
   },
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.10.0",
     "eslint-plugin-jest": "^21.27.2",
-    "jest": "^24.9.0",
+    "jest": "^25.2.4",
     "jest-extended": "^0.11.2"
   }
 }
