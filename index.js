@@ -13,6 +13,7 @@ const defaultProcess = process;
  * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
  * @param {string=}	options.source - An optional glob specifying which files to read
  * @param {string=}	options.projectName - An optional name for the project, used to generate links back to the project in mardown output
+ * @param {string=}	options.printDate - If set to false it won't print the date in the issues.md
  * @param {*=}		options.allowCustomRules - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules
  * @param {*=}		options.jenkins - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
  * @param {object=} io - IO overrides, primarily for testing
@@ -200,11 +201,15 @@ module.exports = async function(
 			});
 			fs.writeFileSync('results.json', json, 'utf8');
 		}
-
+		if (options.allowCustomRules !== undefined) {
+			let printDate = String(options.printDate).toLowerCase() == "true";
+		} else {
+			let printDate = true;
+		};
 		console.log('Writing summary files...');
 		fs.writeFileSync('developer.md', templates.developer({messages}).replace(/\n\t+/g, '\n'));
 		console.log('> Developer index done');
-		fs.writeFileSync('issues.md', templates.issues({messages, jobURL}).replace(/\n\t+/g, '\n'));
+		fs.writeFileSync('issues.md', templates.issues({messages, jobURL, printDate}).replace(/\n\t+/g, '\n'));
 		console.log('> Issue summary done');
 
 		console.log('> Summary files done!');
