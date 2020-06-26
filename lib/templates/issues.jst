@@ -24,7 +24,7 @@ navigation: true
 ---
 
 <p style="text-align:right;color:#cccs">
-	{{?ctx.printDate}}Generated {{=(new Date()).toUTCString()}}{{?}}
+	{{?ctx.dateOutput!=='none'}}Generated {{=(new Date()).toUTCString()}}{{?}}
 	{{?ctx.jobURL}}<br><a href="{{=ctx.jobURL}}">Build Log</a>{{?}}</p>{{?lamsMessages.length}}{{?}}{{?issues}}
 {{= renderRecursive(issues,{rootName:"Issues"}) }}{{??}}
 <p>✅ No issues to report ✅</p>

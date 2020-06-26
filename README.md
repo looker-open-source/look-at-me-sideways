@@ -94,7 +94,7 @@ lams
 - **jenkins** - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output.
 - **output-to-cli** - Primarily intended for debugging. Setting it will output a verbose listing of errors and warnings to stdout.
 - **onParserError** - Set to "fail" to indicate that LookML parsing errors should fail the linter. By default, parsing errors are logged and ignored.
-- **useDeate** - If set to false it won't print the date at the top of the `issues.md` file.
+- **date-output** - Set to "none" to skip printing the date at the top of the `issues.md` file.
 
 ### Manifest.lkml arguments
 
