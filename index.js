@@ -208,8 +208,8 @@ module.exports = async function(
 		fs.writeFileSync('issues.md', templates.issues({
 			messages,
 			jobURL,
-			dateOutput:options.dateOutput
-			}).replace(/\n\t+/g, '\n'));
+			dateOutput: options.dateOutput,
+		}).replace(/\n\t+/g, '\n'));
 		console.log('> Issue summary done');
 
 		console.log('> Summary files done!');
