@@ -33,7 +33,7 @@ jobs:
       run: npm install -g @looker/look-at-me-sideways
     - name: Run LAMS
       # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
-      run: lams --reporting=... || echo "::set-env name=ERROR::true"
+      run: lams --reporting=... || echo "ERROR=true" >> $GITHUB_ENV
     - name: Commit changes (e.g., issues.md)
       run: |
         git add .
