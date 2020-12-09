@@ -50,7 +50,7 @@ module.exports = function(
 					'\\${[^}]*}',					// ${} LookML
 					'{%.*?%}',						// {%%} Liquid
 					'{{.*?}}',						// {{}} Liquid
-				].join('|'),'g'), '[nonsql]'); // TODO: Save the contents somewhere in case they were column names we need later?
+				].join('|'), 'g'), '[nonsql]'); // TODO: Save the contents somewhere in case they were column names we need later?
 			while (remaining) {
 				let current;
 				const innermostParens = remaining.match(/(^[\s\S]*)(\([^()]*\))([\s\S]*)/);
