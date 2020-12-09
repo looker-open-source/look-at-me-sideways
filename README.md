@@ -77,8 +77,8 @@ lams
 
 - **[Github Action](https://looker-open-source.github.io/look-at-me-sideways/github-action)** - This option is very quick to get started if you're using Github, and offers a compromise between convenience of setup and per-commit run performance.
 - **[Dockerized Jenkins Server](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md)** - We have provided a Docker image with an end-to-end configuration including a Jenkins server, LAMS, and Github protected branches & status checks configuration. 
-- **[GitLab CI](https://looker-open-source.github.io/look-at-me-sideways/gitlab-ci)** - The most convenient option for users of GitLab, and offers similarly low overhead as our dockerized Jenkins configuration.
-
+- **[GitLab CI](https://looker-open-source.github.io/look-at-me-sideways/gitlab-ci)** - A community-contributed configuration for GitLab, which offers similarly low overhead as our dockerized Jenkins configuration
+- **[CircleCI](https://github.com/renewdotcom/renew-looker-template/blob/master/.circleci)** - A community-contributed configuration for CircleCI (external link) 
 
 ## Configuration
 
