@@ -350,5 +350,20 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...error, ...r.pkColumnsRequired});
 			expect(result).toContainMessage({...error, ...r.pkNamingConvention});
 		});
+
+		it('should not error based on SQL-like syntax in strings anywhere', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo { derived_table: { sql:
+					SELECT
+						'String 1' as pk2_tenant_id, 
+						'(SELECT pk5_foo, MAX(x) FROM bar)' as pk2_user_id,
+						---
+						MAX(start) as last_login
+					FROM sessions
+					GROUP BY 1,2
+				;; } }
+			}`));
+			expect(result).not.toContainMessage({...error});
+		});
 	});
 });
