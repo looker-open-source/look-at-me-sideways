@@ -40,7 +40,7 @@ module.exports = function(
 
 			// Initialize the "stuff to check" by removing any string literals, comments, & LookML
 			let remaining = sql
-				.replace(/\n\s*---\s*\n/, ',[sep],')
+				.replace(/\n\s*---\s*\n/g, ',[sep],')
 				.replace(new RegExp([
 					'[^\\\\\']+(\\\\.[^\\\\\']+)*\'',	// ' string literal
 					'`[^\\\\`]+(\\\\.[^\\\\`]+)*`',	// ` quoted name

@@ -301,6 +301,33 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...error, ...r.pkNamingConvention});
 		});
 
+		it('should not error if --- separator is used multiple times with leading commas', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo { derived_table: { sql:
+					WITH step_1 AS (
+						SELECT
+							account_id AS pk1_account_id
+							---
+							, COUNT(*)
+						FROM users
+						GROUP BY 1
+					),
+					step_2 AS (
+						SELECT
+							pk2_tenant_id
+							, pk2_user_id
+							---
+							, MAX(start) as last_login
+						FROM sessions
+						GROUP BY 1,2
+					)
+
+					SELECT "foo" as bar
+				;; } }
+			}`));
+			expect(result).not.toContainMessage({...error});
+		});
+
 		it('should error for each nested subquery in a transformation', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
