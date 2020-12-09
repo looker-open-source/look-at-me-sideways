@@ -2374,13 +2374,6 @@
       "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz",
       "integrity": "sha1-FQStJSMVjKpA20onh8sBQRmU6k8="
     },
-    "fsevents": {
-      "version": "2.2.1",
-      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.2.1.tgz",
-      "integrity": "sha512-bTLYHSeC0UH/EFXS9KqWnXuOl/wHK5Z/d+ghd5AsFMYN7wIGkUCOJyzy88+wJKkZPGON8u4Z9f6U4FdgURE9qA==",
-      "dev": true,
-      "optional": true
-    },
     "function-bind": {
       "version": "1.1.1",
       "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz",
@@ -3720,7 +3713,6 @@
         "@types/graceful-fs": "^4.1.2",
         "anymatch": "^3.0.3",
         "fb-watchman": "^2.0.0",
-        "fsevents": "^2.1.2",
         "graceful-fs": "^4.2.4",
         "jest-serializer": "^25.5.0",
         "jest-util": "^25.5.0",
