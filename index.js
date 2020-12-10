@@ -173,20 +173,20 @@ module.exports = async function(
 
 		if (options.outputToCli) {
 			let maxArrayLength =
-				parseInt(options.outputToCli) !== NaN ? parseInt(options.outputToCli)
-				: options.outputToCli === 'null' ? null
-				: 100;
+				!isNaN(options.outputToCli) ? parseInt(options.outputToCli)
+					: options.outputToCli === 'null' ? null
+						: 100;
 			if (errors.length) {
 				console.log('Errors:');
-				console.dir(errors,{maxArrayLength});
+				console.dir(errors, {maxArrayLength});
 			}
 			if (warnings.length) {
 				console.log('Warnings:');
-				console.dir(warnings,{maxArrayLength});
+				console.dir(warnings, {maxArrayLength});
 			}
 			if (lamsErrors.length) {
 				console.log('LAMS Errors:');
-				console.dir(lamsErrors,{maxArrayLength});
+				console.dir(lamsErrors, {maxArrayLength});
 			}
 		}
 
