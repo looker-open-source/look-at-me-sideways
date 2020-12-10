@@ -92,7 +92,7 @@ lams
 - **project-name** - An optional name for the project, used to generate links back to the project in mardown output. Specifying this in manifest.lkml is preferred.
 - **allow-custom-rules** - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules.
 - **jenkins** - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output.
-- **output-to-cli** - Primarily intended for debugging. Setting it will output a verbose listing of errors and warnings to stdout.
+- **output-to-cli** - Primarily intended for debugging. Setting it will output a verbose listing of errors and warnings to stdout. Set to a numerical value to determine the maximum number of entries to output for each of errors & warnings.
 - **on-parser-error** - Set to "fail" to indicate that LookML parsing errors should fail the linter. By default, parsing errors are logged and ignored.
 - **date-output** - Set to "none" to skip printing the date at the top of the `issues.md` file.
 

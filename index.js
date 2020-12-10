@@ -172,17 +172,21 @@ module.exports = async function(
 		console.log(`BUILD ${buildStatus}: ${errors.length} errors and ${warnings.length} warnings found. Check .md files for details.`);
 
 		if (options.outputToCli) {
+			let maxArrayLength =
+				parseInt(options.outputToCli) !== NaN ? parseInt(options.outputToCli)
+				: options.outputToCli === 'null' ? null
+				: 100;
 			if (errors.length) {
 				console.log('Errors:');
-				console.log(errors);
+				console.dir(errors,{maxArrayLength});
 			}
 			if (warnings.length) {
 				console.log('Warnings:');
-				console.log(warnings);
+				console.dir(warnings,{maxArrayLength});
 			}
 			if (lamsErrors.length) {
 				console.log('LAMS Errors:');
-				console.log(lamsErrors);
+				console.dir(lamsErrors,{maxArrayLength});
 			}
 		}
 
