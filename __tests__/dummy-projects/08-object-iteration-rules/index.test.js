@@ -20,14 +20,14 @@ describe('Projects', () => {
 			expect({messages}).toContainMessage({
 				rule: "native_primary_key_required",
 				level: "error",
-				location: "model:bad/explore:no_primary_key"
+				location: "model:bad/view:no_primary_key"
 			});
 		});
 		it("it should not error on rule native_primary_key_required for model:ok", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "native_primary_key_required",
 				level: "error",
-				location: "model:ok/explore:ok_primary_key"
+				location: "model:ok/view:ok_primary_key"
 			});
 		});
 	});
