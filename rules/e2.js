@@ -35,12 +35,12 @@ module.exports = function(
 				let allRefs = (joinSql.match(/(?<=\${).*?(?=})/g)||[]).filter(isFieldRef);
 				let reducedSql = joinSql
 					.replace(new RegExp([
-						'[^\\\\\']+(\\\\.[^\\\\\']+)*\'',	// ' string literal
+						'\'[^\\\\\']+(\\\\.[^\\\\\']+)*\'',	// ' string literal
 						'`[^\\\\`]+(\\\\.[^\\\\`]+)*`',	// ` quoted name
 						'"[^\\\\"]+(\\\\.[^\\\\"]+)*"',	// " string literal or quoted name
 						'--[^\\n]*(\\n|$)',				// -- Single line comment
 						'/\\*[^*]*(\\*[^/][^*]*)*\\*/', // /* Multi-line comment
-					].join('|')), '[nonsql]');
+					].join('|'), 'g'), '[nonsql]');
 				let parensRegex = /\([\s\S]*?(?<!\\)\)/g;
 				if (reducedSql.match(parensRegex)) {
 					messages.push({

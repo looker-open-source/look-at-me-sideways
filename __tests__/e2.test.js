@@ -301,5 +301,33 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(warning);
 			expect(result).not.toContainMessage(error);
 		});
+
+		it('should pass with constraints against a literal value (one_to_one)', () => {
+			let result = rule(parse(`model: m {
+				explore: entity {
+					join: eav {
+						relationship: one_to_one
+						sql_on: \${entity.pk1_id} = \${eav.pk2_id} AND \${eav.pk2_attribute} = 'TEST' ;;
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should pass with constraints against a literal value (one_to_many)', () => {
+			let result = rule(parse(`model: m {
+				explore: entity {
+					join: eav {
+						relationship: one_to_many
+						sql_on: \${entity.pk1_id} = \${eav.pk3_id} AND \${eav.pk3_category} = 'TEST' ;;
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
+		});
 	});
 });
