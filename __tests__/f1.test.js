@@ -39,6 +39,16 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(failMessageF1);
 		});
 
+    // This may be a false negative, but it seems better than false positives
+		it('should not error for a refinement view with no table in the refined view', () => {
+			let result = rule(parse(`files:{} files:{
+				view: +foo_bar { 
+					dimension: combine { sql: \${foo.amount} + \${bar.amount} ;; } 
+				}
+			}`));
+			expect(result).not.toContainMessage(failMessageF1);
+		});
+
 		it('should not error for a field with no references', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {
@@ -52,6 +62,16 @@ describe('Rules', () => {
 		it('should error for a base-table view with a cross-view reference', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { sql: \${baz.bat} ;; }
+				}
+			}`));
+			expect(result).toContainMessage(failMessageF1);
+		});
+
+		it('should error for a base-table view with a cross-view reference, even if in a refinement', () => {
+			let result = rule(parse(`files:{} files:{
+				view: +foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: \${baz.bat} ;; }
 				}
