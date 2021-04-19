@@ -18,7 +18,7 @@ module.exports = function(
 	let ok = true;
 	let files = project.files || [];
 	for (let file of files) {
-		let views = Object.values(file.view || {});
+		let views = Object.values(file.view || {}).flat();
 		for (let view of views) {
 			let fields = Object.values(view.measure || {});
 			for (let field of fields) {

@@ -47,6 +47,15 @@ describe('Rules', () => {
 			expect(result).toContainMessage(warnMessageF2);
 		});
 
+		it('should warn even if view_label used in a dimension within a refinement', () => {
+			let result = rule(parse(`files:{} files:{
+				view: +foo {
+					dimension: bar { view_label: "Foo2" }
+				}
+			}`));
+			expect(result).toContainMessage(warnMessageF2);
+		});
+
 		it('should warn for a measure with a view_label', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {

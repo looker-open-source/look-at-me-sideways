@@ -38,6 +38,15 @@ describe('Rules', () => {
 			expect(result).toContainMessage(failMessageF3);
 		});
 
+		it('should error for a measure with a type:count and no filter even within a refinement', () => {
+			let result = rule(parse(`files:{} files:{
+				view: +foo {
+					measure: bar { type: count }
+				}
+			}`));
+			expect(result).toContainMessage(failMessageF3);
+		});
+
 		it('should not error for a measure with a type:count and 1 filter', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {

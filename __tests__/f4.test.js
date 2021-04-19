@@ -38,6 +38,15 @@ describe('Rules', () => {
 			expect(result).toContainMessage(warnMessageF4);
 		});
 
+		it('should warn for a dimension with no description and no hidden even within a refinement', () => {
+			let result = rule(parse(` files:{} files:{
+				view: +foo {
+					dimension: bar {}
+				}
+			}`));
+			expect(result).toContainMessage(warnMessageF4);
+		});
+
 		it('should warn for a dimension with no description and hidden:no', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
