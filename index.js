@@ -36,7 +36,7 @@ module.exports = async function(
 		fs,
 		get,
 		tracker,
-	} = {}
+	} = {},
 ) {
 	let messages = [];		// These are for the LookML developer who has attempted to lint a project
 	let lamsMessages = [];	// These are for the administrator who has invoked LAMS
@@ -71,7 +71,7 @@ module.exports = async function(
 		if (project.errors) {
 			console.log(project.errors);
 			lamsMessages = lamsMessages.concat(project.errors.map((e) =>
-				({message: e && e.message || e, level: 'lams-error'})
+				({message: e && e.message || e, level: 'lams-error'}),
 			));
 			if (options.onParserError === 'fail') {
 				const parserErrorMessage = 'The LookML Parser is unable to parse this file.';
@@ -84,7 +84,7 @@ module.exports = async function(
 						message: e && e.message || e,
 						level: 'error',
 					}
-					)
+					),
 				));
 			}
 			console.error('> Issues occurred during parsing (containing files will not be considered):');

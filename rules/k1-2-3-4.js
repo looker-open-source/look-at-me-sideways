@@ -2,7 +2,7 @@
 const getExemption = require('../lib/get-exemption.js');
 
 module.exports = function(
-	project
+	project,
 ) {
 	let messages = [];
 	let globalExemptions = {};

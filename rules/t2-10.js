@@ -2,7 +2,7 @@
 const getExemption = require('../lib/get-exemption.js');
 
 module.exports = function(
-	project
+	project,
 ) {
 	let messages = [];
 	let globalExemptions = {};
@@ -169,7 +169,7 @@ module.exports = function(
 				}
 				const allGroupsUsed = groupings.every((g) =>
 					parseInt(g) && g <= pks.length
-					|| pks.some((p) => p.expression === g)
+					|| pks.some((p) => p.expression === g),
 				);
 				if (!allGroupsUsed) {
 					if (!pks[firstPksThatAreGroups.length]) {

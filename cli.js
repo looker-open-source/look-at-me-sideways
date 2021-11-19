@@ -9,17 +9,17 @@ const cliArgs = fromEntries( // ponyfill for Object.fromEntries
 			process.argv.slice(
 				process.argv[0] == 'lams'
 					? 1 // e.g. lams --bla
-					: 2 // e.g. node index.js --bla
+					: 2, // e.g. node index.js --bla
 			),
 			{
 				alias: {
 					source: ['input', 'i'],
 				},
-			}
-		)
+			},
+		),
 	)
 	// Convert kebab-case and snake_case to camelCase
-		.map(([k, v])=>[k.replace(/[-_][a-zA-Z-0-9]/g, (s)=>s.slice(1).toUpperCase()), v])
+		.map(([k, v])=>[k.replace(/[-_][a-zA-Z-0-9]/g, (s)=>s.slice(1).toUpperCase()), v]),
 );
 
 !async function() {

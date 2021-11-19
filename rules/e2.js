@@ -69,7 +69,7 @@ module.exports = function(
 					.concat(ownCardinality === 'one' && join._join)
 					.concat(otherCardinality === 'one' &&
 						allRefs.map(aliasFromRef)
-							.filter((alias) => alias != join._join)
+							.filter((alias) => alias != join._join),
 					)
 					.filter(Boolean)
 					.filter(unique);
