@@ -1,6 +1,6 @@
 {
   "name": "@looker/look-at-me-sideways",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "lockfileVersion": 1,
   "requires": true,
   "dependencies": {
@@ -1782,13 +1782,6 @@
       "resolved": "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz",
       "integrity": "sha1-FQStJSMVjKpA20onh8sBQRmU6k8="
     },
-    "fsevents": {
-      "version": "2.3.2",
-      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz",
-      "integrity": "sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==",
-      "dev": true,
-      "optional": true
-    },
     "function-bind": {
       "version": "1.1.1",
       "resolved": "https://registry.npmjs.org/function-bind/-/function-bind-1.1.1.tgz",
@@ -2401,7 +2394,6 @@
         "@types/node": "*",
         "anymatch": "^3.0.3",
         "fb-watchman": "^2.0.0",
-        "fsevents": "^2.3.2",
         "graceful-fs": "^4.2.4",
         "jest-regex-util": "^27.0.6",
         "jest-serializer": "^27.0.6",
