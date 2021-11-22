@@ -12,8 +12,8 @@
   "scripts": {
     "test": "jest",
     "test-watch": "jest --watchAll --verbose",
-    "lint": "node node_modules/.bin/eslint {*,__tests__/*,rules/*,lib/*}.js",
-    "lint-fix": "node node_modules/.bin/eslint --fix {*,__tests__/*,rules/*,lib/*}.js",
+    "lint": "node node_modules/.bin/eslint -c .eslintrc.js \"{*,__tests__/*,rules/*,lib/*}.js\"",
+    "lint-fix": "node node_modules/.bin/eslint --fix  -c .eslintrc.js \"{*,__tests__/*,rules/*,lib/*}.js\"",
     "preversion": "npm run lint-fix && npm run test",
     "prepublishOnly": "npm shrinkwrap && mv npm-shrinkwrap.json npm-shrinkwrap.dev.json && npm prune --prod && npm shrinkwrap",
     "postpublish": "cp npm-shrinkwrap.dev.json npm-shrinkwrap.json && npm install"
