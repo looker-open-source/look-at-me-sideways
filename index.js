@@ -53,7 +53,7 @@ module.exports = async function(
 		});
 		const path = require('path');
 		const parser = require('lookml-parser');
-		const templates = require('./lib/templates.js');
+		const asyncTemplates = require('./lib/templates.js');
 		const checkCustomRule = require('./lib/custom-rules.js');
 
 		console.log('Parsing project...');
@@ -207,6 +207,7 @@ module.exports = async function(
 		}
 
 		console.log('Writing summary files...');
+		const templates = await asyncTemplates;
 		fs.writeFileSync('developer.md', templates.developer({messages}).replace(/\n\t+/g, '\n'));
 		console.log('> Developer index done');
 		fs.writeFileSync('issues.md', templates.issues({
