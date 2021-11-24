@@ -3,4 +3,8 @@ lib/templates/*.js
 developer.md
 issues.md
 .DS_Store
+docs/img/
+docker/docs/img/
+npm-shrinkwrap.dev.json
 *.tgz
+__tests__
