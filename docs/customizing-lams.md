@@ -21,6 +21,7 @@ To opt-out of a rule for your entire project, just use the rule_exemption syntax
 # LAMS
 # rule_exemptions: {
 #  F2: "Any explanatory message you would like"
+#  F3: "Another explanatory message for a different rule"
 # }
 
 ```
