@@ -21,8 +21,8 @@ module.exports = function(
 	for (let file of files) {
 		let views = Object.values(file.view || {});
 		for (let view of views) {
-			let location = 'view: ' + view._view;
-			let path = '/projects/' + project.name + '/files/' + file._file_path + '#view:' + view._view;
+			let location = 'view: ' + view.$name;
+			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			if (!view.derived_table) {
 				continue;
 			}

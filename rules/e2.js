@@ -26,10 +26,10 @@ module.exports = function(
 	for (let model of models) {
 		let explores = Object.values(model.explore || {});
 		for (let explore of explores) {
-			let path = `/projects/${project.name}/files/${model._model}.model.lkml`;
+			let path = `/projects/${project.name}/files/${model.$name}.model.lkml`;
 			let joins = Object.values(explore.join || {});
 			for (let join of joins) {
-				let location = `model:${model._model}/explore:${explore._explore}/join:${join._join}`;
+				let location = `model:${model.$name}/explore:${explore.$name}/join:${join.$name}`;
 				let exempt = getExemption(join, rule) || getExemption(explore, rule) || getExemption(model, rule);
 				let joinSql = join.sql || join.sql_on || '';
 				let allRefs = (joinSql.match(/(?<=\${).*?(?=})/g)||[]).filter(isFieldRef);
@@ -66,10 +66,10 @@ module.exports = function(
 					.filter(isFieldRef);
 				let [otherCardinality, ownCardinality] = (join.relationship || 'many_to_one').split('_to_');
 				let oneAliases = []
-					.concat(ownCardinality === 'one' && join._join)
+					.concat(ownCardinality === 'one' && join.$name)
 					.concat(otherCardinality === 'one' &&
 						allRefs.map(aliasFromRef)
-							.filter((alias) => alias != join._join),
+							.filter((alias) => alias != join.$name),
 					)
 					.filter(Boolean)
 					.filter(unique);
@@ -84,7 +84,7 @@ module.exports = function(
 						ok = false;
 						messages.push({
 							location, path, rule, exempt, level: 'error',
-							description: `No PKs dimensions used for ${oneAlias} in ${join._join} join`,
+							description: `No PKs dimensions used for ${oneAlias} in ${join.$name} join`,
 						});
 						continue;
 					}
@@ -95,7 +95,7 @@ module.exports = function(
 						ok = false;
 						messages.push({
 							location, path, rule, exempt, level: 'error',
-							description: `${oneAlias} PK references in ${join._join} join specify different column counts (${minDeclaration},${maxDeclaration})`,
+							description: `${oneAlias} PK references in ${join.$name} join specify different column counts (${minDeclaration},${maxDeclaration})`,
 						});
 						continue;
 					}
@@ -103,7 +103,7 @@ module.exports = function(
 						ok = false;
 						messages.push({
 							location, path, rule, exempt, level: 'error',
-							description: `The number of PKs used (${pksForAlias.length}) for ${oneAlias} does not match the declared number of PK columns (${maxDeclaration}) in ${join._join} join`,
+							description: `The number of PKs used (${pksForAlias.length}) for ${oneAlias} does not match the declared number of PK columns (${maxDeclaration}) in ${join.$name} join`,
 						});
 						continue;
 					}
@@ -120,7 +120,7 @@ module.exports = function(
 							ok = false;
 							messages.push({
 								location, path, rule, exempt, level: 'error',
-								description: `${oneAlias}'s PK ${pk} is not used in an equality constraint in ${join._join} join`,
+								description: `${oneAlias}'s PK ${pk} is not used in an equality constraint in ${join.$name} join`,
 							});
 						}
 					}

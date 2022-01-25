@@ -28,8 +28,8 @@ module.exports = function(
 	for (let file of files) {
 		let views = Object.values(file.view || {});
 		for (let view of views) {
-			let location = 'view: ' + view._view;
-			let path = '/projects/' + project.name + '/files/' + file._file_path + '#view:' + view._view;
+			let location = 'view: ' + view.$name;
+			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			let sql = view.sql_table_name || view.derived_table && view.derived_table.sql;
 			if (!sql) {
 				continue;
@@ -70,7 +70,7 @@ module.exports = function(
 					// Single column selects exempt per T9
 					messages.push({
 						location, path, rule: 'T9', level: 'info',
-						description: `Single-column subquery (${snippet}...) in ${view._view} exempt from rule T2 per exemption T9`,
+						description: `Single-column subquery (${snippet}...) in ${view.$name} exempt from rule T2 per exemption T9`,
 					});
 					continue;
 				}
@@ -78,7 +78,7 @@ module.exports = function(
 					// Single table *+projections selects exempt per T10
 					messages.push({
 						location, path, rule: 'T10', level: 'info',
-						description: `Single-table subquery (${snippet}...) in ${view._view} exempt from rule T2 per exemption T9`,
+						description: `Single-table subquery (${snippet}...) in ${view.$name} exempt from rule T2 per exemption T9`,
 					});
 					continue;
 				}
@@ -108,7 +108,7 @@ module.exports = function(
 				if (actualPkCount === 0) {
 					messages.push({
 						location, path, rule: 'T2', level: 'error', exempt: exempt('T2'),
-						description: `No Primary Key columns/selectAliases found in ${view._view}`,
+						description: `No Primary Key columns/selectAliases found in ${view.$name}`,
 					});
 					continue;
 				}
@@ -118,7 +118,7 @@ module.exports = function(
 				if (pkCountDeclarations.length > 1) {
 					messages.push({
 						location, path, rule: 'T3', level: 'error', exempt: exempt('T3') || exempt('T2'),
-						description: `Primary Key columns in "${snippet}"  in ${view._view} have mismatching numbers (${pkCountDeclarations.join(', ')})`,
+						description: `Primary Key columns in "${snippet}"  in ${view.$name} have mismatching numbers (${pkCountDeclarations.join(', ')})`,
 					});
 					continue;
 				}
@@ -126,14 +126,14 @@ module.exports = function(
 				if (actualPkCount !== declaredPkCount) {
 					messages.push({
 						location, path, rule: 'T3', level: 'error', exempt: exempt('T3') || exempt('T2'),
-						description: `Primary Key columns in "${snippet}"  in ${view._view} declare ${declaredPkCount} column(s), but there are ${actualPkCount}`,
+						description: `Primary Key columns in "${snippet}"  in ${view.$name} declare ${declaredPkCount} column(s), but there are ${actualPkCount}`,
 					});
 					continue;
 				}
 				if (!selections.slice(0, pks.length).every((s) => pkNamingConvention(s.alias))) {
 					messages.push({
 						location, path, rule: 'T4', level: 'error', exempt: exempt('T4') || exempt('T2'),
-						description: `Primary Key columns in "${snippet}" in ${view._view} are not first`,
+						description: `Primary Key columns in "${snippet}" in ${view.$name} are not first`,
 					});
 					continue;
 				}
@@ -141,14 +141,14 @@ module.exports = function(
 				if (selections[actualPkCount].expression !== '[sep]') {
 					messages.push({
 						location, path, rule: 'T8', level: 'warning', exempt: exempt('T8') || exempt('T2'),
-						description: `Primary Key columns/selectAliases in ${view._view} should finish with ---`,
+						description: `Primary Key columns/selectAliases in ${view.$name} should finish with ---`,
 					});
 					// no `continue;` Allow further rule checks to proceed
 				}
 				if (!groupings.length) {
 					messages.push({
 						location, path, rule: 'T6', level: 'warning', exempt: exempt('T6') || exempt('T2'),
-						description: `LAMS cannot currently enforce rule T6. Please use a T6 exemption in ${view._view} to communicate whether/how the rule is followed in "${snippet}..."`,
+						description: `LAMS cannot currently enforce rule T6. Please use a T6 exemption in ${view.$name} to communicate whether/how the rule is followed in "${snippet}..."`,
 					});
 					continue;
 				}
@@ -163,7 +163,7 @@ module.exports = function(
 				if (!firstPksThatAreGroups.length) {
 					messages.push({
 						location, path, rule: 'T5', level: 'error', exempt: exempt('T5') || exempt('T2'),
-						description: `Transformation with GROUP BY (${snippet}...) in ${view._view} does not begin with at least 1 grouped column as part of a primary key"`,
+						description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} does not begin with at least 1 grouped column as part of a primary key"`,
 					});
 					continue;
 				}
@@ -175,7 +175,7 @@ module.exports = function(
 					if (!pks[firstPksThatAreGroups.length]) {
 						messages.push({
 							location, path, rule: 'T7', level: 'error', exempt: exempt('T7') || exempt('T2'),
-							description: `Transformation with GROUP BY (${snippet}...) in ${view._view} did not use all grouped columns in the pk, and does not continue with additional columns in the pk"`,
+							description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} did not use all grouped columns in the pk, and does not continue with additional columns in the pk"`,
 						});
 						continue;
 					}
@@ -183,13 +183,13 @@ module.exports = function(
 					if (!nextCol.match(/\brow_number\s*\[paren]\s+over\s+\[paren]/)) {
 						messages.push({
 							location, path, rule: 'T7', level: 'error', exempt: exempt('T7') || exempt('T2'),
-							description: `Transformation with GROUP BY (${snippet}...) in ${view._view} did not use all grouped columns in the pk, and the next column is not a ROW_NUMBER window"`,
+							description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} did not use all grouped columns in the pk, and the next column is not a ROW_NUMBER window"`,
 						});
 						continue;
 					}
 					messages.push({
 						location, path, level: 'info', rule: 'T7',
-						description: `Transformation with GROUP BY (${snippet}...) in ${view._view} appears valid, but LAMS does not verify the partition columns used in the window function (T7)`,
+						description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} appears valid, but LAMS does not verify the partition columns used in the window function (T7)`,
 					});
 				}
 			}

@@ -28,8 +28,8 @@ module.exports = function(
 				.concat(Object.values(view.measure || {}))
 				.concat(Object.values(view.filter || {}));
 			for (let field of fields) {
-				let location = `view:${view._view}/field:${field._dimension || field._measure || field._filter}`;
-				let path = `/projects/${project.name}/files/${file._file_path}#${location}`;
+				let location = `view:${view.$name}/field:${field._dimension || field._measure || field._filter}`;
+				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
 				// TODO: Doublecheck the below matches the actual LookML parameters... I wrote the below without internet connectivity -FB
 				[field.sql,
@@ -50,7 +50,7 @@ module.exports = function(
 						return;
 					}
 					// Don't treat references to TABLE or to own default alias as cross-view
-					if (parts[0] === 'TABLE' || parts[0] === view._view) {
+					if (parts[0] === 'TABLE' || parts[0] === view.$name) {
 						parts.shift();
 					}
 					// Don't treat references to special properties as cross-view

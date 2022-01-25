@@ -19,10 +19,10 @@ module.exports = function(
 	for (let model of models) {
 		let explores = Object.values(model.explore || {});
 		for (let explore of explores) {
-			let path = `/projects/${project.name}/files/${model._model}.model.lkml`;
+			let path = `/projects/${project.name}/files/${model.$name}.model.lkml`;
 			let joins = Object.values(explore.join || {});
 			for (let join of joins) {
-				let location = `model:${model._model}/explore:${explore._explore}/join:${join._join}`;
+				let location = `model:${model.$name}/explore:${explore.$name}/join:${join.$name}`;
 				let exempt = getExemption(join, rule) || getExemption(explore, rule) || getExemption(model, rule);
 				let sql = join.sql || join.sql_on || '';
 				let sqlWithLkmlRemoved = sql.replace(/\${[\s\S]*?}|{{[\s\S]*?}}|{%\s*if[\s\S]*?endif\s*%}|{%[\s\S]*?%}/g, '');

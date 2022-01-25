@@ -1,7 +1,7 @@
 const lams = require('../../../index.js')
 const mocks = require('../../../lib/mocks.js')
 const path= require('path')
-const options = {reporting:"no", cwd:__dirname}
+const options = {reporting:"no", cwd:__dirname, output:"lines"}
 require('../../../lib/expect-to-contain-message');
 const log = x=>console.log(x)
 const testProjectName = __dirname.split(path.sep).slice(-1)[0];

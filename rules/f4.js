@@ -26,8 +26,8 @@ module.exports = function(
 				.concat(Object.values(view.filter || {}))
 				.concat(Object.values(view.parameter || {}));
 			for (let field of fields) {
-				let location = `view:${view._view}/field:${field._dimension || field._measure || field._filter || field._parameter}`;
-				let path = `/projects/${project.name}/files/${file._file_path}#${location}`;
+				let location = `view:${view.$name}/field:${field.$name}`;
+				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
 				if (!field.hidden && !field.description) {
 					ok = false;

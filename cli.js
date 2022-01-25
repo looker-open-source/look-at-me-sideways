@@ -18,10 +18,20 @@ const cliArgs = fromEntries( // ponyfill for Object.fromEntries
 			},
 		),
 	)
-	// Convert kebab-case and snake_case to camelCase
-		.map(([k, v])=>[k.replace(/[-_][a-zA-Z-0-9]/g, (s)=>s.slice(1).toUpperCase()), v]),
+		// Convert kebab-case and snake_case to camelCase
+		.map(([k, v])=>[k.replace(/[-_][a-zA-Z-0-9]/g, (s)=>s.slice(1).toUpperCase()), v])
+		// Manifest option accepts JSON
+		.map(([k, v])=>[k, k==='manifest' ? jsonParseOrThrow(v,'Unable to parse JSON from manifest argument') : v]),
 );
 
 !async function() {
 	await lams(cliArgs);
 }();
+
+function jsonParseOrThrow(str,err){
+	try{return JSON.parse(str)}
+	catch(e){
+		console.error(err);
+		process.exit(1);
+	}
+}

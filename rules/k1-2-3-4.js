@@ -22,15 +22,15 @@ module.exports = function(
 	if (allExempted) {
 		return {messages};
 	}
-	const pkNamingConvention = (d) => d._dimension.match(/^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/);
+	const pkNamingConvention = (d) => d.$name.match(/^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/);
 	const unique = (x, i, arr) => arr.indexOf(x) === i;
 	let files = project.files || [];
 	for (let file of files) {
 		let rule;
 		let views = Object.values(file.view || {});
 		for (let view of views) {
-			let location = 'view: ' + view._view;
-			let path = '/projects/' + project.name + '/files/' + file._file_path + '#view:' + view._view;
+			let location = 'view: ' + view.$name;
+			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			let pkDimensions = (Object.values(view.dimension || {})).filter(pkNamingConvention);
 			{/* Field-only view exemption */
 				if (!view.derived_table && !view.sql_table_name && !view.extends) {
@@ -39,8 +39,8 @@ module.exports = function(
 							continue;
 						}
 						messages.push({
-							location, path, rule, level: 'info',
-							description: `Field-only view ${view._view} is not subject to Primary Key Dimension rules`,
+							location, path, rule, level: 'verbose',
+							description: `Field-only view ${view.$name} is not subject to Primary Key Dimension rules`,
 						});
 					}
 					continue;
@@ -52,13 +52,13 @@ module.exports = function(
 				if (!pkDimensions.length) {
 					messages.push({
 						location, path, rule, exempt, level: 'error',
-						description: 'No Primary Key Dimensions found in ' + view._view,
+						description: 'No Primary Key Dimensions found in ' + view.$name,
 					});
 					continue;
 				}
 				messages.push({
-					location, path, rule, exempt, level: 'info',
-					description: '1 or more Primary Key Dimensions found in ' + view._view,
+					location, path, rule, exempt, level: 'verbose',
+					description: '1 or more Primary Key Dimensions found in ' + view.$name,
 				});
 			}
 			rule = 'K2';
@@ -69,7 +69,7 @@ module.exports = function(
 				if (declaredNs.length > 1) {
 					messages.push({
 						location, path, rule, exempt, level: 'error',
-						description: `Different Primary Key Dimensions in ${view._view} declare different column counts: ${declaredNs.join(', ')}`,
+						description: `Different Primary Key Dimensions in ${view.$name} declare different column counts: ${declaredNs.join(', ')}`,
 					});
 					continue;
 				}
@@ -77,29 +77,43 @@ module.exports = function(
 				if (n != pkDimensions.length && n !== 0) {
 					messages.push({
 						location, path, rule, exempt, level: 'error',
-						description: `View ${view._view} has ${pkDimensions.length} Primary Key Dimension(s) but their names declare ${declaredNs[0]} columns`,
+						description: `View ${view.$name} has ${pkDimensions.length} Primary Key Dimension(s) but their names declare ${declaredNs[0]} columns`,
 					});
 					continue;
 				}
 				messages.push({
-					location, path, rule, exempt, level: 'info',
-					description: `Primary Key Dimensions found in ${view._view} are appropriately numbered`,
+					location, path, rule, exempt, level: 'verbose',
+					description: `Primary Key Dimensions found in ${view.$name} are appropriately numbered`,
 				});
 			}
 			rule = 'K3';
 			if (!globalExemptions[rule]) {
 				let exempt = getExemption(view, rule) || getExemption(file, rule);
-				if (pkDimensions.reduce(((min, x) => x._n < min ? x._n : min), 99) !== 0 ||
-					pkDimensions.reduce(((max, x) => x._n > max ? x._n : max), 0) !== pkDimensions.length - 1) {
+				let d;
+				for(d=0; d<pkDimensions.length; d++){
+					let dimensions = Object.values(view.dimension || {})
+					let dimension = dimensions[d]
+					if(!pkNamingConvention(dimension)){
+						messages.push({
+							location, path, rule, exempt, level: 'warning',
+							description: `Primary Key Dimensions in ${view.$name} are not declared before other dimensions`,
+						});
+						break;
+					}
+				}
+				// if (pkDimensions.reduce(((min, x) => x._n < min ? x._n : min), 99) !== 0 ||
+				// 	pkDimensions.reduce(((max, x) => x._n > max ? x._n : max), 0) !== pkDimensions.length - 1) {
+				// 	messages.push({
+				// 		location, path, rule, exempt, level: 'warning',
+				// 		description: `Primary Key Dimensions in ${view.$name} are not declared before other dimensions`,
+				// 	});
+				// }
+				if(d===pkDimensions.length){ //All initial dimensions were checked and the loop didn't break
 					messages.push({
-						location, path, rule, exempt, level: 'warning',
-						description: `Primary Key Dimensions in ${view._view} are not declared before other dimensions`,
+					location, path, rule, exempt, level: 'verbose',
+					description: `Primary Key Dimensions found in ${view.$name} are declared before other dimensions`,
 					});
 				}
-				messages.push({
-					location, path, rule, exempt, level: 'info',
-					description: `Primary Key Dimensions found in ${view._view} are declared before other dimensions`,
-				});
 			}
 			rule = 'K4';
 			if (!globalExemptions[rule]) {
@@ -108,17 +122,17 @@ module.exports = function(
 					let exempt = badDims.every((d) => getExemption(d, rule)) && getExemption(badDims[0], rule)
 						|| getExemption(view, rule)
 						|| getExemption(file, rule);
-					let dimNames = badDims.map((dim) => dim._dimension).join(', ');
+					let dimNames = badDims.map((dim) => dim.$name).join(', ');
 					messages.push({
 						location, path, rule, exempt, level: 'warning',
-						description: `Primary Key Dimensions (${dimNames}) in ${view._view} are not hidden`,
+						description: `Primary Key Dimensions (${dimNames}) in ${view.$name} are not hidden`,
 						hint: `If you want the column to be user-facing, make it the sql for both a hidden Primary Key Dimension, and a separate non-hidden dimension.`,
 					});
 					continue;
 				} else {
 					messages.push({
-						location, path, rule, level: 'info',
-						description: `Primary Key Dimensions found in ${view._view} are all hidden`,
+						location, path, rule, level: 'verbose',
+						description: `Primary Key Dimensions found in ${view.$name} are all hidden`,
 					});
 				}
 			}
@@ -128,9 +142,9 @@ module.exports = function(
 					continue;
 				}
 				messages.push({
-					location, path, level: 'info',
+					location, path, level: 'verbose',
 					primaryKey: pkNamingConvention(pkDimension)[2],
-					view: view._view,
+					view: view.$name,
 					primaryKeys: pkDimensions.map(pkNamingConvention).map((match) => match[2]).join(', '),
 				});
 			}

@@ -13,7 +13,7 @@ describe('Rules', () => {
 
 		let passMessageK1 = {
 			rule: 'K1',
-			level: 'info',
+			level: 'verbose',
 		};
 
 		it('should pass if any pk is defined using [0-9]pk_.* or pk[0-9]_.*', () => {
@@ -88,7 +88,7 @@ describe('Rules', () => {
 	describe('K2', () => {
 		let passMessageK2 = {
 			rule: 'K2',
-			level: 'info',
+			level: 'verbose',
 		};
 
 		let failMessageK2 = {
@@ -147,7 +147,7 @@ describe('Rules', () => {
 	describe('K3', () => {
 		let passMessageK3 = {
 			rule: 'K3',
-			level: 'info',
+			level: 'verbose',
 		};
 
 		let failMessageK3 = {
@@ -182,7 +182,7 @@ describe('Rules', () => {
 	describe('K4', () => {
 		let passMessageK4 = {
 			rule: 'K4',
-			level: 'info',
+			level: 'verbose',
 		};
 
 		let failMessageK4 = {

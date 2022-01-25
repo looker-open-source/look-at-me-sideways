@@ -12,7 +12,8 @@ const defaultProcess = process;
  * @param {string=}	options.onParserError - Set to "fail" to indicate that LookML parsing errors should fail the linter. By default, parsing errors are logged and ignored.
  * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
  * @param {string=}	options.source - An optional glob specifying which files to read
- * @param {string=}	options.projectName - An optional name for the project, used to generate links back to the project in mardown output
+ * @param {string=}	options.manifest - An override/alternative for the contents of the manifest file
+ * @param {string=}	options.projectName - An optional name for the project, if not specified in the manifest, used to generate links back to the project in mardown output
  * @param {string=}	options.dateOutput - Set to "none" to skip printing the date in the issues.md
  * @param {*=}		options.allowCustomRules - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules
  * @param {*=}		options.jenkins - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
@@ -53,55 +54,58 @@ module.exports = async function(
 		});
 		const path = require('path');
 		const parser = require('lookml-parser');
-		const asyncTemplates = require('./lib/templates.js');
 		const checkCustomRule = require('./lib/custom-rules.js');
+
+		const cwd = options.cwd || process.cwd()
 
 		console.log('Parsing project...');
 		const project = await parser.parseFiles({
 			source: options.source,
 			conditionalCommentString: 'LAMS',
 			fileOutput: 'array',
-			cwd: options.cwd || process.cwd(),
-			console: {
-				log: (msg) => { },
-				warn: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-warning'}), // LAMS warnings should not abort the deploy
-				error: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-error'}), // LAMS errors should abort the deploy
-			},
+			cwd,
+			// console: {
+			// 	log: (msg) => { },
+			// 	warn: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-warning'}),
+			// 	error: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-error'}),
+			// },
 		});
-		if (project.errors) {
-			console.log(project.errors);
-			lamsMessages = lamsMessages.concat(project.errors.map((e) =>
-				({message: e && e.message || e, level: 'lams-error'}),
-			));
-			if (options.onParserError === 'fail') {
-				const parserErrorMessage = 'The LookML Parser is unable to parse this file.';
-				messages = messages.concat(project.errors.map((e) =>
-					({
-						rule: 'LookML Parser Error',
-						description: parserErrorMessage,
-						path: e._file_path,
-						location: e._file_rel,
-						message: e && e.message || e,
-						level: 'error',
-					}
-					),
-				));
-			}
-			console.error('> Issues occurred during parsing (containing files will not be considered):');
-			project.errorReport();
-		}
-		if (project.error) {
+		if (project.error) { //Fatal error
 			throw (project.error);
 		}
+		if (project.errors) {
+			console.error('> Issues occurred during parsing (containing files will not be considered. See messages for details.)');
+			messages = messages.concat(project.errors.map((e) => {
+				e = e.error || e
+				const messageDefault = {
+					rule: 'P0',
+					level: options.onParserError === 'info' ? 'info' : 'error',
+					message: `Error during parsing: ${e.message || e}`,
+					path: e.$file_path,
+					location: e.$file_rel,
+				}
+				if(e.name === 'SyntaxError'){
+					return {
+						...messageDefault,
+						rule: 'P1',
+						message: `The LookML Parser encounterd a syntax error in the file ${e.$file_path}.`,
+						hint: e.message + "\n" + e.context,
+					}
+				}
+				return messageDefault
+			}));
+		}
+		console.log('> Parsing done!');
+
+		project.manifest = {
+			...(project.manifest||{}),
+			...(options.manifest||{})
+			}
 		project.name = false
 			|| project.manifest && project.manifest.project_name
 			|| options.projectName
 			|| (options.cwd || process.cwd() || '').split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
 			|| 'unknown_project';
-		if (project.name === 'look-at-me-sideways') {
-			lamsMessages.push({level: 'lams-warning', message: 'Consider adding a manifest.lkml file to your project to identify the project_name'});
-		}
-		console.log('> Parsing done!');
 
 		console.log('Checking rules... ');
 		let rules = fs.readdirSync(path.join(__dirname, 'rules')).map((fileName) => fileName.match(/^(.*)\.js$/)).filter(Boolean).map((match) => match[1]);
@@ -114,10 +118,17 @@ module.exports = async function(
 		console.log('> Rules done!');
 
 		if (project.manifest && project.manifest.custom_rules) {
-			console.warn('\x1b[33m%s\x1b[0m', 'Legacy (Javascript) custom rules may be removed in a future major version!');
-			console.log('Checking legacy custom rules...');
-			let get = options.get || require('./lib/https-get.js');
-			if (options.allowCustomRules !== undefined) {
+			console.warn('\x1b[33m%s\x1b[0m', 'Legacy (Javascript) custom rules are unsafe and may be removed in a future major version!');
+			console.log('For details, see https://looker-open-source.github.io/look-at-me-sideways/customizing-lams.html');
+			if (options.allowCustomRules === undefined) {
+				console.warn([
+					'> Your project specifies custom Javascript-based rules. Run LAMS with `--allow-custom-rules`',
+					'if you want to allow potentially unsafe local execution of this remotely-defined Javascript code:',
+				].concat(project.manifest.custom_rules).join('\n  '));
+
+			} else {
+				console.log('Checking legacy custom rules...');
+				let get = options.get || require('./lib/https-get.js');
 				let requireFromString = require('require-from-string');
 				let customRuleRequests = [];
 				project.manifest.custom_rules.forEach(async (url, u) => {
@@ -130,23 +141,23 @@ module.exports = async function(
 							prependPaths: path.resolve(__dirname, './rules'),
 						});
 						let result = rule(project);
-						messages = messages.concat(result.messages.map((msg) => ({rule: `Custom Rule ${u}`, ...msg})));
+						messages = messages.concat(result.messages.map((msg) => ({
+							rule: `LCR ${u}`,
+							level: 'error',
+							...msg
+						})));
 					} catch (e) {
 						let msg = `URL #${u}: ${e && e.message || e}`;
 						console.error('> ' + msg);
-						lamsMessages.push({
-							level: 'lams-error',
-							message: `An error occurred while checking custom rule in ${msg}`,
+						messages.push({
+							rule: 'LAMS1',
+							level: 'error',
+							message: `An error occurred while checking legacy custom rule in ${msg}`,
 						});
 					}
 				});
 				await Promise.all(customRuleRequests).catch(() => { });
 				console.log('> Legacy custom rules done!');
-			} else {
-				console.warn([
-					'> Your project specifies custom rules. Run LAMS with `--allow-custom-rules`',
-					'if you want to allow local execution of this remotely-defined Javascript code:',
-				].concat(project.manifest.custom_rules).join('\n  '));
 			}
 		}
 
@@ -161,63 +172,39 @@ module.exports = async function(
 		let errors = messages.filter((msg) => {
 			return msg.level === 'error' && !msg.exempt;
 		});
-		let warnings = messages.filter((msg) => {
-			return msg.level === 'warning' && !msg.exempt;
-		});
-		let lamsErrors = messages.filter((msg) => {
-			return msg.level === 'lams-errors' && !msg.exempt;
-		});
+		// let warnings = messages.filter((msg) => {
+		// 	return msg.level === 'warning' && !msg.exempt;
+		// });
 
-		const buildStatus = (errors.length || warnings.length || lamsErrors.length) ? 'FAILED' : 'PASSED';
-		console.log(`BUILD ${buildStatus}: ${errors.length} errors and ${warnings.length} warnings found. Check .md files for details.`);
-
-		if (options.outputToCli) {
-			let maxArrayLength =
-				!isNaN(options.outputToCli) ? parseInt(options.outputToCli)
-					: options.outputToCli === 'null' ? null
-						: 100;
-			if (errors.length) {
-				console.log('Errors:');
-				console.dir(errors, {maxArrayLength});
-			}
-			if (warnings.length) {
-				console.log('Warnings:');
-				console.dir(warnings, {maxArrayLength});
-			}
-			if (lamsErrors.length) {
-				console.log('LAMS Errors:');
-				console.dir(lamsErrors, {maxArrayLength});
+		const outputModes = 
+			options.jenkins ? "jenkins,markdown"
+			: options.output ? options.output
+			: 'markdown';
+		for(let output of outputModes.split(',')){
+			switch(output){
+				case '': break;
+				case 'markdown':
+					const {dateOutput} = options
+					await outputMarkdown(messages,{dateOutput});
+					break;
+				case 'markdown-developer':
+					await outputDeveloperMarkdown(messages);
+					break;
+				case 'jenkins':
+					await outputJenkins(messages);
+					break;
+				case 'lines':
+					const verbose = options.verbose || false;
+					await outputLines(messages,{verbose});
+					break;
+				case 'legacy-cli':
+					await outputLegacyCli(messages); 
+					break;
+				default:
+					console.warn(`Unrecognized output mode: ${output}`);
 			}
 		}
-
-		let jobURL;
-		if (options.jenkins) {
-			try {
-				jobURL = process.env.BUILD_URL;
-			} catch (e) {
-				// silent
-			}
-			let json = JSON.stringify({
-				buildStatus: buildStatus,
-				errors: errors.length,
-				warnings: warnings.length,
-				lamsErrors: lamsErrors.length,
-			});
-			fs.writeFileSync('results.json', json, 'utf8');
-		}
-
-		console.log('Writing summary files...');
-		const templates = await asyncTemplates;
-		fs.writeFileSync('developer.md', templates.developer({messages}).replace(/\n\t+/g, '\n'));
-		console.log('> Developer index done');
-		fs.writeFileSync('issues.md', templates.issues({
-			messages,
-			jobURL,
-			dateOutput: options.dateOutput,
-		}).replace(/\n\t+/g, '\n'));
-		console.log('> Issue summary done');
-
-		console.log('> Summary files done!');
+		
 		if (tracker.enabled) {
 			await Promise.race([
 				tracker.track({messages, errors: lamsMessages}),
@@ -248,4 +235,87 @@ module.exports = async function(
 		}
 		process.exit(1);
 	}
+
+	return;
+
+	async function outputJenkins(messages){
+		let errors = messages.filter((msg) => {
+			return msg.level === 'error'
+		});
+		const buildStatus = errors.length ? 'FAILED' : 'PASSED';
+		console.log(`BUILD ${buildStatus}: ${errors.length} errors found. Check .md files for details.`);
+		let jobURL;
+		if (options.jenkins) {
+			try {
+				jobURL = process.env.BUILD_URL;
+			} catch (e) {
+				// silent
+			}
+			let json = JSON.stringify({
+				buildStatus: buildStatus,
+				errors: errors.length,
+				warnings: warnings.length,
+				lamsErrors: lamsErrors.length,
+			});
+			fs.writeFileSync('results.json', json, 'utf8');
+		}
+	}
+	
+	async function outputMarkdown(messsages, {dateOutput}){
+		console.log('Writing issues.md...');
+		const asyncTemplates = require('./lib/templates.js');
+		const templates = await asyncTemplates;
+		const jobURL = process.env && provess.env.BUILD_URL || undefined; 
+		fs.writeFileSync('issues.md', templates.issues({
+			messages,
+			jobURL,
+			dateOutput,
+		}).replace(/\n\t+/g, '\n'));
+		console.log('> issues.md done');
+	}
+	
+	async function outputDeveloperMarkdown(messages,{console=defaultConsole}){
+		console.log('Writing developer.md files...');
+		const asyncTemplates = require('./lib/templates.js');
+		const templates = await asyncTemplates;
+		fs.writeFileSync('developer.md', templates.developer({messages}).replace(/\n\t+/g, '\n'));
+		console.log('> developer.md done');
+	}
+
+	function outputLegacyCli(mesages) {
+		let maxArrayLength = 5000;
+		let errors = messages.filter((msg) => {
+			return msg.level === 'error'
+		});
+		if (errors.length) {
+			console.log('Errors:');
+			console.dir(errors, {maxArrayLength});
+		}
+	}
+
+	async function outputLines(messages,{verbose}){
+		const cols = {
+			level: {header:'',width:3},
+			rule: {header:'Rule', width:7},
+			location: {header:'Location',width:47},
+			description: {header:'Description'}
+		};
+		console.log(Object.values(cols).map(col=>col.header.padEnd(col.width||0)).join('\t'))
+		for(message of messages){
+			if(message.level === "verbose" && !verbose){continue}
+			const level = (
+				message.level == "verbose" ? "💬" :  
+				message.level == "info" ? "🛈" :
+				message.level == "error" ? "❌" :
+				typeof message.level == "string" ? message.level :
+				"").slice(0,cols.level.width).padEnd(cols.level.width,' ');
+			const rule = (message.rule || '').slice(0,cols.rule.width).padEnd(cols.rule.width,'.');
+			const location = (message.location || '')
+				.replace(/model:|view:|explore:|join:|dimension:|measure:|filter:/g,match=>match[0]+":")
+				.slice(0,cols.location.width).padEnd(cols.location.width,'.');
+			const description = message.description || '';
+			console.log([level,rule,location,description].join('\t'));
+		}
+	}
+
 };
