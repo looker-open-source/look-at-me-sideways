@@ -32,7 +32,7 @@ module.exports = function(
 				if (!field.hidden && !field.description) {
 					ok = false;
 					messages.push({
-						location, path, rule, exempt, level: 'warning',
+						location, path, rule, exempt, level: 'error',
 						description: `${location} is missing a description`,
 						hint: 'Either apply a description or hide it',
 					});

@@ -32,7 +32,7 @@ module.exports = function(
 				if ( field.view_label !== undefined) {
 					ok = false;
 					messages.push({
-						location, path, rule, exempt, level: 'warning',
+						location, path, rule, exempt, level: 'error',
 						description: `${location} contains a field-level view_label "${field.view_label}"`,
 						hint: 'If specific fields require different view_labels, consider splitting them out into their own field-only view(s) and applying a `label` there',
 					});

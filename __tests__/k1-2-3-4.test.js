@@ -153,7 +153,7 @@ describe('Rules', () => {
 		let failMessageK3 = {
 			rule: 'K3',
 			exempt: false,
-			level: 'warning',
+			level: 'error',
 		};
 
 		it('should pass if pks are defined first in view file', () => {
@@ -167,7 +167,7 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(failMessageK3);
 		});
 
-		it('should warn if pks are not defined first in view file', () => {
+		it('should error if pks are not defined first in view file', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
@@ -188,7 +188,7 @@ describe('Rules', () => {
 		let failMessageK4 = {
 			rule: 'K4',
 			exempt: false,
-			level: 'warning',
+			level: 'error',
 		};
 
 		it('should pass if all pks are hidden', () => {
@@ -202,7 +202,7 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(failMessageK4);
 		});
 
-		it('should warn if any pk is not hidden', () => {
+		it('should error if any pk is not hidden', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;

@@ -33,7 +33,7 @@ module.exports = function(
 				if (references.length) {
 					ok = false;
 					messages.push({
-						location, path, rule, exempt, level: 'warning',
+						location, path, rule, exempt, level: 'error',
 						description:
 							references.slice(0, 3).join(', ')
 							+ (references.length > 3 ? '...' : '')

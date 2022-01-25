@@ -95,7 +95,7 @@ module.exports = function(
 					let dimension = dimensions[d]
 					if(!pkNamingConvention(dimension)){
 						messages.push({
-							location, path, rule, exempt, level: 'warning',
+							location, path, rule, exempt, level: 'error',
 							description: `Primary Key Dimensions in ${view.$name} are not declared before other dimensions`,
 						});
 						break;
@@ -104,7 +104,7 @@ module.exports = function(
 				// if (pkDimensions.reduce(((min, x) => x._n < min ? x._n : min), 99) !== 0 ||
 				// 	pkDimensions.reduce(((max, x) => x._n > max ? x._n : max), 0) !== pkDimensions.length - 1) {
 				// 	messages.push({
-				// 		location, path, rule, exempt, level: 'warning',
+				// 		location, path, rule, exempt, level: 'error',
 				// 		description: `Primary Key Dimensions in ${view.$name} are not declared before other dimensions`,
 				// 	});
 				// }
@@ -124,7 +124,7 @@ module.exports = function(
 						|| getExemption(file, rule);
 					let dimNames = badDims.map((dim) => dim.$name).join(', ');
 					messages.push({
-						location, path, rule, exempt, level: 'warning',
+						location, path, rule, exempt, level: 'error',
 						description: `Primary Key Dimensions (${dimNames}) in ${view.$name} are not hidden`,
 						hint: `If you want the column to be user-facing, make it the sql for both a hidden Primary Key Dimension, and a separate non-hidden dimension.`,
 					});

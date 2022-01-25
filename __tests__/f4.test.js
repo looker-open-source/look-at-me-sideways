@@ -6,99 +6,99 @@ const {parse} = require('lookml-parser');
 
 describe('Rules', () => {
 	describe('F4', () => {
-		let warnMessageF4 = {
+		let errorMessageF4 = {
 			rule: 'F4',
 			exempt: false,
-			level: 'warning',
+			level: 'error',
 		};
 
-		it('should not warn if there are no files', () => {
+		it('should not error if there are no files', () => {
 			let result = rule(parse(``));
-			expect(result).not.toContainMessage(warnMessageF4);
+			expect(result).not.toContainMessage(errorMessageF4);
 		});
 
-		it('should not warn if there are no views', () => {
+		it('should not error if there are no views', () => {
 			let result = rule(parse(` files:{} files:{}`));
-			expect(result).not.toContainMessage(warnMessageF4);
+			expect(result).not.toContainMessage(errorMessageF4);
 		});
 
-		it('should not warn for a view with no fields', () => {
+		it('should not error for a view with no fields', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {}
 			}`));
-			expect(result).not.toContainMessage(warnMessageF4);
+			expect(result).not.toContainMessage(errorMessageF4);
 		});
 
-		it('should warn for a dimension with no description and no hidden', () => {
+		it('should error for a dimension with no description and no hidden', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					dimension: bar {}
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
-		it('should warn for a dimension with no description and hidden:no', () => {
+		it('should error for a dimension with no description and hidden:no', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					dimension: bar { hidden: no }
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
-		it('should warn for a dimension with an empty string description', () => {
+		it('should error for a dimension with an empty string description', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					dimension: bar { description: "" }
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
-		it('should not warn for a dimension with hidden:yes', () => {
+		it('should not error for a dimension with hidden:yes', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					dimension: bar { hidden: yes }
 				}
 			}`));
-			expect(result).not.toContainMessage(warnMessageF4);
+			expect(result).not.toContainMessage(errorMessageF4);
 		});
 
-		it('should not warn for a dimension with a non-blank description', () => {
+		it('should not error for a dimension with a non-blank description', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					dimension: bar { description: "Barry bar" }
 				}
 			}`));
-			expect(result).not.toContainMessage(warnMessageF4);
+			expect(result).not.toContainMessage(errorMessageF4);
 		});
 
-		it('should warn for measures', () => {
+		it('should error for measures', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					measure: bar {}
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
-		it('should warn for filters', () => {
+		it('should error for filters', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					filter: bar {}
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
-		it('should warn for parameters', () => {
+		it('should error for parameters', () => {
 			let result = rule(parse(` files:{} files:{
 				view: foo {
 					parameter: bar {}
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
 		it('should not error for an F4 exempted view', () => {
@@ -108,7 +108,7 @@ describe('Rules', () => {
 					measure: bar { type:count }
 				}
 			}`));
-			expect(result).not.toContainMessage(warnMessageF4);
+			expect(result).not.toContainMessage(errorMessageF4);
 		});
 
 		it('should not error for an F4 exempted field', () => {
@@ -120,7 +120,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).not.toContainMessage(warnMessageF4);
+			expect(result).not.toContainMessage(errorMessageF4);
 		});
 
 		it('should error for an F4 exempted view if no reason is specified', () => {
@@ -130,7 +130,7 @@ describe('Rules', () => {
 					measure: bar { type:count }
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
 		it('should error for an otherwise exempted view', () => {
@@ -140,7 +140,7 @@ describe('Rules', () => {
 					measure: bar { type: count }
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 
 		it('should error for an otherwise exempted field', () => {
@@ -152,7 +152,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(warnMessageF4);
+			expect(result).toContainMessage(errorMessageF4);
 		});
 	});
 });

@@ -140,14 +140,14 @@ module.exports = function(
 
 				if (selections[actualPkCount].expression !== '[sep]') {
 					messages.push({
-						location, path, rule: 'T8', level: 'warning', exempt: exempt('T8') || exempt('T2'),
+						location, path, rule: 'T8', level: 'error', exempt: exempt('T8') || exempt('T2'),
 						description: `Primary Key columns/selectAliases in ${view.$name} should finish with ---`,
 					});
 					// no `continue;` Allow further rule checks to proceed
 				}
 				if (!groupings.length) {
 					messages.push({
-						location, path, rule: 'T6', level: 'warning', exempt: exempt('T6') || exempt('T2'),
+						location, path, rule: 'T6', level: 'error', exempt: exempt('T6') || exempt('T2'),
 						description: `LAMS cannot currently enforce rule T6. Please use a T6 exemption in ${view.$name} to communicate whether/how the rule is followed in "${snippet}..."`,
 					});
 					continue;

@@ -9,7 +9,6 @@ describe('Rules', () => {
 	describe('T2+', () => {
 		let info = {level: 'info'};
 		let error = {level: 'error'};
-		let warning = {level: 'warning'};
 		let exempt = {exempt: expect.any(String)};
 		let r = {
 			pkColumnsRequired: {rule: 'T2'},
@@ -97,7 +96,7 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...exempt, ...r.pkColumnsRequired});
 		});
 
-		it('should info and not warn/error for single-column transformations', () => {
+		it('should info and not error/error for single-column transformations', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT MAX(id)
@@ -105,11 +104,10 @@ describe('Rules', () => {
 				;; } }
 			}`));
 			expect(result).toContainMessage({...info, ...r.singleColumnExemption});
-			expect(result).not.toContainMessage({...warning});
 			expect(result).not.toContainMessage({...error});
 		});
 
-		it('should info and not warn/error for single-table SELECT *+ transformations', () => {
+		it('should info and not error/error for single-table SELECT *+ transformations', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT *, DATE_DIFF(seconds, start, end) as duration
@@ -117,11 +115,10 @@ describe('Rules', () => {
 				;; } }
 			}`));
 			expect(result).toContainMessage({...info, ...r.starFromSingleTableExemption});
-			expect(result).not.toContainMessage({...warning});
 			expect(result).not.toContainMessage({...error});
 		});
 
-		it('should not warn/error for a transformation containing correct pk columns', () => {
+		it('should not error/error for a transformation containing correct pk columns', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
@@ -133,7 +130,6 @@ describe('Rules', () => {
 					GROUP BY 1,2
 				;; } }
 			}`));
-			expect(result).not.toContainMessage({...warning});
 			expect(result).not.toContainMessage({...error});
 		});
 
@@ -167,7 +163,7 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...error, ...r.pkColumnsFirst});
 		});
 
-		it('should warn for a derived table missing the pk separator', () => {
+		it('should error for a derived table missing the pk separator', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
@@ -178,10 +174,10 @@ describe('Rules', () => {
 					GROUP BY 1,2
 				;; } }
 			}`));
-			expect(result).toContainMessage({...warning, ...r.pkSeparator});
+			expect(result).toContainMessage({...error, ...r.pkSeparator});
 		});
 
-		it('should warn (and suggest an exemption) for ungrouped trasformations that it can\'t enforce', () => {
+		it('should error (and suggest an exemption) for ungrouped trasformations that it can\'t enforce', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
@@ -195,7 +191,7 @@ describe('Rules', () => {
 					  ON events.session_id = sessions.id
 				;; } }
 			}`));
-			expect(result).toContainMessage({...warning, ...r.ungroupedQueries});
+			expect(result).toContainMessage({...error, ...r.ungroupedQueries});
 		});
 
 		it('should error for grouped transformations that don\'t use a group as the first PK', () => {
@@ -245,7 +241,7 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...error, ...r.continueWithWindow});
 		});
 
-		it('should not warn/error for ordinal-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
+		it('should not error/error for ordinal-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
@@ -257,11 +253,10 @@ describe('Rules', () => {
 					GROUP BY 1,3
 				;; } }
 			}`));
-			expect(result).not.toContainMessage({...warning});
 			expect(result).not.toContainMessage({...error});
 		});
 
-		it('should not warn/error for expression-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
+		it('should not error/error for expression-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT
@@ -273,7 +268,6 @@ describe('Rules', () => {
 					GROUP BY user_id, date
 				;; } }
 			}`));
-			expect(result).not.toContainMessage({...warning});
 			expect(result).not.toContainMessage({...error});
 		});
 

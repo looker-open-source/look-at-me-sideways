@@ -8,20 +8,19 @@ describe('Rules', () => {
 	describe('E2', () => {
 		let info = {level: 'info'};
 		let error = {level: 'error'};
-		let warning = {level: 'warning'};
 		let e2 = {rule: 'E2'};
 
 		it('should pass if there are no models', () => {
 			let result = rule(parse(`view: foo{}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
 		it('should pass if there are no explores', () => {
 			let result = rule(parse(`model: foo {}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -30,7 +29,7 @@ describe('Rules', () => {
 				explore: orders {}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -43,7 +42,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -57,7 +56,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -73,7 +72,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -88,7 +87,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -193,7 +192,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -208,7 +207,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -298,7 +297,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -312,7 +311,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -326,7 +325,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e2, ...info});
-			expect(result).not.toContainMessage(warning);
+			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
 	});
