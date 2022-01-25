@@ -202,15 +202,11 @@ describe('CLI', () => {
 			rule: 'baz',
 			exempt: false,
 			level: 'info',
-		}, {
-			rule: 'bat',
-			exempt: 'My reason',
-			level: 'warning',
-		}];
+		},
+		];
 		tracker.track({messages, errors});
 		expect(spies.httpsRequestWrite).toHaveBeenCalledWith(`v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&cd1=834b0d7807e798000493db52fd650814e534a8f742a1c5a58cbb7b42879696e0&cd2=&ec=Run&ea=End
 			v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&ec=Rule%20Result&ea=foo%20error&el=false&ev=2&cd3=foo&ni=1
-			v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&ec=Rule%20Result&ea=baz%20info&el=false&ev=1&cd3=baz&ni=1
-			v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&ec=Rule%20Result&ea=bat%20warning&el=My%20reason&ev=1&cd3=bat&ni=1`.replace(/\t+/g, ''));
+			v=1&an=LAMS&av=${appVersion}&tid=test&cid=834b0d78-07e7-4800-8493-db52fd650814&t=event&ec=Rule%20Result&ea=baz%20info&el=false&ev=1&cd3=baz&ni=1`.replace(/\t+/g, ''));
 	});
 });
