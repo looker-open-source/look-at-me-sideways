@@ -300,8 +300,17 @@ module.exports = async function(
 			location: {header:'Location',width:47},
 			description: {header:'Description'}
 		};
+		const levelGrouping = {
+			info: 1,
+			verbose: 1,
+			error: 2
+		}
+		let sortedMessages = messages.sort((a,b)=>{
+			(levelGrouping[a.level]||0)-(levelGrouping[b.level]||0)
+			|| (a.rule||'').localeCompare(b.rule||'')
+		})
 		console.log(Object.values(cols).map(col=>col.header.padEnd(col.width||0)).join('\t'))
-		for(message of messages){
+		for(message of sortedMessages){
 			if(message.level === "verbose" && !verbose){continue}
 			const level = (
 				message.level == "verbose" ? "💬" :  
@@ -317,5 +326,4 @@ module.exports = async function(
 			console.log([level,rule,location,description].join('\t'));
 		}
 	}
-
 };
