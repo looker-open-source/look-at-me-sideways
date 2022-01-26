@@ -15,7 +15,9 @@ module.exports = function(
 		});
 		return {messages};
 	}
-	let ok = true;
+	let matchCt = 0;
+	let exemptionCt = 0;
+	let errorCt = 0;
 	let files = project.files || [];
 	for (let file of files) {
 		let views = Object.values(file.view || {});
@@ -26,11 +28,16 @@ module.exports = function(
 				.concat(Object.values(view.filter || {}))
 				.concat(Object.values(view.parameter || {}));
 			for (let field of fields) {
-				let location = `view:${view.$name}/field:${field.$name}`;
-				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
+				matchCt++;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
+				if (exempt) {
+					exemptionCt++; continue;
+				}
+
+				let location = `view:${view.$name}/${field.$type}:${field.$name}`;
+				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
 				if (!field.hidden && !field.description) {
-					ok = false;
+					errorCt++;
 					messages.push({
 						location, path, rule, exempt, level: 'error',
 						description: `${location} is missing a description`,
@@ -40,12 +47,10 @@ module.exports = function(
 			}
 		}
 	}
-	if (ok) {
-		messages.push({
-			rule, level: 'info',
-			description: `No field-level view-labels found`,
-		});
-	}
+	messages.push({
+		rule, level: 'info',
+		description: `Evaluated ${matchCt} fields, with ${exemptionCt} exempt and ${errorCt} erroring`,
+	});
 	return {
 		messages,
 	};

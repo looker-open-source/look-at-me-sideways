@@ -15,18 +15,28 @@ module.exports = function(
 		});
 		return {messages};
 	}
-	let ok = true;
+	let matchCt = 0;
+	let exemptionCt = 0;
+	let errorCt = 0;
 	let files = project.files || [];
 	for (let file of files) {
 		let views = Object.values(file.view || {});
 		for (let view of views) {
 			let fields = Object.values(view.measure || {});
 			for (let field of fields) {
+				if (field.type !== 'count') {
+					continue;
+				}
+				matchCt++;
+				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
+				if (exempt) {
+					exemptionCt++; continue;
+				}
+
 				let location = `view:${view.$name}/field:${field.$name}`;
 				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
-				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
-				if (field.type === 'count' && field.filters === undefined) {
-					ok = false;
+				if (field.filters === undefined) {
+					errorCt++;
 					messages.push({
 						location, path, rule, exempt, level: 'error',
 						description: `Type:count measure at ${location} does not have a filter applied`,
@@ -35,12 +45,10 @@ module.exports = function(
 			}
 		}
 	}
-	if (ok) {
-		messages.push({
-			rule, level: 'info',
-			description: `No type:count measures without a filter found`,
-		});
-	}
+	messages.push({
+		rule, level: 'info',
+		description: `Evaluated ${matchCt} count measures, with ${exemptionCt} exempt and ${errorCt} erroring`,
+	});
 	return {
 		messages,
 	};

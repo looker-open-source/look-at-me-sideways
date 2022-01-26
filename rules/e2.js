@@ -15,7 +15,9 @@ module.exports = function(
 		});
 		return {messages};
 	}
-	let ok = true;
+	let matchCt = 0;
+	let exemptionCt = 0;
+	let errorCt = 0;
 	let models = Object.values(project.model || {});
 	const pkRegex = /^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/;
 	const isFieldRef = (ref) => !ref.match(/^TABLE$|^SUPER$|^EXTENDED$|\.SQL_TABLE_NAME$/);
@@ -29,8 +31,13 @@ module.exports = function(
 			let path = `/projects/${project.name}/files/${model.$name}.model.lkml`;
 			let joins = Object.values(explore.join || {});
 			for (let join of joins) {
-				let location = `model:${model.$name}/explore:${explore.$name}/join:${join.$name}`;
+				matchCt++;
 				let exempt = getExemption(join, rule) || getExemption(explore, rule) || getExemption(model, rule);
+				if (exempt) {
+					exemptionCt++; continue;
+				}
+
+				let location = `model:${model.$name}/explore:${explore.$name}/join:${join.$name}`;
 				let joinSql = join.sql || join.sql_on || '';
 				let allRefs = (joinSql.match(/(?<=\${).*?(?=})/g)||[]).filter(isFieldRef);
 				let reducedSql = joinSql
@@ -44,7 +51,7 @@ module.exports = function(
 				let parensRegex = /\([\s\S]*?(?<!\\)\)/g;
 				if (reducedSql.match(parensRegex)) {
 					messages.push({
-						path, location, rule, level: 'info',
+						path, location, rule, level: 'verbose',
 						description: 'Equality constraints are only checked in the top-level of the ON clause (not within parentheses)',
 					});
 					while (reducedSql.match(parensRegex)) {
@@ -56,6 +63,7 @@ module.exports = function(
 					continue;
 				}
 				if (reducedSql.match(/\bOR\b/i)) {
+					errorCt++;
 					messages.push({
 						path, location, rule, exempt, level: 'error',
 						description: 'Compound equality constraints are only established by AND\'ed equality expressions. OR is not allowed.',
@@ -73,6 +81,7 @@ module.exports = function(
 					)
 					.filter(Boolean)
 					.filter(unique);
+				let ok = true;
 				for (let oneAlias of oneAliases) {
 					let pksForAlias = allRefs
 						.map((ref) => ref.split('.'))
@@ -125,15 +134,16 @@ module.exports = function(
 						}
 					}
 				}
+				if (!ok) {
+					errorCt++;
+				}
 			}
 		}
 	}
-	if (ok) {
-		messages.push({
-			rule, level: 'info',
-			description: 'All primary keys from `one` cardinality views apply equality constraints to all primary keys',
-		});
-	}
+	messages.push({
+		rule, level: 'info',
+		description: `Evaluated ${matchCt} joins, with ${exemptionCt} exempt and ${errorCt} erroring`,
+	});
 	return {
 		messages,
 	};

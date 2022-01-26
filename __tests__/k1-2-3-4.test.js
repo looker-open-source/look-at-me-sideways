@@ -59,7 +59,7 @@ describe('Rules', () => {
 				}
 			}
 			manifest: {rule_exemptions: {K1: "It's ok, exempt"}}`));
-			expect(result).toContainMessage({exempt: expect.any(String)});
+			expect(result).not.toContainMessage(failMessageK1);
 		});
 
 		it('should error if no pk is found and project is exempt from another rule', () => {

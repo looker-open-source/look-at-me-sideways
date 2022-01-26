@@ -7,7 +7,7 @@ const {parse} = require('lookml-parser');
 
 describe('Rules', () => {
 	describe('T2+', () => {
-		let info = {level: 'info'};
+		let verbose = {level: 'verbose'};
 		let error = {level: 'error'};
 		let exempt = {exempt: expect.any(String)};
 		let r = {
@@ -96,25 +96,25 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...exempt, ...r.pkColumnsRequired});
 		});
 
-		it('should info and not error/error for single-column transformations', () => {
+		it('should not error/error for single-column transformations', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT MAX(id)
 					FROM sessions
 				;; } }
 			}`));
-			expect(result).toContainMessage({...info, ...r.singleColumnExemption});
+			expect(result).toContainMessage({...verbose, ...r.singleColumnExemption});
 			expect(result).not.toContainMessage({...error});
 		});
 
-		it('should info and not error/error for single-table SELECT *+ transformations', () => {
+		it('should not error/error for single-table SELECT *+ transformations', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { derived_table: { sql:
 					SELECT *, DATE_DIFF(seconds, start, end) as duration
 					FROM sessions
 				;; } }
 			}`));
-			expect(result).toContainMessage({...info, ...r.starFromSingleTableExemption});
+			expect(result).toContainMessage({...verbose, ...r.starFromSingleTableExemption});
 			expect(result).not.toContainMessage({...error});
 		});
 

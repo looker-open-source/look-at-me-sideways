@@ -15,7 +15,9 @@ module.exports = function(
 		});
 		return {messages};
 	}
-	let ok = true;
+	let matchCt = 0;
+	let exemptionCt = 0;
+	let errorCt = 0;
 	let files = project.files || [];
 	for (let file of files) {
 		let views = Object.values(file.view || {});
@@ -28,10 +30,14 @@ module.exports = function(
 				.concat(Object.values(view.measure || {}))
 				.concat(Object.values(view.filter || {}));
 			for (let field of fields) {
-				let location = `view:${view.$name}/field:${field._dimension || field._measure || field._filter}`;
-				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
+				matchCt++;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
-				// TODO: Doublecheck the below matches the actual LookML parameters... I wrote the below without internet connectivity -FB
+				if (exempt) {
+					exemptionCt++; continue;
+				}
+
+				let location = `view:${view.$name}/${field.$type}:${field.$name}`;
+				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
 				[field.sql,
 					field.html,
 					field.label_from_parameter,
@@ -68,22 +74,20 @@ module.exports = function(
 						parts.pop();
 					}
 					if (parts.length > 1) {
-						ok = false;
+						errorCt++;
 						messages.push({
 							location, path, rule, exempt, level: 'error',
-							description: `${field._dimension || field._measure} references another view, ${parts[0]},  via ${match[0]}`,
+							description: `${field.$name} references another view, ${parts[0]},  via ${match[0]}`,
 						});
 					}
 				});
 			}
 		}
 	}
-	if (ok) {
-		messages.push({
-			rule, level: 'info',
-			description: `No cross-view references found`,
-		});
-	}
+	messages.push({
+		rule, level: 'info',
+		description: `Evaluated ${matchCt} fields, with ${exemptionCt} exempt and ${errorCt} erroring`,
+	});
 	return {
 		messages,
 	};

@@ -9,27 +9,34 @@ module.exports = function(
 	let exempt;
 	if (exempt = getExemption(project.manifest, rule)) {
 		messages.push({
-			rule, exempt, level: 'info', location: 'project',
+			rule, level: 'info', location: 'project',
 			path: `/projects/${project.name}/files/manifest.lkml`,
-			description: 'Project-level rule exemption',
+			description: `Project-level exemption: ${exempt}`,
 		});
 		return {messages};
 	}
-	let ok = true;
+	let matchCt = 0;
+	let exemptionCt = 0;
+	let errorCt = 0;
 	let files = project.files || [];
 
 	for (let file of files) {
 		let views = Object.values(file.view || {});
 		for (let view of views) {
-			let location = 'view: ' + view.$name;
-			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			if (!view.derived_table) {
 				continue;
 			}
+			matchCt++;
+			let exempt = getExemption(view.derived_table, rule) || getExemption(view, rule) || getExemption(file, rule);
+			if (exempt) {
+				exemptionCt++; continue;
+			}
+
+			let location = 'view: ' + view.$name;
+			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			if (!(view.derived_table.datagroup_trigger || view.derived_table.persist_for)
 				&& view.derived_table.sql_trigger_value) {
-				let exempt = getExemption(view.derived_table, rule) || getExemption(view, rule) || getExemption(file, rule);
-				ok = false;
+				errorCt++;
 				messages.push({
 					location, path, rule, exempt, level: 'error',
 					description: `Triggered PDTs should use datagroups.`,
@@ -38,12 +45,10 @@ module.exports = function(
 		}
 	}
 
-	if (ok) {
-		messages.push({
-			rule, level: 'info',
-			description: `No outdated derived table persistence constructs found.`,
-		});
-	}
+	messages.push({
+		rule, level: 'info',
+		description: `Evaluated ${matchCt} derived tables, with ${exemptionCt} exempt and ${errorCt} erroring`,
+	});
 
 	return {
 		messages,

@@ -12,8 +12,8 @@ module.exports = function(
 		if (globalExemptions[rule]) {
 			messages.push({
 				rule, level: 'info', location: 'project',
-				exempt: globalExemptions[rule],
 				path: `/projects/${project.name}/files/manifest.lkml`,
+				description: `Project-level exemption: ${globalExemptions[rule]}`,
 			});
 		} else {
 			allExempted = false;
@@ -25,10 +25,12 @@ module.exports = function(
 	const pkNamingConvention = (d) => d.$name.match(/^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/);
 	const unique = (x, i, arr) => arr.indexOf(x) === i;
 	let files = project.files || [];
+	let matchCt = 0;
 	for (let file of files) {
 		let rule;
 		let views = Object.values(file.view || {});
 		for (let view of views) {
+			matchCt++;
 			let location = 'view: ' + view.$name;
 			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			let pkDimensions = (Object.values(view.dimension || {})).filter(pkNamingConvention);
@@ -64,7 +66,7 @@ module.exports = function(
 			rule = 'K2';
 			if (!globalExemptions[rule]) {
 				let declaredNs = pkDimensions.map(pkNamingConvention).map((match) => match[1].replace('pk', '')).filter(unique);
-				let rule = 'K2';
+				// let rule = 'K2';
 				let exempt = getExemption(view, rule) || getExemption(file, rule);
 				if (declaredNs.length > 1) {
 					messages.push({
@@ -90,10 +92,10 @@ module.exports = function(
 			if (!globalExemptions[rule]) {
 				let exempt = getExemption(view, rule) || getExemption(file, rule);
 				let d;
-				for(d=0; d<pkDimensions.length; d++){
-					let dimensions = Object.values(view.dimension || {})
-					let dimension = dimensions[d]
-					if(!pkNamingConvention(dimension)){
+				for (d=0; d<pkDimensions.length; d++) {
+					let dimensions = Object.values(view.dimension || {});
+					let dimension = dimensions[d];
+					if (!pkNamingConvention(dimension)) {
 						messages.push({
 							location, path, rule, exempt, level: 'error',
 							description: `Primary Key Dimensions in ${view.$name} are not declared before other dimensions`,
@@ -101,17 +103,10 @@ module.exports = function(
 						break;
 					}
 				}
-				// if (pkDimensions.reduce(((min, x) => x._n < min ? x._n : min), 99) !== 0 ||
-				// 	pkDimensions.reduce(((max, x) => x._n > max ? x._n : max), 0) !== pkDimensions.length - 1) {
-				// 	messages.push({
-				// 		location, path, rule, exempt, level: 'error',
-				// 		description: `Primary Key Dimensions in ${view.$name} are not declared before other dimensions`,
-				// 	});
-				// }
-				if(d===pkDimensions.length){ //All initial dimensions were checked and the loop didn't break
+				if (d===pkDimensions.length) { // All initial dimensions were checked and the loop didn't break
 					messages.push({
-					location, path, rule, exempt, level: 'verbose',
-					description: `Primary Key Dimensions found in ${view.$name} are declared before other dimensions`,
+						location, path, rule, exempt, level: 'verbose',
+						description: `Primary Key Dimensions found in ${view.$name} are declared before other dimensions`,
 					});
 				}
 			}
@@ -150,6 +145,11 @@ module.exports = function(
 			}
 		}
 	}
+
+	messages.push({
+		rule: 'K1-4', level: 'info',
+		description: `Evaluated ${matchCt} views`,
+	});
 	return {
 		messages,
 	};

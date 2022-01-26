@@ -5,15 +5,22 @@ module.exports = function(
 	project,
 ) {
 	let messages = [];
-	let globalExemptions = {};
+	let ruleIds = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'];
+	let rules = {};
 	let allExempted = true;
-	for (let rule of ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10']) {
-		globalExemptions[rule] = getExemption(project.manifest, rule);
-		if (globalExemptions[rule]) {
+	for (let rule of ruleIds) {
+		rules[rule] = {
+			globallyExempt: getExemption(project.manifest, rule),
+			matches: 0,
+			exemptions: 0,
+			errors: 0,
+		};
+		if (rules[rule].globallyExempt) {
 			messages.push({
 				rule, level: 'info', location: 'project',
-				exempt: globalExemptions[rule],
+				exempt: rules[rule].globallyExempt,
 				path: `/projects/${project.name}/files/manifest.lkml`,
+				description: `Project-level exemption: ${rules[rule].globallyExempt}`,
 			});
 		} else {
 			allExempted = false;
@@ -34,13 +41,27 @@ module.exports = function(
 			if (!sql) {
 				continue;
 			}
-			let exempt = (rule) =>
-				view.derived_table && getExemption(view.derived_table, rule)
-				|| getExemption(view, rule);
+
+			let exempt = (ruleId) =>
+				getExemption(file, ruleId)
+				|| getExemption(view, ruleId)
+				|| view.derived_table && getExemption(view.derived_table, ruleId);
+
+			for (let rule of ruleIds) {
+				rules[rule].matches++;
+				if (exempt(rule)) {
+					rules[rule].exemptions++;
+				}
+			}
+
+			let rulesInMatch = {};
+			for (let r of ruleIds) {
+				rulesInMatch[r] = {errored: false};
+			}
 
 			// Initialize the "stuff to check" by removing any string literals, comments, & LookML
 			let remaining = sql
-				.replace(/\n\s*---\s*\n/g, ',[sep],')
+				.replace(/\n\s*-- ?--*\s*\n/g, ',[sep],') // Allow some flexibility in separator because --- is a syntax error in MySQL
 				.replace(new RegExp([
 					'[^\\\\\']+(\\\\.[^\\\\\']+)*\'',	// ' string literal
 					'`[^\\\\`]+(\\\\.[^\\\\`]+)*`',	// ` quoted name
@@ -69,16 +90,16 @@ module.exports = function(
 				if (current.match(/^\s*SELECT\s[^,]+(\bFROM|$)/)) {
 					// Single column selects exempt per T9
 					messages.push({
-						location, path, rule: 'T9', level: 'info',
-						description: `Single-column subquery (${snippet}...) in ${view.$name} exempt from rule T2 per exemption T9`,
+						location, path, rule: 'T9', level: 'verbose',
+						description: `Single-column subquery (${snippet}...) in ${view.$name} not subject to rule T2 per rule T9`,
 					});
 					continue;
 				}
 				if (current.match(/^\s*SELECT\s+\*[\s\S]*?\bFROM\b(?!.*?(,|\bJOIN\b))/)) {
 					// Single table *+projections selects exempt per T10
 					messages.push({
-						location, path, rule: 'T10', level: 'info',
-						description: `Single-table subquery (${snippet}...) in ${view.$name} exempt from rule T2 per exemption T9`,
+						location, path, rule: 'T10', level: 'verbose',
+						description: `Single-table subquery (${snippet}...) in ${view.$name} not subject to rule T2 per rule T10`,
 					});
 					continue;
 				}
@@ -105,12 +126,15 @@ module.exports = function(
 					.filter(Boolean);
 				const pks = selections.filter((s) => pkNamingConvention(s.alias));
 				const actualPkCount = pks.length;
-				if (actualPkCount === 0) {
-					messages.push({
-						location, path, rule: 'T2', level: 'error', exempt: exempt('T2'),
-						description: `No Primary Key columns/selectAliases found in ${view.$name}`,
-					});
-					continue;
+				if (!exempt('')) {
+					if (actualPkCount === 0) {
+						rulesInMatch.T2.errored = true;
+						messages.push({
+							location, path, rule: 'T2', level: 'error', exempt: exempt('T2'),
+							description: `No Primary Key columns/selectAliases found in ${view.$name}`,
+						});
+						continue;
+					}
 				}
 				const pkCountDeclarations = pks
 					.map((p) => parseInt(p.alias.match(/\d+/)[0]))
@@ -195,7 +219,16 @@ module.exports = function(
 			}
 		}
 	}
-	messages = messages.filter((msg) => !globalExemptions[msg.rule] || msg.location == 'project');
+	// messages = messages.filter((msg) => !rules[msg.rule].globallyExempt || msg.location == 'project');
+	for (let rule of ruleIds) {
+		if (rule==='T9' || rule=='T10') {
+			continue; // These rules are actually exceptions and not evaluated per se
+		}
+		messages.push({
+			rule, level: 'info',
+			description: `Evaluated ${rules[rule].matches} views, with ${rules[rule].exemptions} exempt`,
+		});
+	}
 	return {
 		messages,
 	};

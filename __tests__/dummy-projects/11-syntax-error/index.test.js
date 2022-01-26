@@ -16,28 +16,28 @@ describe('Projects', () => {
 		it("should not error out", ()=> {
 			expect(console.error).not.toHaveBeenCalled()
 		});
-		it("it should error twice on rule types_required for model:bad", ()=> {
+		it("it should report an error-level message for the file that couldn't be parsed", ()=> {
 			expect({messages}).toContainMessage({
-				rule: "types_required",
-				level: "error",
-				location: "model:bad/view:bad_view/dimension:foo"
-			});
-			expect({messages}).toContainMessage({
-				rule: "types_required",
-				level: "error",
-				location: "model:bad/view:bad_view/measure:bar"
+				rule: "P1",
+				level: "error"
 			});
 		});
-		it("it should not error on rule types_required for model:ok", ()=> {
-			expect({messages}).not.toContainMessage({
-				rule: "types_required",
+		it("it should still evaluate other files and error for model:bad", ()=> {
+			expect({messages}).toContainMessage({
+				rule: "E2",
 				level: "error",
-				location: "model:ok/view:ok_view/dimension:foo"
+				location: "model:bad/explore:bad/join:foo"
+			});
+		});
+		it("it should still evaluate other files and not error for model:ok", ()=> {
+			expect({messages}).toContainMessage({
+				rule: "E2",
+				level: "info",
 			});
 			expect({messages}).not.toContainMessage({
-				rule: "types_required",
+				rule: "E2",
 				level: "error",
-				location: "model:ok/view:ok_view/measure:bar"
+				location: "model:ok/explore:ok/join:foo"
 			});
 		});
 	});
