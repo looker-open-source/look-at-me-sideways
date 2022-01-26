@@ -179,7 +179,7 @@ module.exports = async function(
         if (project.manifest && project.manifest.rule) {
             console.log('Checking custom rules...');
             for (let rule of Object.values(project.manifest.rule)) {
-                console.log('> ' + rule._rule);
+                console.log('> ' + rule.$name);
                 messages = messages.concat(checkCustomRule(rule, project));
             }
             console.log('> Custom rules done!');
