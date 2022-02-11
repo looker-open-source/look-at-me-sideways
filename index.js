@@ -16,7 +16,7 @@ const defaultProcess = process;
  * @param {string=}	options.projectName - An optional name for the project, if not specified in the manifest, used to generate links back to the project in mardown output
  * @param {string=}	options.dateOutput - Set to "none" to skip printing the date in the issues.md
  * @param {*=}		options.allowCustomRules - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules
- * @param {string=}	options.output - Comma-separated string of output modes: markdown, markdown-developer, jenkins, lines, 
+ * @param {string=}	options.output - Comma-separated string of output modes: markdown, markdown-developer, jenkins, lines,
  * @param {*=}		options.jenkins - Deprecated. Use `output=jenkins,markdown` insead. Indicates that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
  * @param {object=} io - IO overrides, primarily for testing
  * @param {object=} io.console
@@ -127,7 +127,7 @@ module.exports = async function(
         console.log('Checking rules... ');
         let rules = fs.readdirSync(path.join(__dirname, 'rules')).map((fileName) => fileName.match(/^(.*)\.js$/)).filter(Boolean).map((match) => match[1]);
         for (let r of rules) {
-            try{
+            try {
                 console.log('> ' + r.toUpperCase());
                 let rule = require('./rules/' + r + '.js');
                 let result = rule(project);
@@ -137,7 +137,7 @@ module.exports = async function(
                     rule: 'LAMS1',
                     level: 'error',
                     description: `LAMS error evaluating rule ${r.toUpperCase()}: ${e.message || e}`,
-                })
+                });
             }
         }
         console.log('> Rules done!');

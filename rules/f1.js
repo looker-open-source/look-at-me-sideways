@@ -26,7 +26,7 @@ module.exports = function(
 			let location = `view:${view.$name}`;
 			if (!view.sql_table_name && !view.derived_table && !view.extends) {
 				messages.push({
-					location, path, rule:'F1', level: 'verbose',
+					location, path, rule: 'F1', level: 'verbose',
 					description: `Field-only view ${view.$name} is not subject to no-cross view references rule`,
 				});
 				continue;

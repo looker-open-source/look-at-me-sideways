@@ -7,7 +7,7 @@ const {parse} = require('lookml-parser');
 
 describe('Rules', () => {
 	describe('F1', () => {
-		let F1 = { rule: 'F1' };
+		let F1 = {rule: 'F1'};
 		let error = {level: 'error'};
 
 		it('should not error if there are no files', () => {

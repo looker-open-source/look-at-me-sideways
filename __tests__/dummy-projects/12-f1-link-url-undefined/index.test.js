@@ -12,7 +12,6 @@ describe('Projects', () => {
 		let messages
 		beforeAll( async () => {
 			messages = await lams(options,{process, console})
-			log(messages)
 		})
 		it("should not console error", async ()=> {
 			expect(console.error).not.toHaveBeenCalled()
