@@ -20,9 +20,15 @@ module.exports = function(
 	let errorCt = 0;
 	let files = project.files || [];
 	for (let file of files) {
+		let path = `/projects/${project.name}/files/${file.$file_path}`;
 		let views = Object.values(file.view || {});
 		for (let view of views) {
+			let location = `view:${view.$name}`;
 			if (!view.sql_table_name && !view.derived_table && !view.extends) {
+				messages.push({
+					location, path, rule:'F1', level: 'verbose',
+					description: `Field-only view ${view.$name} is not subject to no-cross view references rule`,
+				});
 				continue;
 			}
 			let fields = []
@@ -35,22 +41,23 @@ module.exports = function(
 				if (exempt) {
 					exemptionCt++; continue;
 				}
-
 				let location = `view:${view.$name}/${field.$type}:${field.$name}`;
-				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
 				[field.sql,
 					field.html,
-					field.label_from_parameter,
-					field.link && Object.values(field.link).map((o) => o.url).join(''),
-					field.link && Object.values(field.link).map((o) => o.url).join(''),
-					field.filter && Object.values(field.filter).map((o) => '{{' + o.field + '}}').join(''),
+					field.label_from_parameter && '{{' + field.label_from_parameter + '}}',
+					...[].concat(field.link||[]).map((link) => link.url),
+					...[].concat(field.link||[]).map((link) => link.icon_url),
+					// measure.*.filter has been deprecated and replaced by measure.*.filters, with a different syntax
+					// I am keeping this check around for historical consistency, but there should eventually be a rule
+					// to guard against the old syntax at all, and this could be updated accordingly.
+					...[].concat(field.filter||[]).map((filter) => '{{' + filter.field + '}}'),
 				].forEach((value) => {
 					if (!value || !value.replace) {
 						return;
 					}
 					let match = value
 						.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
-						.match(/(^|\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*($|%\}|\})/);
+						.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/);
 					let parts = ((match || [])[2] || '').split('.').filter(Boolean);
 					if (!parts.length) {
 						return;

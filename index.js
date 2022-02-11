@@ -127,10 +127,18 @@ module.exports = async function(
         console.log('Checking rules... ');
         let rules = fs.readdirSync(path.join(__dirname, 'rules')).map((fileName) => fileName.match(/^(.*)\.js$/)).filter(Boolean).map((match) => match[1]);
         for (let r of rules) {
-            console.log('> ' + r.toUpperCase());
-            let rule = require('./rules/' + r + '.js');
-            let result = rule(project);
-            messages = messages.concat(result.messages.map((msg) => ({rule: r, ...msg})));
+            try{
+                console.log('> ' + r.toUpperCase());
+                let rule = require('./rules/' + r + '.js');
+                let result = rule(project);
+                messages = messages.concat(result.messages.map((msg) => ({rule: r.toUpperCase(), ...(msg||{})})));
+            } catch (e) {
+                messages.push({
+                    rule: 'LAMS1',
+                    level: 'error',
+                    description: `LAMS error evaluating rule ${r.toUpperCase()}: ${e.message || e}`,
+                })
+            }
         }
         console.log('> Rules done!');
 
