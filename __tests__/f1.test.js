@@ -7,27 +7,24 @@ const {parse} = require('lookml-parser');
 
 describe('Rules', () => {
 	describe('F1', () => {
-		let failMessageF1 = {
-			rule: 'F1',
-			exempt: false,
-			level: 'error',
-		};
+		let F1 = {rule: 'F1'};
+		let error = {level: 'error'};
 
 		it('should not error if there are no files', () => {
 			let result = rule(parse(``));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error if there are no views', () => {
 			let result = rule(parse(`files:{} files:{}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for a view with no fields', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { sql_table_name: foo ;; }
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for a view with no table (a.k.a. field-only view)', () => {
@@ -36,7 +33,7 @@ describe('Rules', () => {
 					dimension: combine { sql: \${foo.amount} + \${bar.amount} ;; } 
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for a field with no references', () => {
@@ -46,7 +43,7 @@ describe('Rules', () => {
 					dimension: foo { sql: 1 ;; }
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should error for a base-table view with a cross-view reference', () => {
@@ -56,7 +53,7 @@ describe('Rules', () => {
 					dimension: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a derived-table view with a cross-view reference', () => {
@@ -66,7 +63,7 @@ describe('Rules', () => {
 					dimension: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for an extended view with a cross-view reference', () => {
@@ -76,7 +73,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a view with cross-view references in measures', () => {
@@ -86,7 +83,7 @@ describe('Rules', () => {
 					measure: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a view with cross-view references in filters', () => {
@@ -96,7 +93,7 @@ describe('Rules', () => {
 					filter: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should not error for an F1 exempted view', () => {
@@ -107,7 +104,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should error for an F1 exempted view if no reason is specified', () => {
@@ -118,7 +115,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for an otherwise exempted view', () => {
@@ -129,7 +126,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should not error for an F1 exempted field', () => {
@@ -142,7 +139,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should error for an otherwise exempted field', () => {
@@ -155,7 +152,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should not error for an F1 exempted project', () => {
@@ -168,7 +165,7 @@ describe('Rules', () => {
 				}
 			}
 			manifest: {rule_exemptions: {F1: "It is okay, this is extended"}}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should error for an otherwise exempted project', () => {
@@ -181,7 +178,7 @@ describe('Rules', () => {
 				}
 			}
 			files: manifest {rule_exemptions: {X1: "Different exemption"}}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in sql {{}}', () => {
@@ -191,7 +188,7 @@ describe('Rules', () => {
 					dimension: bar { sql: {{baz.bat}} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in sql {% %}', () => {
@@ -201,7 +198,7 @@ describe('Rules', () => {
 					dimension: bar { sql: {%parameter baz.bat %} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in html ${}', () => {
@@ -211,7 +208,7 @@ describe('Rules', () => {
 					dimension: bar { html: \${baz.bat} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in html {{}}', () => {
@@ -221,7 +218,7 @@ describe('Rules', () => {
 					dimension: bar { html: {{baz.bat}} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in html {% %}', () => {
@@ -231,7 +228,7 @@ describe('Rules', () => {
 					dimension: bar { html: {%parameter baz.bat %} ;; }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should not error for a field with a TABLE reference', () => {
@@ -241,7 +238,7 @@ describe('Rules', () => {
 					dimension: foo { sql: \${TABLE.foo} ;; }
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for references to its own default alias', () => {
@@ -252,7 +249,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${foo.bar} ;; }
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for 2-part ._sql references', () => {
@@ -263,7 +260,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{baz._sql}} ;;}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for 2-part ._value references', () => {
@@ -274,7 +271,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{baz._value}} ;;}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for 2-part ._name references', () => {
@@ -285,7 +282,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{baz._name}} ;;}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for 2-part ._parameter_value references', () => {
@@ -296,7 +293,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{bar._parameter_value}} ;;}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should error for 2-part ._in_query references', () => {
@@ -306,7 +303,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{bar._in_query}} ;;}
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should error for 3-part cross-view special-suffix references', () => {
@@ -316,7 +313,7 @@ describe('Rules', () => {
 					dimension: bar { sql: {{bat.baz._value}} ;;}
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF1);
+			expect(result).toContainMessage({...F1, ...error});
 		});
 
 		it('should not error for 3-part same-view special-suffix references', () => {
@@ -327,7 +324,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{foo.bar._value}} ;;}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for decimal numbers that look kind of like fields', () => {
@@ -338,7 +335,7 @@ describe('Rules', () => {
 					dimension: baz { type: yesno sql: \${bar} > 3.14;;}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for decimal numbers that look kind of like fields in liquid', () => {
@@ -349,7 +346,107 @@ describe('Rules', () => {
 					dimension: rot { sql: {% if value > 3.14 %} \${rad}/3.14 ||' rot' {% else %} \${rad}||' rad' {% endif %} ;;}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF1);
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should error for a field with a 2-part reference in label_from_parameter', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { label_from_parameter: baz.bat }
+				}
+			}`));
+			expect(result).toContainMessage({...F1, ...error});
+		});
+
+		it('should not error for a field with a 1-part reference in label_from_parameter', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { label_from_parameter: bat }
+				}
+			}`));
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should error for a field with a non-special-case 2-part reference in link > url', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { 
+						link: { url: "http://mysite.example.com/{{baz.bat}}" }
+					} 
+				}
+			}`));
+			expect(result).toContainMessage({...F1, ...error});
+		});
+
+		it('should error for a field with a non-special-case 2-part reference in link > icon_url', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { 
+						link: { icon_url: "http://mysite.example.com/{{baz.bat}}" }
+					} 
+				}
+			}`));
+			expect(result).toContainMessage({...F1, ...error});
+		});
+
+		it('should not error for a field with a 1-part reference in link > url', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { 
+						link: { url: "http://mysite.example.com/{{bat}}" }
+					} 
+				}
+			}`));
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should not error for a field with a special-case 2-part reference in link > url', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { 
+						link: { url: "http://mysite.example.com/{{bat._value}}" }
+					} 
+				}
+			}`));
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should not error for a field with no-reference in link > icon_url', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { 
+						link: { icon_url: "http://mysite.example.com/favicon.ico" }
+					} 
+				}
+			}`));
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should error for a field with a 2-part reference in filter (deprecated syntax)', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					measure: bar { filter: { field:bat.bax value: "0" } }
+				}
+			}`));
+			expect(result).toContainMessage({...F1, ...error});
+		});
+
+		it('should not error for a field with a 1-part reference in filter (deprecated syntax)', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					measure: bar { filter: { field:bat value:"0" } }
+				}
+			}`));
+			expect(result).not.toContainMessage(error);
 		});
 	});
 });
