@@ -16,7 +16,8 @@ const defaultProcess = process;
  * @param {string=}	options.projectName - An optional name for the project, if not specified in the manifest, used to generate links back to the project in mardown output
  * @param {string=}	options.dateOutput - Set to "none" to skip printing the date in the issues.md
  * @param {*=}		options.allowCustomRules - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules
- * @param {*=}		options.jenkins - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
+ * @param {string=}	options.output - Comma-separated string of output modes: markdown, markdown-developer, jenkins, lines, 
+ * @param {*=}		options.jenkins - Deprecated. Use `output=jenkins,markdown` insead. Indicates that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
  * @param {object=} io - IO overrides, primarily for testing
  * @param {object=} io.console
  * @param {object=} io.console.log
@@ -191,7 +192,7 @@ module.exports = async function(
         const outputModes =
 			options.jenkins ? 'jenkins,markdown'
 			: options.output ? options.output
-			: 'markdown';
+			: 'lines';
         for (let output of outputModes.split(',')) {
             switch (output) {
             case '': break;
