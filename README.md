@@ -18,8 +18,8 @@ Interested? See a video of LAMS in action!
 - [Functionality & Features](#functionality--features)
 	- [Predefined Linter Rules](#predefined-linter-rules)
 	- [Rule Exemptions](#rule-exemptions)
-	- [Generated Markdown Output](#generated-markdown-output)
 	- [Custom Rules](#custom-rules)
+	- [Output](#output)
 - [Deployment Examples](#deployment-examples)
 - [Configuration](#configuration)
 - [About](#about)
@@ -53,24 +53,33 @@ Note: For large projects with many exemptions, we suggest starting the reasons w
 
 If you want to entirely opt-out of checking a particular rule, you can specify the exemptions in your project's manifest.lkml file. See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for additional details.
 
-### Generated Markdown Output
-
-One of the primary ways that LAMS gives developers feedback, in addition to any integrations with your CI workflow, is by adding its findings to markdown files in your project, so that they can be viewed in Looker's IDE. Here is an example of a resulting markdown file as displayed in Looker:
-
-![Markdown example](docs/img/markdown-example.gif)
-
 ### Custom Rules
 
 In addition to linting against its [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html), LAMS also lets you specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams).
+
+
+### Output
+
+Once LAMS has evaluated your project against the necessary rules, the resulting list of messages are communicated back to you through one of several output modes.
+
+The default mode is a human-readable tabble logged to the command line / stdout, where each line represents a distinct message:
+
+!["Lines" output example](docs/img/lines-output.png)
+
+Another available output mode is formatting the messages into a markdown file in your project, so that they can be viewed in Looker's IDE. Here is an example of a resulting markdown file as displayed in Looker:
+
+!["Markdown" output example](docs/img/markdown-example.gif)
 
 ## Deployment Examples
 
 Although LAMS can be deployed in many ways to fit your specific CI flow, we have put together a few examples and resources to get you up and running quicker. (If you'd like to contribute your configuration, [get in touch](https://github.com/looker-open-source/look-at-me-sideways/issues/new)!)
 
+Regardless of which example you follow, we recommend pinning your LAMS version to a particular major version.
+
 - **Local Interactive Usage** - To use LAMS with the least overhead for simple interactive local use and testing:
 
 ```bash
-npm install -g @looker/look-at-me-sideways
+npm install -g @looker/look-at-me-sideways@2
 cd <your-lookml-project>
 lams
 ```
@@ -87,14 +96,15 @@ lams
 - **reporting** - Required. One of `yes`, `no`, `save-yes`, or `save-no`. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **report-user** - An email address to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **report-license-key** - A Looker license key to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
-- **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory via the globally installed lams command.
+- **output** - A comma-separated string of output modes from among: `lines` (default), `markdown`, `markdown-developer`, `jenkins`, `legacy-cli`
 - **source** - A glob specifying which files to read. Defaults to `**/{*.model,*.explore,*.view,manifest}.lkml`.
+- **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory.
 - **project-name** - An optional name for the project, used to generate links back to the project in mardown output. Specifying this in manifest.lkml is preferred.
-- **allow-custom-rules** - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules.
-- **jenkins** - Set to indicate that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output.
-- **output-to-cli** - Primarily intended for debugging. Setting it will output a verbose listing of errors and warnings to stdout. Set to a numerical value to determine the maximum number of entries to output for each of errors & warnings.
-- **on-parser-error** - Set to "fail" to indicate that LookML parsing errors should fail the linter. By default, parsing errors are logged and ignored.
+- **manifest** - A JSON-encoded object to override any properties that are normally set via the manifest.lkml file.
+- **on-parser-error** - Set to "info" to indicate that LookML parsing errors should not fail the linter, but yield an `info` level message instead (not all output modes display `info` level messages)
+- **verbose** - Set to also output `verbose` level messages, for output modes that support it (`lines`)
 - **date-output** - Set to "none" to skip printing the date at the top of the `issues.md` file.
+- **allow-custom-rules** - Experimental and not recommended. Used to approve the running of Javascript-based custom rules. DO NOT USE TO RUN UNTRUSTED CODE. See [custom rules](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for details.
 
 ### Manifest.lkml arguments
 
@@ -105,6 +115,10 @@ If your LookML project doesn't have a manifest.lkml file, you may want to consid
 - **rule: rule_name** - Optional. Used to specify custom rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
 
 ## About
+
+### Release Notes
+
+- [v2](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2)
 
 ### Privacy Policy
 

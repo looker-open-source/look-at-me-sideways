@@ -6,17 +6,18 @@ const defaultProcess = process;
  * LAMS main function
  *
  * @param {object}	options - options
- * @param {object}	options.cwd - Override the current working directory
  * @param {string=}	options.reporting - One of yes, no, save-yes, or save-no. Program terminates with a warning if omitted. See PRIVACY.md for details
- * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
- * @param {string=}	options.onParserError - Set to "fail" to indicate that LookML parsing errors should fail the linter. By default, parsing errors are logged and ignored.
  * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
+ * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
+ * @param {string=}	options.output - Comma-separated string of output modes from among: lines (default), markdown, markdown-developer, jenkins, legacy-cli
  * @param {string=}	options.source - An optional glob specifying which files to read
- * @param {string=}	options.manifest - An override/alternative for the contents of the manifest file
+ * @param {object}	options.cwd - Override the current working directory
  * @param {string=}	options.projectName - An optional name for the project, if not specified in the manifest, used to generate links back to the project in mardown output
+ * @param {string=}	options.manifest - An override/alternative for the contents of the manifest file
+ * @param {string=}	options.onParserError -  Set to "info" to indicate that LookML parsing errors should not fail the linter
+ * @param {boolean} options.verbose Set to also output verbose level messages, for output modes that support it (lines)
  * @param {string=}	options.dateOutput - Set to "none" to skip printing the date in the issues.md
  * @param {*=}		options.allowCustomRules - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules
- * @param {string=}	options.output - Comma-separated string of output modes: markdown, markdown-developer, jenkins, lines,
  * @param {*=}		options.jenkins - Deprecated. Use `output=jenkins,markdown` insead. Indicates that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
  * @param {object=} io - IO overrides, primarily for testing
  * @param {object=} io.console

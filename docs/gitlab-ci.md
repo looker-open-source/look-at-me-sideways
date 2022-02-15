@@ -18,7 +18,7 @@ RUN apk --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testin
  apk --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ add \
  nodejs nodejs-npm
 
-RUN  npm i -g @looker/look-at-me-sideways --unsafe-perm
+RUN  npm i -g @looker/look-at-me-sideways@2 --unsafe-perm
 
 CMD ["/bin/sh"]
 ```
