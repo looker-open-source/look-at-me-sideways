@@ -22,7 +22,7 @@ module.exports = function(
 	if (allExempted) {
 		return {messages};
 	}
-	const pkNamingConvention = (d) => d.$name.match(/^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/);
+	const pkNamingConvention = (d) => d.$name.match(/^([0-9]+pk|pk[0-9]+|pk)_([a-z0-9A-Z_]+)$/);
 	const unique = (x, i, arr) => arr.indexOf(x) === i;
 	let files = project.files || [];
 	let matchCt = 0;
@@ -66,7 +66,6 @@ module.exports = function(
 			rule = 'K2';
 			if (!globalExemptions[rule]) {
 				let declaredNs = pkDimensions.map(pkNamingConvention).map((match) => match[1].replace('pk', '')).filter(unique);
-				// let rule = 'K2';
 				let exempt = getExemption(view, rule) || getExemption(file, rule);
 				if (declaredNs.length > 1) {
 					messages.push({
@@ -76,6 +75,7 @@ module.exports = function(
 					continue;
 				}
 				let n = parseInt(declaredNs[0]);
+				n = isNaN(n) ? 1 : n; // Handle the case of an implicit 1 (e.g. "pk_chu" instead of "pk1_chu")
 				if (n != pkDimensions.length && n !== 0) {
 					messages.push({
 						location, path, rule, exempt, level: 'error',

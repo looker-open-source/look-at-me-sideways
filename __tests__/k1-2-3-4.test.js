@@ -16,11 +16,33 @@ describe('Rules', () => {
 			level: 'verbose',
 		};
 
-		it('should pass if any pk is defined using [0-9]pk_.* or pk[0-9]_.*', () => {
+		it('should pass if any pk is defined using pk[0-9]_.*', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: pk2_baz {}
+				}
+			}`));
+			expect(result).toContainMessage(passMessageK1);
+			expect(result).not.toContainMessage(failMessageK1);
+		});
+
+		it('should pass if any pk is defined using [0-9]pk_.*', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: 2pk_baz {}
+				}
+			}`));
+			expect(result).toContainMessage(passMessageK1);
+			expect(result).not.toContainMessage(failMessageK1);
+		});
+
+		it('should pass if any pk is defined using pk_.*', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: pk_baz {}
 				}
 			}`));
 			expect(result).toContainMessage(passMessageK1);
@@ -138,6 +160,28 @@ describe('Rules', () => {
 					sql_table_name: bar ;;
 					dimension: 3pk_baz {}
 					dimension: 3pk_qux {}
+				}
+			}`));
+			expect(result).toContainMessage(failMessageK2);
+		});
+
+		it('should pass if there is only one pk and it does not contain prefix or suffix', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: pk_baz {}
+				}
+			}`));
+			expect(result).toContainMessage(passMessageK2);
+			expect(result).not.toContainMessage(failMessageK2);
+		});
+
+		it('should error if one key matches pk_.* and there are other keys', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: pk_baz {}
+					dimension: pk2_qux {}
 				}
 			}`));
 			expect(result).toContainMessage(failMessageK2);
