@@ -9,13 +9,14 @@ import {
 	TextField
 	} from '@mui/material'
 
-import * as customRule from '../../../lib/custom-rules.js'
+import * as ruleEvaluator from '../../../lib/custom-rule/rule-evaluator.js'
+import * as getMatches from '../../../lib/custom-rule/get-matches.js'
 
 const columns = [
-	{width: 200, field:"path",headerName:"Path"},
-	{width: 400, field:"matchValue", headerName:"Match Value"},
+	{width: 400, field:"path",headerName:"Path"},
+	{width: 600, field:"matchValue", headerName:"Match Value"},
 	{width: 250, field:"ruleResult", headerName:"Rule Result"},
-	{width: 250, field:"cursorResult", headerName:"Result at Cursor", description:"The result of evaluating the rule within the subtree where the text cursos is currently located"}
+	//{width: 250, field:"cursorResult", headerName:"Result at Cursor", description:"The result of evaluating the rule within the subtree where the text cursos is currently located"}
 	]
 
 const RulePage = (props) => {
@@ -31,9 +32,9 @@ const RulePage = (props) => {
 	// Derived state
 	const [dRuleText] = useDebounce(ruleText,1000)
 	const [dMatchText] = useDebounce(matchText,1000)
-	const [rows, setRows] = useState(
-		[{ id: 1, path: '$.', matchValue: '{...}', ruleResult: "true", cursorResult: "true" }],
-		)
+	const [rows, setRows] = useState([
+		//{ id: 1, path: '$.', matchValue: '{...}', ruleResult: "true", cursorResult: "true" },
+	])
 	
 	// Effects
 	useEffect(evaluate,[dRuleText, dMatchText])
@@ -78,10 +79,22 @@ const RulePage = (props) => {
 			match: matchText,
 			expr_rule: ruleText
 			}
-		let ruleResult, ruleError
-		try{ ruleResult = customRule(ruleDef,project) }
-		catch(e){ console.log({e}); ruleError = e && e.message || e }
-		if(ruleError){
+		
+		try{
+			let matches = getMatches(project,ruleDef)
+			let results = matches.map(ruleEvaluator(ruleDef,project))
+			let newRows = results.map((result,r)=>({
+				id: r,
+				path: result.match.path,
+				matchValue: JSON.stringify(result.match.value,undefined, 4),
+				ruleResult: JSON.stringify(result.value, undefined, 4)
+			}))
+			setRows(newRows)
+		}
+		catch(e){
+			console.log({e});
+			setRows([])
+			let ruleError = e && e.message || e;
 			console.error(`TODO: Rule error handling: ${ruleError}`)
 			if(ruleError.match(/Invalid jsonpath/)){
 				
@@ -90,9 +103,7 @@ const RulePage = (props) => {
 			
 				}	
 			}
-		console.log({ruleResult})
 		}
 	}
-
 
 export default RulePage

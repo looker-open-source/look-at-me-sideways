@@ -1,4 +1,4 @@
-const {parse} = require('../lib/custom-rule-parser.js');
+const {parse} = require('../lib/custom-rule/custom-rule-parser.js');
 
 describe('Custom Rule Parser', () => {
 	it('Equality rule', () => {
