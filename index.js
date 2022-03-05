@@ -56,7 +56,7 @@ module.exports = async function(
         });
         const path = require('path');
         const parser = require('lookml-parser');
-        const checkCustomRule = require('./lib/custom-rules.js');
+        const checkCustomRule = require('./lib/custom-rule/custom-rule.js');
 
         const cwd = options.cwd || process.cwd();
 
