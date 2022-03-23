@@ -39,8 +39,8 @@
     "fromentries": "^1.3.2",
     "jsonpath": "^1.1.1",
     "liyad": "^0.2.4",
-    "lookml-parser": "^6.4.2",
-    "minimist": "^1.2.5",
+    "lookml-parser": "^6.5.2",
+    "minimist": "^1.2.6",
     "require-from-string": "^2.0.2"
   },
   "devDependencies": {
