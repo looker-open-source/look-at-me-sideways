@@ -13,8 +13,8 @@
         "fromentries": "^1.3.2",
         "jsonpath": "^1.1.1",
         "liyad": "^0.2.4",
-        "lookml-parser": "^6.4.2",
-        "minimist": "^1.2.5",
+        "lookml-parser": "^6.5.2",
+        "minimist": "^1.2.6",
         "require-from-string": "^2.0.2"
       },
       "bin": {
@@ -3746,9 +3746,9 @@
       "dev": true
     },
     "node_modules/lookml-parser": {
-      "version": "6.4.2",
-      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.4.2.tgz",
-      "integrity": "sha512-Li0MwG8AU9TLQvnBFBwg6C22VuqQU/rKGNDCVAueFvr/F6yMiTN0kZlF9Sm8n6KK4KISA0zDBNbVRCBPRpwgVg==",
+      "version": "6.5.2",
+      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.5.2.tgz",
+      "integrity": "sha512-PzwiWf2zMs5/uH3amg05U4GvrpZPBuZVAt6c4MVHMEmJetLXXj09chYE+CsFzmNEN0g6IVrb3gsNIeH2A8RlGg==",
       "dependencies": {
         "bluebird": "^3.5.1",
         "deep-object-diff": "^1.1.0",
@@ -3866,9 +3866,9 @@
       }
     },
     "node_modules/minimist": {
-      "version": "1.2.5",
-      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.5.tgz",
-      "integrity": "sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw=="
+      "version": "1.2.6",
+      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.6.tgz",
+      "integrity": "sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q=="
     },
     "node_modules/ms": {
       "version": "2.1.2",
@@ -7831,9 +7831,9 @@
       "dev": true
     },
     "lookml-parser": {
-      "version": "6.4.2",
-      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.4.2.tgz",
-      "integrity": "sha512-Li0MwG8AU9TLQvnBFBwg6C22VuqQU/rKGNDCVAueFvr/F6yMiTN0kZlF9Sm8n6KK4KISA0zDBNbVRCBPRpwgVg==",
+      "version": "6.5.2",
+      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.5.2.tgz",
+      "integrity": "sha512-PzwiWf2zMs5/uH3amg05U4GvrpZPBuZVAt6c4MVHMEmJetLXXj09chYE+CsFzmNEN0g6IVrb3gsNIeH2A8RlGg==",
       "requires": {
         "bluebird": "^3.5.1",
         "deep-object-diff": "^1.1.0",
@@ -7923,9 +7923,9 @@
       }
     },
     "minimist": {
-      "version": "1.2.5",
-      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.5.tgz",
-      "integrity": "sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw=="
+      "version": "1.2.6",
+      "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.6.tgz",
+      "integrity": "sha512-Jsjnk4bw3YJqYzbdyBiNsPWHPfO++UGG749Cxs6peCu5Xg4nrena6OVxOYxrQTqww0Jmwt+Ref8rggumkTLz9Q=="
     },
     "ms": {
       "version": "2.1.2",
