@@ -69,8 +69,8 @@ module.exports = async function(
             fileOutput: 'array',
             cwd,
             globOptions: {
-                ignore
-            }
+                ignore,
+            },
             // console: {
             // 	log: (msg) => { },
             // 	warn: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-warning'}),
