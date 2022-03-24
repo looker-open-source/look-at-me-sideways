@@ -11,6 +11,7 @@ const defaultProcess = process;
  * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
  * @param {string=}	options.output - Comma-separated string of output modes from among: lines (default), markdown, markdown-developer, jenkins, legacy-cli
  * @param {string=}	options.source - An optional glob specifying which files to read
+ * @param {string=}	options.ignore - An optional glob specifying patterns to ignore. Defaults to `node_modules/**`
  * @param {object}	options.cwd - Override the current working directory
  * @param {string=}	options.projectName - An optional name for the project, if not specified in the manifest, used to generate links back to the project in mardown output
  * @param {string=}	options.manifest - An override/alternative for the contents of the manifest file
@@ -59,6 +60,7 @@ module.exports = async function(
         const checkCustomRule = require('./lib/custom-rule/custom-rule.js');
 
         const cwd = options.cwd || process.cwd();
+        const ignore = options.ignore || 'node_modules/**';
 
         console.log('Parsing project...');
         const project = await parser.parseFiles({
@@ -66,6 +68,9 @@ module.exports = async function(
             conditionalCommentString: 'LAMS',
             fileOutput: 'array',
             cwd,
+            globOptions: {
+                ignore
+            }
             // console: {
             // 	log: (msg) => { },
             // 	warn: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-warning'}),
