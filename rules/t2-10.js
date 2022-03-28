@@ -5,7 +5,16 @@ module.exports = function(
 	project,
 ) {
 	let messages = [];
-	let ruleIds = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'];
+	if(getExemption(project.manifest, 'T2')){
+		messages.push({
+			rule:'T2', level: 'info', location: 'project',
+			path: `/projects/${project.name}/files/manifest.lkml`,
+			description: `T2 covers all of T3-10. Project-level exemption: ${getExemption(project.manifest, 'T2')}`,
+		});
+		return messages
+	}
+
+	let ruleIds = ['T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'];
 	let rules = {};
 	let allExempted = true;
 	for (let rule of ruleIds) {
@@ -43,19 +52,21 @@ module.exports = function(
 			}
 
 			let exempt = (ruleId) =>
-				getExemption(file, ruleId)
+				getExemption(project.manifest, ruleId)
+				|| getExemption(file, ruleId)
 				|| getExemption(view, ruleId)
-				|| view.derived_table && getExemption(view.derived_table, ruleId);
-
-			for (let rule of ruleIds) {
-				rules[rule].matches++;
-				if (exempt(rule)) {
-					rules[rule].exemptions++;
-				}
-			}
+				|| view.derived_table && getExemption(view.derived_table, ruleId)
+				|| (ruleId !== 'T2' && exempt('T2'));
 
 			let rulesInMatch = {};
 			for (let r of ruleIds) {
+				rules[r].matches++;
+				if (exempt(r)) {
+					rules[r].exemptions++;
+				}
+				// Because of nesting of subqueries, each rule may be avaluated multiple times within a single matched view.
+				// Create a mtch-scoped hashmap to store whether each rule errored at any point, then at the end
+				// consolidate these into a single incremement in our top-level rule hashmap to not double count # of erroring matches
 				rulesInMatch[r] = {errored: false};
 			}
 
@@ -73,7 +84,7 @@ module.exports = function(
 					'{{.*?}}',						// {{}} Liquid
 				].join('|'), 'g'), '[nonsql]'); // TODO: Save the contents somewhere in case they were column names we need later?
 			while (remaining) {
-				let current;
+				let current, rule;
 				const innermostParens = remaining.match(/(^[\s\S]*)(\([^()]*\))([\s\S]*)/);
 				if (innermostParens) {
 					current = innermostParens[2].slice(1, -1);
@@ -126,54 +137,76 @@ module.exports = function(
 					.filter(Boolean);
 				const pks = selections.filter((s) => pkNamingConvention(s.alias));
 				const actualPkCount = pks.length;
-				if (!exempt('')) {
-					if (actualPkCount === 0) {
-						rulesInMatch.T2.errored = true;
+				
+				rule = 'T3'
+				if (actualPkCount === 0) {
+					if(!exempt(rule)){
+						rulesInMatch[rule].errored = true;
 						messages.push({
-							location, path, rule: 'T2', level: 'error', exempt: exempt('T2'),
+							location, path, rule, level: 'error',
 							description: `No Primary Key columns/selectAliases found in ${view.$name}`,
 						});
-						continue;
 					}
+					continue;
 				}
 				const pkCountDeclarations = pks
 					.map((p) => parseInt(p.alias.match(/\d+/)[0]))
 					.filter(unique);
+
 				if (pkCountDeclarations.length > 1) {
-					messages.push({
-						location, path, rule: 'T3', level: 'error', exempt: exempt('T3') || exempt('T2'),
-						description: `Primary Key columns in "${snippet}"  in ${view.$name} have mismatching numbers (${pkCountDeclarations.join(', ')})`,
-					});
+					if(!exempt(rule)){
+						rulesInMatch[rule].errored = true;
+						messages.push({
+							location, path, rule, level: 'error',
+							description: `Primary Key columns in "${snippet}"  in ${view.$name} have mismatching numbers (${pkCountDeclarations.join(', ')})`,
+						});
+					}
 					continue;
 				}
 				const declaredPkCount = pkCountDeclarations[0];
 				if (actualPkCount !== declaredPkCount) {
-					messages.push({
-						location, path, rule: 'T3', level: 'error', exempt: exempt('T3') || exempt('T2'),
-						description: `Primary Key columns in "${snippet}"  in ${view.$name} declare ${declaredPkCount} column(s), but there are ${actualPkCount}`,
-					});
-					continue;
-				}
-				if (!selections.slice(0, pks.length).every((s) => pkNamingConvention(s.alias))) {
-					messages.push({
-						location, path, rule: 'T4', level: 'error', exempt: exempt('T4') || exempt('T2'),
-						description: `Primary Key columns in "${snippet}" in ${view.$name} are not first`,
-					});
+					if(!exempt(rule)){
+						rulesInMatch[rule].errored = true;
+						messages.push({
+							location, path, rule, level: 'error',
+							description: `Primary Key columns in "${snippet}"  in ${view.$name} declare ${declaredPkCount} column(s), but there are ${actualPkCount}`,
+						});
+					}
 					continue;
 				}
 
-				if (selections[actualPkCount].expression !== '[sep]') {
-					messages.push({
-						location, path, rule: 'T8', level: 'error', exempt: exempt('T8') || exempt('T2'),
-						description: `Primary Key columns/selectAliases in ${view.$name} should finish with ---`,
-					});
-					// no `continue;` Allow further rule checks to proceed
+				rule="T4"
+				if (!selections.slice(0, pks.length).every((s) => pkNamingConvention(s.alias))) {
+					if(!exempt(rule)){
+						rulesInMatch[rule].errored = true;
+						messages.push({
+							location, path, rule, level: 'error',
+							description: `Primary Key columns in "${snippet}" in ${view.$name} are not first`,
+						});
+					}
+					continue;
 				}
+
+				rule = "T8"
+				if (selections[actualPkCount].expression !== '[sep]') {
+					if(!exempt(rule)){
+						rulesInMatch[rule].errored = true;
+						messages.push({
+							location, path, rule, level: 'error',
+							description: `Primary Key columns/selectAliases in ${view.$name} should finish with ---`,
+						});
+						// no `continue;` Allow further rule checks to proceed
+					}
+				}
+				rule = "T6"
 				if (!groupings.length) {
-					messages.push({
-						location, path, rule: 'T6', level: 'error', exempt: exempt('T6') || exempt('T2'),
-						description: `LAMS cannot currently enforce rule T6. Please use a T6 exemption in ${view.$name} to communicate whether/how the rule is followed in "${snippet}..."`,
-					});
+					if(!exempt(rule)){
+						rulesInMatch[rule].errored = true;
+						messages.push({
+							location, path, rule, level: 'error',
+							description: `LAMS cannot currently enforce rule T6. Please use a T6 exemption in ${view.$name} to communicate whether/how the rule is followed in "${snippet}..."`,
+						});
+					}
 					continue;
 				}
 				let firstPksThatAreGroups = [];
@@ -184,49 +217,69 @@ module.exports = function(
 						break;
 					}
 				}
+				rule = "T5"
 				if (!firstPksThatAreGroups.length) {
-					messages.push({
-						location, path, rule: 'T5', level: 'error', exempt: exempt('T5') || exempt('T2'),
-						description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} does not begin with at least 1 grouped column as part of a primary key"`,
-					});
+					if(!exempt(rule)){
+						rulesInMatch[rule].errored = true;
+						messages.push({
+							location, path, rule, level: 'error',
+							description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} does not begin with at least 1 grouped column as part of a primary key"`,
+						});
+					}
 					continue;
 				}
 				const allGroupsUsed = groupings.every((g) =>
 					parseInt(g) && g <= pks.length
 					|| pks.some((p) => p.expression === g),
 				);
+				rule = "T7"
 				if (!allGroupsUsed) {
 					if (!pks[firstPksThatAreGroups.length]) {
-						messages.push({
-							location, path, rule: 'T7', level: 'error', exempt: exempt('T7') || exempt('T2'),
-							description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} did not use all grouped columns in the pk, and does not continue with additional columns in the pk"`,
-						});
+						if(!exempt(rule)){
+							rulesInMatch[rule].errored = true;
+							messages.push({
+								location, path, rule, level: 'error',
+								description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} did not use all grouped columns in the pk, and does not continue with additional columns in the pk"`,
+							});
+						}
 						continue;
 					}
 					let nextCol = pks[firstPksThatAreGroups.length].expression;
 					if (!nextCol.match(/\brow_number\s*\[paren]\s+over\s+\[paren]/)) {
-						messages.push({
-							location, path, rule: 'T7', level: 'error', exempt: exempt('T7') || exempt('T2'),
-							description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} did not use all grouped columns in the pk, and the next column is not a ROW_NUMBER window"`,
-						});
+						if(!exempt(rule)){
+							rulesInMatch[rule].errored = true;
+							messages.push({
+								location, path, rule, level: 'error',
+								description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} did not use all grouped columns in the pk, and the next column is not a ROW_NUMBER window"`,
+							});
+						}
 						continue;
 					}
 					messages.push({
-						location, path, level: 'info', rule: 'T7',
+						location, path, level: 'verbose', rule,
 						description: `Transformation with GROUP BY (${snippet}...) in ${view.$name} appears valid, but LAMS does not verify the partition columns used in the window function (T7)`,
 					});
 				}
 			}
+
+			// Done iterating through subqueries. If any rules errored, add them to the summary counts
+			for (let r of ruleIds){
+				if(exempt(r)){
+					rules[r].exemptions++
+				}
+				if(rulesInMatch[r].errored){
+					rules[r].errors++
+				}
+			}
 		}
 	}
-	// messages = messages.filter((msg) => !rules[msg.rule].globallyExempt || msg.location == 'project');
 	for (let rule of ruleIds) {
 		if (rule==='T9' || rule=='T10') {
 			continue; // These rules are actually exceptions and not evaluated per se
 		}
 		messages.push({
 			rule, level: 'info',
-			description: `Evaluated ${rules[rule].matches} views, with ${rules[rule].exemptions} exempt`,
+			description: `Evaluated ${rules[rule].matches} views, with ${rules[rule].exemptions} exempt and ${rules[rule].errors} erroring`,
 		});
 	}
 	return {
