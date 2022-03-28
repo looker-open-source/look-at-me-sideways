@@ -9,7 +9,6 @@ describe('Rules', () => {
 	describe('T2+', () => {
 		let verbose = {level: 'verbose'};
 		let error = {level: 'error'};
-		let info = {level: 'info'};
 		let r = {
 			umbrellaRuleT2: {rule: 'T2'},
 			pkColumnsRequired: {rule: 'T3'}, // Changed from T2 -> T3 since T2 is a overview rule that represents all of T2-T10
@@ -80,8 +79,8 @@ describe('Rules', () => {
 					GROUP BY 1
 				;; } }
 			}`));
-			expect(result).not.toContainMessage({...error, ...r.umbrellaRuleT2})
-			expect(result).not.toContainMessage({...error, ...r.pkColumnsRequired})
+			expect(result).not.toContainMessage({...error, ...r.umbrellaRuleT2});
+			expect(result).not.toContainMessage({...error, ...r.pkColumnsRequired});
 		});
 
 
@@ -95,8 +94,8 @@ describe('Rules', () => {
 				;; } }
 			}
 			manifest: {rule_exemptions: {T2: "Forget PKs"}}`));
-			expect(result).not.toContainMessage({...error, ...r.umbrellaRuleT2})
-			expect(result).not.toContainMessage({...error, ...r.pkColumnsRequired})
+			expect(result).not.toContainMessage({...error, ...r.umbrellaRuleT2});
+			expect(result).not.toContainMessage({...error, ...r.pkColumnsRequired});
 		});
 
 		it('should not error/error for single-column transformations', () => {

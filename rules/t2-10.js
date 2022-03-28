@@ -5,13 +5,13 @@ module.exports = function(
 	project,
 ) {
 	let messages = [];
-	if(getExemption(project.manifest, 'T2')){
+	if (getExemption(project.manifest, 'T2')) {
 		messages.push({
-			rule:'T2', level: 'info', location: 'project',
+			rule: 'T2', level: 'info', location: 'project',
 			path: `/projects/${project.name}/files/manifest.lkml`,
 			description: `T2 covers all of T3-10. Project-level exemption: ${getExemption(project.manifest, 'T2')}`,
 		});
-		return messages
+		return messages;
 	}
 
 	let ruleIds = ['T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'];
@@ -84,7 +84,7 @@ module.exports = function(
 					'{{.*?}}',						// {{}} Liquid
 				].join('|'), 'g'), '[nonsql]'); // TODO: Save the contents somewhere in case they were column names we need later?
 			while (remaining) {
-				let current, rule;
+				let current; let rule;
 				const innermostParens = remaining.match(/(^[\s\S]*)(\([^()]*\))([\s\S]*)/);
 				if (innermostParens) {
 					current = innermostParens[2].slice(1, -1);
@@ -137,10 +137,10 @@ module.exports = function(
 					.filter(Boolean);
 				const pks = selections.filter((s) => pkNamingConvention(s.alias));
 				const actualPkCount = pks.length;
-				
-				rule = 'T3'
+
+				rule = 'T3';
 				if (actualPkCount === 0) {
-					if(!exempt(rule)){
+					if (!exempt(rule)) {
 						rulesInMatch[rule].errored = true;
 						messages.push({
 							location, path, rule, level: 'error',
@@ -154,7 +154,7 @@ module.exports = function(
 					.filter(unique);
 
 				if (pkCountDeclarations.length > 1) {
-					if(!exempt(rule)){
+					if (!exempt(rule)) {
 						rulesInMatch[rule].errored = true;
 						messages.push({
 							location, path, rule, level: 'error',
@@ -165,7 +165,7 @@ module.exports = function(
 				}
 				const declaredPkCount = pkCountDeclarations[0];
 				if (actualPkCount !== declaredPkCount) {
-					if(!exempt(rule)){
+					if (!exempt(rule)) {
 						rulesInMatch[rule].errored = true;
 						messages.push({
 							location, path, rule, level: 'error',
@@ -175,9 +175,9 @@ module.exports = function(
 					continue;
 				}
 
-				rule="T4"
+				rule='T4';
 				if (!selections.slice(0, pks.length).every((s) => pkNamingConvention(s.alias))) {
-					if(!exempt(rule)){
+					if (!exempt(rule)) {
 						rulesInMatch[rule].errored = true;
 						messages.push({
 							location, path, rule, level: 'error',
@@ -187,9 +187,9 @@ module.exports = function(
 					continue;
 				}
 
-				rule = "T8"
+				rule = 'T8';
 				if (selections[actualPkCount].expression !== '[sep]') {
-					if(!exempt(rule)){
+					if (!exempt(rule)) {
 						rulesInMatch[rule].errored = true;
 						messages.push({
 							location, path, rule, level: 'error',
@@ -198,9 +198,9 @@ module.exports = function(
 						// no `continue;` Allow further rule checks to proceed
 					}
 				}
-				rule = "T6"
+				rule = 'T6';
 				if (!groupings.length) {
-					if(!exempt(rule)){
+					if (!exempt(rule)) {
 						rulesInMatch[rule].errored = true;
 						messages.push({
 							location, path, rule, level: 'error',
@@ -217,9 +217,9 @@ module.exports = function(
 						break;
 					}
 				}
-				rule = "T5"
+				rule = 'T5';
 				if (!firstPksThatAreGroups.length) {
-					if(!exempt(rule)){
+					if (!exempt(rule)) {
 						rulesInMatch[rule].errored = true;
 						messages.push({
 							location, path, rule, level: 'error',
@@ -232,10 +232,10 @@ module.exports = function(
 					parseInt(g) && g <= pks.length
 					|| pks.some((p) => p.expression === g),
 				);
-				rule = "T7"
+				rule = 'T7';
 				if (!allGroupsUsed) {
 					if (!pks[firstPksThatAreGroups.length]) {
-						if(!exempt(rule)){
+						if (!exempt(rule)) {
 							rulesInMatch[rule].errored = true;
 							messages.push({
 								location, path, rule, level: 'error',
@@ -246,7 +246,7 @@ module.exports = function(
 					}
 					let nextCol = pks[firstPksThatAreGroups.length].expression;
 					if (!nextCol.match(/\brow_number\s*\[paren]\s+over\s+\[paren]/)) {
-						if(!exempt(rule)){
+						if (!exempt(rule)) {
 							rulesInMatch[rule].errored = true;
 							messages.push({
 								location, path, rule, level: 'error',
@@ -263,12 +263,12 @@ module.exports = function(
 			}
 
 			// Done iterating through subqueries. If any rules errored, add them to the summary counts
-			for (let r of ruleIds){
-				if(exempt(r)){
-					rules[r].exemptions++
+			for (let r of ruleIds) {
+				if (exempt(r)) {
+					rules[r].exemptions++;
 				}
-				if(rulesInMatch[r].errored){
-					rules[r].errors++
+				if (rulesInMatch[r].errored) {
+					rules[r].errors++;
 				}
 			}
 		}
