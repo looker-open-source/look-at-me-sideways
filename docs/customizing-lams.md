@@ -42,7 +42,9 @@ Expression-based rules (available as of version 1.0) can be declared within your
 
 ```
 
-Here is what each part does:
+You can also quickly experiment with custom rule definitions in the [Rule Sandbox](tools/rule-sandbox)
+
+Here is what each part of the rule definition means:
 
 - **Rule name:** Any LookML name for this rule. This name is included in LAMS usage reporting, if you have opted in to it. Names composed of a single letter followed by a number are reserved for future LAMS usage.
 - **description:** (Optional) A succint human-readable description, which will be shown to developers in LAMS' output
