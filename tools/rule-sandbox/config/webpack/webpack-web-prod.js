@@ -33,7 +33,7 @@ module.exports = {
 	devtool: 'inline-source-map',
 	mode: 'development',
 	output: {
-		path: path.resolve(__dirname, '../../../../../docs/tools/rule-sandbox'),
+		path: path.resolve(__dirname, '../../../../docs/tools/rule-sandbox'),
 		filename: "rule-sandbox-web-prod.js"
 		}
 	}
