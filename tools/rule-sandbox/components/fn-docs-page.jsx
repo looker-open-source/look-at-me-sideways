@@ -24,15 +24,46 @@
 
  */
 
- import React from 'react'
+import React from 'react'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableHead from '@mui/material/TableHead'
+import TableRow from '@mui/material/TableRow'
 
-import {
-	Box
-	} from '@mui/material'
+import {config} from '../../../lib/custom-rule/custom-rule-parser.js'
+
+const fns = config.funcs.map((fn) => ({
+	name: fn.name,
+	def: fn.fn.toString()
+		.replace(/^[^{]*{\s*|\s*}[^}]*$/ig, '')
+		.replace(/\/\/[^:]*:/g, '')
+		.replace(/\\r|\\n/g, ' ')
+		.replace(/\s+/g, ' ')
+		.slice(0, 240),
+}));
 
 const FnDocsPage = (props) => {
 	return (
-		<Box>TODO</Box>
+		<Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+			<TableHead>
+				<TableRow>
+					<TableCell>Name</TableCell>
+					<TableCell>Definition</TableCell>
+					</TableRow>
+				</TableHead>
+			<TableBody>
+				{fns.map((fn) => (
+					<TableRow
+						key={fn.name}
+						sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+						>
+						<TableCell component="th" scope="row">{fn.name}</TableCell>
+						<TableCell><code>{fn.def}</code></TableCell>
+						</TableRow>
+					))}
+			</TableBody>
+			</Table>
 		)
 
 	}

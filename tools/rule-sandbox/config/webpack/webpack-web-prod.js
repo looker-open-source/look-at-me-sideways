@@ -24,3 +24,16 @@
 
  */
 
+// By default webpack config files are not cross-compiled, so we use require, not import
+const common = require('./webpack-common.js')
+const path = require('path')
+
+module.exports = {
+	...common,
+	devtool: 'inline-source-map',
+	mode: 'development',
+	output: {
+		path: path.resolve(__dirname, '../../../../docs/tools/rule-sandbox'),
+		filename: "rule-sandbox-web-prod.js"
+		}
+	}
