@@ -1,4 +1,4 @@
-/*
+<!--
 
  MIT License
 
@@ -22,18 +22,16 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 
- */
-
-// By default webpack config files are not cross-compiled, so we use require, not import
-const common = require('./webpack-common.js')
-const path = require('path')
-
-module.exports = {
-	...common,
-	devtool: 'inline-source-map',
-	mode: 'development',
-	output: {
-		path: path.resolve(__dirname, '../../../../../docs/tools/rule-sandbox'),
-		filename: "rule-sandbox-web-prod.js"
-		}
-	}
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>LAMS Rule Sandbox</title>
+  <script src="/rule-sandbox-web-prod.js"></script>
+</head>
+<body style="margin:0">
+</body>
+</html>
