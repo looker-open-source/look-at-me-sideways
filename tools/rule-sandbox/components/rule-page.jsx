@@ -2,32 +2,33 @@ import React, {useState, useEffect} from 'react'
 import {useDebounce} from 'use-debounce'
 
 import {DataGrid} from '@mui/x-data-grid'
-import {
-	Box,
-	Button,
-	Stack,
-	TextField
-	} from '@mui/material'
+
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 
 import * as ruleEvaluator from '../../../lib/custom-rule/rule-evaluator.js'
 import * as getMatches from '../../../lib/custom-rule/get-matches.js'
 
 const columns = [
-	{width: 400, field:"path",headerName:"Path"},
-	{width: 600, field:"matchValue", headerName:"Match Value"},
-	{width: 250, field:"ruleResult", headerName:"Rule Result"},
-	//{width: 250, field:"cursorResult", headerName:"Result at Cursor", description:"The result of evaluating the rule within the subtree where the text cursos is currently located"}
+	{width: 250, field:"path",headerName:"Path"},
+	{width: 500, field:"matchValue", headerName:"Match Value"},
+	{width: 500, field:"ruleResult", headerName:"Rule Result", cellClassName:cell=>cell.row.resultClass},
 	]
+const nil = []
 
-const RulePage = (props) => {
-	const {
-		setTab,
-		project
-		} = props
-
+const RulePage = ({
+	project,
+	match,
+	rule,
+	setMatch,
+	setRule
+	}) => {
+	
 	// Core state
-	const [ruleText, setRuleText] = useState("")
-	const [matchText, setMatchText] = useState("")
+	const [ruleText,	setRuleText] = 	useState(rule || '')
+	const [matchText,	setMatchText] = useState(match || '')
 	
 	// Derived state
 	const [dRuleText] = useDebounce(ruleText,1000)
@@ -35,9 +36,12 @@ const RulePage = (props) => {
 	const [rows, setRows] = useState([
 		//{ id: 1, path: '$.', matchValue: '{...}', ruleResult: "true", cursorResult: "true" },
 	])
+	const [status,setStatus] = useState("")
 	
 	// Effects
-	useEffect(evaluate,[dRuleText, dMatchText])
+	useEffect(evaluate,[project, dRuleText, dMatchText])
+	useEffect(updateMatch,[matchText])
+	useEffect(updateRule, [ruleText])
 
 	return (
 		<Stack direction="column" spacing={4} className="rule-page">
@@ -57,51 +61,85 @@ const RulePage = (props) => {
 				value={ruleText}
 				onChange={changeRuleText}
 				></TextField>
-			<DataGrid
-				columns={columns}
-				rows={rows}
-				autoHeight
-				pagination
-				pageSize={10}
-				/>
+			<Typography align="center">{status}</Typography>
+			<Box sx={{
+				'& .error': {color: 'red'},
+				'& .fail': {color: 'darkred'},
+				'& .pass': {color: 'darkgreen'}
+				}}>
+				{rows.length>0 && 
+					<DataGrid
+						columns={columns}
+						rows={rows}
+						autoHeight
+						pagination
+						pageSize={10}
+						/>}
+				</Box>
 			</Stack>
 		)
 
 	function changeMatchText(event){setMatchText(event.target.value)}
 	function changeRuleText (event){setRuleText (event.target.value)}
+	function updateMatch(){setMatch(matchText)}
+	function updateRule (){setRule(ruleText)}
 
 	function evaluate(event){
-		console.log("Evaluating...")
+		setRows(nil) // React: Is it ok to pre-emptively "clear" state that may be immediately re-set, or can it thrash the app?
 		if(project===undefined){
-			console.error("TODO: Project not ready")
+			return setStatus(`Project not ready. Please review Project tab first.`)
 			}
+		const uncommentedRule = dRuleText.replace(/\n\s*#/g," ")
 		let ruleDef = {
-			match: matchText,
-			expr_rule: ruleText
+			$name: 'sandbox_rule',
+			match: dMatchText,
+			expr_rule: uncommentedRule
 			}
-		
 		try{
+			if(!ruleDef.match){
+				return setStatus(`Please provide a "Match" (JSONPath)`)
+				}
+			if(!ruleDef.expr_rule){
+				return setStatus(`Please provide a "Rule Expression" (Liyad expression)`)
+				}
+			
 			let matches = getMatches(project,ruleDef)
-			let results = matches.map(ruleEvaluator(ruleDef,project))
+			
+			if(!matches.length){
+				return setStatus(`No matches found for the provided Match expression`)
+				}
+			
+			let rule
+			try{
+				rule = ruleEvaluator(ruleDef,project)
+				}
+			catch(e){
+				let ruleError = e && e.message || e;
+				return setStatus('❌ '+ruleError)
+				}
+
+			let results = matches.map(match=>{
+				try{return rule(match)}
+				catch(e){return {match,error:e}}
+				})
 			let newRows = results.map((result,r)=>({
 				id: r,
 				path: result.match.path,
 				matchValue: JSON.stringify(result.match.value,undefined, 4),
-				ruleResult: JSON.stringify(result.value, undefined, 4)
-			}))
+				ruleResult: result.error ? result.error.message : JSON.stringify(result.value, undefined, 4),
+				resultClass: result.error ? 'error'
+					 : result.value === true ? 'pass'
+					 : result.value === false ? 'fail'
+					 : typeof result.value == 'string' ? 'fail'
+					 : ''
+				}))
+			setStatus("")
 			setRows(newRows)
-		}
+			}
 		catch(e){
-			console.log({e});
-			setRows([])
+			console.error(e);
 			let ruleError = e && e.message || e;
-			console.error(`TODO: Rule error handling: ${ruleError}`)
-			if(ruleError.match(/Invalid jsonpath/)){
-				
-				}
-			if(ruleError.match(/Invalid expr_rule/)){
-			
-				}	
+			setStatus('❌ '+ruleError)
 			}
 		}
 	}

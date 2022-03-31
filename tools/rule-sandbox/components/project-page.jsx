@@ -27,25 +27,25 @@
 import React, {useEffect, useState} from 'react'
 import {useDebounce} from 'use-debounce'
 
-import {
-	Box,
-	Button,
-	Stack,
-	TextField
-	} from '@mui/material'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 
 const ProjectPage = (props) => {
 	const {
+		project,
 		setTab,
 		setProject
 		} = props
 
 	// Core state
-	const [projectText, setProjectText] = useState("")
+	const [projectText, setProjectText] = useState(project ? JSON.stringify(project, undefined, 4) : "")
 	
 	// Derived state
 	const [debouncedProjectText] = useDebounce(projectText,1000)
-	const [matchMessage, setMatchMessage] = useState("...")
+	const [ctaDisabled, setCtaDisabled] = useState(true)
+	const [projectStatus, setProjectStatus] = useState("")
 	
 	// Effects
 	useEffect(parseProject,[debouncedProjectText])
@@ -63,11 +63,12 @@ const ProjectPage = (props) => {
 				onChange={changeProjectText}
 				></TextField>
 			<Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={4}>
-				<Box>{matchMessage}</Box>
+				<Typography>{projectStatus}</Typography>
 				<Button 
 					variant="contained"
 					onClick={()=>setTab("rule")}
-					value="rule">
+					value="rule"
+					disabled={ctaDisabled}>
 					Inspect Rule(s)
 					</Button>
 				</Stack>
@@ -76,17 +77,29 @@ const ProjectPage = (props) => {
 
 	function changeProjectText(event){setProjectText(event.target.value)}
 	function parseProject(){
+		if(projectText === ""){
+			setProjectStatus("Provide Project JSON")
+			setProject(undefined)
+			setCtaDisabled(true)
+			return
+			}
 		try{
 			const project = JSON.parse(projectText)
+			setProjectStatus("✅ Project ready")
 			setProject(project)
+			setCtaDisabled(false)
 			}
 		catch(e){
-			console.error("TODO: Invalid JSON message")
+			setProjectStatus(`❌ Invalid JSON. ${trunc(e,120)}`)
 			setProject(undefined)
+			setCtaDisabled(true)
 			}
 		}
-
 	}
 
+function trunc(message, maxLength){
+	message = message.toString()
+	return message.length <= maxLength ? message : message.slice(0,maxLength)+'...'
+	}
 
 export default ProjectPage

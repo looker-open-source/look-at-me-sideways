@@ -1,4 +1,4 @@
-let {config} = require('./lib/custom-rule-parser.js');
+let {config} = require('./lib/custom-rule/custom-rule-parser.js');
 
 console.table(config.funcs.map((fn) => ({
 	name: fn.name,
