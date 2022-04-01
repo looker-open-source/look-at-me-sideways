@@ -11,7 +11,7 @@ module.exports = function(
 			path: `/projects/${project.name}/files/manifest.lkml`,
 			description: `T2 covers all of T3-10. Project-level exemption: ${getExemption(project.manifest, 'T2')}`,
 		});
-		return messages;
+		return {messages};
 	}
 
 	let ruleIds = ['T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'];
