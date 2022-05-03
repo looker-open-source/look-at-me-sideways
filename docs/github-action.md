@@ -33,22 +33,6 @@ jobs:
       run: npm install -g @looker/look-at-me-sideways@2
     - name: Run LAMS
       # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
-      run: lams --reporting=... || echo "ERROR=true" >> $GITHUB_ENV
-    - name: Commit changes (e.g., issues.md)
-      run: |
-        git add .
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git commit -m "LAMS feedback" -a
-    - name: Push changes
-      uses: ad-m/github-push-action@02b0b75d447f0098d40d0d65a3e6cdf2119e6f60
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{github.ref}}
-    - name: Set status
-      run: |
-        if [ "$ERROR" ]; then
-          exit 1
-        fi
+      run: lams --reporting=... --report-license-key=... --report-user=...
 ```
 <!-- {% endraw %}) -->
