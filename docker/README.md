@@ -1,5 +1,7 @@
 # LAMS Docker Image
 
+**Note:** This configuration is out of date and may not work with LAMS v2. Please review [v2 release notes](https://looker-open-source.github.io/release-notes/v2) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
+
 This is a fully functional Jenkins Server with a pre-configured job that is triggered by a webhook from a specified LookML Git repo, lints the branch invoking the job, commits the lint results back into the branch and sets a status to the commits. 
 
 <a name=docker_run></a>

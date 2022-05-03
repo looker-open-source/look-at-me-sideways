@@ -3,6 +3,8 @@ favicon: img/logo.png
 ---
 # Running LAMS via GitLab CI
 
+**Note:** This example was prepared for v1 of LAMS, though updating it for v2 should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/release-notes/v2) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
+
 This example shows how to run LAMS with GitLab CI and was contributed by [PieterjanCriel](https://github.com/PieterjanCriel). Thanks!
 
 ## Instructions
@@ -18,7 +20,7 @@ RUN apk --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testin
  apk --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing/ add \
  nodejs nodejs-npm
 
-RUN  npm i -g @looker/look-at-me-sideways@2 --unsafe-perm
+RUN  npm i -g @looker/look-at-me-sideways@1 --unsafe-perm
 
 CMD ["/bin/sh"]
 ```
