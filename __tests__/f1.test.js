@@ -5,13 +5,19 @@ const rule = require('../rules/f1');
 const {parse} = require('lookml-parser');
 
 
+let F1 = {rule: 'F1'};
+let error = {level: 'error'};
+let summary = (m=1, ex=0, er=1) => ({
+	rule: 'F1',
+	level: 'info',
+	description: `Evaluated ${m} matches, with ${ex} exempt and ${er} erroring`,
+});
+
 describe('Rules', () => {
 	describe('F1', () => {
-		let F1 = {rule: 'F1'};
-		let error = {level: 'error'};
-
 		it('should not error if there are no files', () => {
 			let result = rule(parse(``));
+			expect(result).toContainMessage(summary(0, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -24,6 +30,7 @@ describe('Rules', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo { sql_table_name: foo ;; }
 			}`));
+			expect(result).toContainMessage(summary(0, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -33,6 +40,7 @@ describe('Rules', () => {
 					dimension: combine { sql: \${foo.amount} + \${bar.amount} ;; } 
 				}
 			}`));
+			expect(result).toContainMessage(summary(0, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -43,6 +51,7 @@ describe('Rules', () => {
 					dimension: foo { sql: 1 ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -53,6 +62,7 @@ describe('Rules', () => {
 					dimension: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -63,6 +73,7 @@ describe('Rules', () => {
 					dimension: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -73,6 +84,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -83,6 +95,7 @@ describe('Rules', () => {
 					measure: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -93,6 +106,7 @@ describe('Rules', () => {
 					filter: bar { sql: \${baz.bat} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -104,6 +118,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 1, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -115,6 +130,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -122,10 +138,11 @@ describe('Rules', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {
 					extends: [bar]
-					rule_exemptions: [X1]
+					rule_exemptions: {X1: "Other rule"}
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -139,6 +156,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 1, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -148,10 +166,11 @@ describe('Rules', () => {
 					extends: [bar]
 					dimension: baz {
 						sql: \${abc.xyz} ;;
-						rule_exemptions: [X1]
+						rule_exemptions: {X1: "Other"}
 					}
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -178,6 +197,7 @@ describe('Rules', () => {
 				}
 			}
 			files: manifest {rule_exemptions: {X1: "Different exemption"}}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -188,6 +208,7 @@ describe('Rules', () => {
 					dimension: bar { sql: {{baz.bat}} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -198,6 +219,7 @@ describe('Rules', () => {
 					dimension: bar { sql: {%parameter baz.bat %} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -208,6 +230,7 @@ describe('Rules', () => {
 					dimension: bar { html: \${baz.bat} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -218,6 +241,7 @@ describe('Rules', () => {
 					dimension: bar { html: {{baz.bat}} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -228,6 +252,7 @@ describe('Rules', () => {
 					dimension: bar { html: {%parameter baz.bat %} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -238,6 +263,7 @@ describe('Rules', () => {
 					dimension: foo { sql: \${TABLE.foo} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -249,6 +275,7 @@ describe('Rules', () => {
 					dimension: baz { sql: \${foo.bar} ;; }
 				}
 			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -260,6 +287,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{baz._sql}} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -271,6 +299,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{baz._value}} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -282,6 +311,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{baz._name}} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -293,6 +323,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{bar._parameter_value}} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -303,6 +334,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{bar._in_query}} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -313,6 +345,7 @@ describe('Rules', () => {
 					dimension: bar { sql: {{bat.baz._value}} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -324,6 +357,7 @@ describe('Rules', () => {
 					dimension: baz { sql: {{foo.bar._value}} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -335,6 +369,7 @@ describe('Rules', () => {
 					dimension: baz { type: yesno sql: \${bar} > 3.14;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -346,6 +381,7 @@ describe('Rules', () => {
 					dimension: rot { sql: {% if value > 3.14 %} \${rad}/3.14 ||' rot' {% else %} \${rad}||' rad' {% endif %} ;;}
 				}
 			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -356,6 +392,7 @@ describe('Rules', () => {
 					dimension: bar { label_from_parameter: baz.bat }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -366,6 +403,7 @@ describe('Rules', () => {
 					dimension: bar { label_from_parameter: bat }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -378,6 +416,7 @@ describe('Rules', () => {
 					} 
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -390,6 +429,7 @@ describe('Rules', () => {
 					} 
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -402,6 +442,7 @@ describe('Rules', () => {
 					} 
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -414,6 +455,7 @@ describe('Rules', () => {
 					} 
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -426,6 +468,7 @@ describe('Rules', () => {
 					} 
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
@@ -436,6 +479,7 @@ describe('Rules', () => {
 					measure: bar { filter: { field:bat.bax value: "0" } }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
@@ -446,6 +490,7 @@ describe('Rules', () => {
 					measure: bar { filter: { field:bat value:"0" } }
 				}
 			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 	});

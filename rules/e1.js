@@ -52,7 +52,7 @@ module.exports = function(
 	}
 	messages.push({
 		rule, level: 'info',
-		description: `Evaluated ${matchCt} joins, with ${exemptionCt} exempt and ${errorCt} erroring`,
+		description: `Evaluated ${matchCt} matches, with ${exemptionCt} exempt and ${errorCt} erroring`,
 	});
 	return {
 		messages,

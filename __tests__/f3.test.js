@@ -4,29 +4,34 @@ require('../lib/expect-to-contain-message');
 const rule = require('../rules/f3');
 const {parse} = require('lookml-parser');
 
+let F3 = {rule: 'F3'};
+let error = {level: 'error'};
+
+let summary = (m=1, ex=0, er=1) => ({
+	level: 'info',
+	description: `Evaluated ${m} matches, with ${ex} exempt and ${er} erroring`,
+});
+
 describe('Rules', () => {
 	describe('F3', () => {
-		let failMessageF3 = {
-			rule: 'F3',
-			exempt: false,
-			level: 'error',
-		};
-
 		it('should not error if there are no files', () => {
 			let result = rule(parse(``));
-			expect(result).not.toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(0, 0, 0)});
+			expect(result).not.toContainMessage({...F3, ...error});
 		});
 
 		it('should not error if there are no views', () => {
 			let result = rule(parse(`files:{} files:{}`));
-			expect(result).not.toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(0, 0, 0)});
+			expect(result).not.toContainMessage({...F3, ...error});
 		});
 
 		it('should not error for a view with no fields', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {}
 			}`));
-			expect(result).not.toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(0, 0, 0)});
+			expect(result).not.toContainMessage({...F3, ...error});
 		});
 
 		it('should error for a measure with a type:count and no filter', () => {
@@ -35,7 +40,8 @@ describe('Rules', () => {
 					measure: bar { type: count }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 0, 1)});
+			expect(result).toContainMessage({...F3, ...error});
 		});
 
 		it('should not error for a measure with a type:count and 1 filter', () => {
@@ -50,7 +56,8 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 0, 0)});
+			expect(result).not.toContainMessage({...F3, ...error});
 		});
 
 		it('should not error for a measure with a type:count and 2 filter', () => {
@@ -69,7 +76,8 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 0, 0)});
+			expect(result).not.toContainMessage({...F3, ...error});
 		});
 
 		it('should not error for an F3 exempted view', () => {
@@ -79,7 +87,8 @@ describe('Rules', () => {
 					measure: bar { type:count }
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 1, 0)});
+			expect(result).not.toContainMessage({...F3, ...error});
 		});
 
 		it('should not error for an F3 exempted field', () => {
@@ -91,7 +100,8 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).not.toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 1, 0)});
+			expect(result).not.toContainMessage({...F3, ...error});
 		});
 
 		it('should error for an F3 exempted field if no reason is specified', () => {
@@ -103,7 +113,8 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 0, 1)});
+			expect(result).toContainMessage({...F3, ...error});
 		});
 
 		it('should error for an otherwise exempted view', () => {
@@ -113,7 +124,8 @@ describe('Rules', () => {
 					measure: bar { type: count }
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 0, 1)});
+			expect(result).toContainMessage({...F3, ...error});
 		});
 
 		it('should error for an otherwise exempted field', () => {
@@ -125,7 +137,8 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(failMessageF3);
+			expect(result).toContainMessage({...F3, ...summary(1, 0, 1)});
+			expect(result).toContainMessage({...F3, ...error});
 		});
 	});
 });
