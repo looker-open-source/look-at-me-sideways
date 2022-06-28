@@ -6,10 +6,9 @@ module.exports = function(
 ) {
 	let messages = [];
 	let rule = 'F3';
-	let exempt;
-	if (exempt = getExemption(project.manifest, rule)) {
+	if (getExemption(project.manifest, rule)) {
 		messages.push({
-			rule, exempt, level: 'info', location: 'project',
+			rule, level: 'info', location: 'project',
 			path: `/projects/${project.name}/files/manifest.lkml`,
 			description: 'Project-level rule exemption',
 		});
@@ -28,7 +27,9 @@ module.exports = function(
 					continue;
 				}
 				matchCt++;
-				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
+				let exempt = getExemption(field, rule)
+					|| getExemption(view, rule)
+					|| getExemption(file, rule);
 				if (exempt) {
 					exemptionCt++; continue;
 				}
@@ -38,7 +39,7 @@ module.exports = function(
 				if (field.filters === undefined) {
 					errorCt++;
 					messages.push({
-						location, path, rule, exempt, level: 'error',
+						location, path, rule, level: 'error',
 						description: `Type:count measure at ${location} does not have a filter applied`,
 					});
 				}
@@ -47,7 +48,7 @@ module.exports = function(
 	}
 	messages.push({
 		rule, level: 'info',
-		description: `Evaluated ${matchCt} count measures, with ${exemptionCt} exempt and ${errorCt} erroring`,
+		description: `Evaluated ${matchCt} matches, with ${exemptionCt} exempt and ${errorCt} erroring`,
 	});
 	return {
 		messages,

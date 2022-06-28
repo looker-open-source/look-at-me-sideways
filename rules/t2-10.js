@@ -20,7 +20,6 @@ module.exports = function(
 	for (let rule of ruleIds) {
 		rules[rule] = {
 			globallyExempt: getExemption(project.manifest, rule),
-			matches: 0,
 			exemptions: 0,
 			errors: 0,
 		};
@@ -41,15 +40,20 @@ module.exports = function(
 	let files = project.files || [];
 	let pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);
 	let unique = (x, i, arr) => arr.indexOf(x) == i;
+
+	let matchCt = 0;
 	for (let file of files) {
 		let views = Object.values(file.view || {});
 		for (let view of views) {
 			let location = 'view: ' + view.$name;
 			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			let sql = view.sql_table_name || view.derived_table && view.derived_table.sql;
+
 			if (!sql) {
 				continue;
 			}
+
+			matchCt++;
 
 			let exempt = (ruleId) =>
 				getExemption(project.manifest, ruleId)
@@ -60,7 +64,6 @@ module.exports = function(
 
 			let rulesInMatch = {};
 			for (let r of ruleIds) {
-				rules[r].matches++;
 				if (exempt(r)) {
 					rules[r].exemptions++;
 				}
@@ -279,7 +282,7 @@ module.exports = function(
 		}
 		messages.push({
 			rule, level: 'info',
-			description: `Evaluated ${rules[rule].matches} views, with ${rules[rule].exemptions} exempt and ${rules[rule].errors} erroring`,
+			description: `Evaluated ${matchCt} matches, with ${rules[rule].exemptions} exempt and ${rules[rule].errors} erroring`,
 		});
 	}
 	return {

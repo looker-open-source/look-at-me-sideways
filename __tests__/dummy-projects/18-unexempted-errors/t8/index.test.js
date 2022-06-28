@@ -1,22 +1,11 @@
-const lams = require('../../../index.js')
-const mocks = require('../../../lib/mocks.js')
-const path= require('path')
-require('../../../lib/expect-to-contain-message');
-const log = x=>console.log(x)
-const testProjectName = __dirname.split(path.sep).slice(-1)[0];
-
-
-const options = {reporting:"no", cwd:__dirname,
-	ignore: "misc{,2}/**"
-}
+const {testName, lams, options, mocks} = require('../../../../lib/test-commons.js')(__dirname,{dirnameOffset:-2})
 
 describe('Projects', () => {
-	describe(testProjectName, () => {
+	describe(testName, () => {
 		let {spies, process, console} = mocks()
 		let messages
 		beforeAll( async () => {
 			messages = await lams(options,{process, console})
-			console.log(messages)
 		})
 		it("should not error out", ()=> {
 			expect(console.error).not.toHaveBeenCalled()
@@ -33,11 +22,17 @@ describe('Projects', () => {
 				level: "error"
 			});
 		});
-		it("it should check exactly one explore", ()=> {
+		it("it should on T8 (missing separator line)", ()=> {
 			expect({messages}).toContainMessage({
-				rule: "E1",
+				rule: "T8",
+				level: "error"
+			});
+		});
+		it("it should provide correct aggregate info (1 match, 0 exempt, 1 error)", ()=> {
+			expect({messages}).not.toContainMessage({
+				rule: "F3",
 				level: "info",
-				description: "Evaluated 1 matches, with 0 exempt and 0 erroring"
+				description: "Evaluated 1 matches, with 0 exempt and 1 erroring"
 			});
 		});
 	});
