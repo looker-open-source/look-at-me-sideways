@@ -1,4 +1,4 @@
-const {testName, lams, options, mocks, log} = require('../../../../lib/test-commons.js')(__dirname,{dirnameOffset:-2})
+const {testName, lams, options, mocks} = require('../../../../lib/test-commons.js')(__dirname,{dirnameOffset:-2})
  
 describe('Projects', () => {
 	describe(testName, () => {
@@ -6,8 +6,6 @@ describe('Projects', () => {
 		let messages
 		beforeAll( async () => {
 			messages = await lams(options,{process, console});
-
-			log(messages.filter(m=>m.rule=="F3"))
 		})
 		it("should not error out", ()=> {
 			expect(console.error).not.toHaveBeenCalled()
@@ -32,11 +30,11 @@ describe('Projects', () => {
 			});
 		});
 
-		it("it should provide aggregate info (1 match, 1 exempt, 0 error)", ()=> {
-			expect({messages}).not.toContainMessage({
+		it("it should provide correct aggregate info (1 match, 1 exempt, 0 error)", ()=> {
+			expect({messages}).toContainMessage({
 				rule: "F3",
 				level: "info",
-				description: "Evaluated 0 matches, with 1 exempt and 0 erroring"
+				description: "Evaluated 1 matches, with 1 exempt and 0 erroring"
 			});
 		});
 	});

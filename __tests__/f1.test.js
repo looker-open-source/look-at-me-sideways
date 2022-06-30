@@ -327,6 +327,22 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(error);
 		});
 
+		it('should not error for special-case 2-part references, even when there is additional whitespace', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar1 { sql: 1 ;; }
+					dimension: baz2 { sql: {{  baz._sql  }} ;;}
+					dimension: baz3 { sql: {{  baz._value  }} ;;}
+					dimension: baz5 { sql: {{ bar._parameter_value	 }} ;;}
+					dimension: baz6 { sql: {{ baz._name
+					 }} ;;}
+				}
+			}`));
+			expect(result).toContainMessage(summary(5, 0, 0));
+			expect(result).not.toContainMessage(error);
+		});
+
 		it('should error for 2-part ._in_query references', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {

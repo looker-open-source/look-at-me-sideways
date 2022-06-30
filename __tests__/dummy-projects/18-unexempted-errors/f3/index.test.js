@@ -1,13 +1,11 @@
-const {testName, lams, options, mocks, log} = require('../../../../lib/test-commons.js')(__dirname,{dirnameOffset:-2})
+const {testName, lams, options, mocks} = require('../../../../lib/test-commons.js')(__dirname,{dirnameOffset:-2})
  
 describe('Projects', () => {
 	describe(testName, () => {
 		let {spies, process, console} = mocks()
 		let messages
 		beforeAll( async () => {
-			log({options})
 			messages = await lams(options,{process, console});
-			log(messages.filter(m=>m.rule=="F3"))
 		})
 		it("should not error out", ()=> {
 			expect(console.error).not.toHaveBeenCalled()
