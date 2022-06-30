@@ -39,7 +39,7 @@ module.exports = function(
 		return {messages};
 	}
 
-	const pkNamingConvention = (d) => d.$name.match(/^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/);
+	const pkNamingConvention = (d) => d.$name.match(/^([0-9]+pk|pk[0-9]*)_([a-z0-9A-Z_]+)$/);
 	const unique = (x, i, arr) => arr.indexOf(x) === i;
 	let files = project.files || [];
 
@@ -87,7 +87,11 @@ module.exports = function(
 			}
 
 			rule = 'K2';
-			let declaredNs = pkDimensions.map(pkNamingConvention).map((match) => match[1].replace('pk', '')).filter(unique);
+			let declaredNs = pkDimensions
+				.map(pkNamingConvention)
+				.map((match) => match[1].replace('pk', ''))
+				.map((n) => (n===''?'1':n))
+				.filter(unique);
 			if (declaredNs.length > 1) {
 				if (!exempt(rule)) {
 					rules[rule].errors++;
