@@ -58,7 +58,7 @@ module.exports = function(
 					let match = value
 						.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
 						.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/);
-					let parts = ((match || [])[2] || '').split('.').filter(Boolean);
+					let parts = ((match || [])[2] || '').split('.').map((p)=>p.trim()).filter(Boolean);
 					if (!parts.length) {
 						return;
 					}
@@ -84,7 +84,7 @@ module.exports = function(
 						errorCt++;
 						messages.push({
 							location, path, rule, exempt, level: 'error',
-							description: `${field.$name} references another view, ${parts[0]},  via ${match[0]}`,
+							description: `${field.$name} references another view, ${parts[0]},  via ${parts.join('.')}`,
 						});
 					}
 				});
