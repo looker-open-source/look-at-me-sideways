@@ -122,6 +122,7 @@ If your LookML project doesn't have a manifest.lkml file, you may want to consid
 ### Release Notes
 
 - [v2](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2)
+- [v3](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v3)
 
 ### Privacy Policy
 
