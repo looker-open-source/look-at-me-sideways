@@ -1,4 +1,4 @@
-const {testName, lams, options, mocks} = require('../../..//lib/test-commons.js')(__dirname)
+const {testName, lams, options, mocks} = require('../../../../lib/test-commons.js')(__dirname,{dirnameOffset:-2})
 
 describe('Projects', () => {
 	describe(testName, () => {
@@ -7,9 +7,17 @@ describe('Projects', () => {
 		beforeAll( async () => {
 			messages = await lams(options,{process, console})
 		})
+		
+		// Standard sanity checks
 		it("should not error out", ()=> {
 			expect(console.error).not.toHaveBeenCalled()
 		});
+		it("it should not contain any unexpected parser errors", ()=> {
+			expect({messages}).not.toContainMessage({rule: "P0"});
+			expect({messages}).not.toContainMessage({rule: "P1"});
+		});
+
+		// Rule failing as expected without refinement
 		it("it should error on rule explore_descriptions for model:bad", ()=> {
 			expect({messages}).toContainMessage({
 				rule: "explore_descriptions",
@@ -24,6 +32,8 @@ describe('Projects', () => {
 				location: "model:bad/view:needs_refinement/dimension:id"
 			});
 		});
+
+		// Rule passing with refinement
 		it("it should not error on rule explore_descriptions for model:ok", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "explore_descriptions",
