@@ -17,6 +17,7 @@ const defaultProcess = process;
  * @param {string=}	options.manifest - An override/alternative for the contents of the manifest file
  * @param {string=}	options.onParserError -  Set to "info" to indicate that LookML parsing errors should not fail the linter
  * @param {boolean} options.verbose Set to also output verbose level messages, for output modes that support it (lines)
+ * @param {string=}	options.transformations - An optional object specifying transformation overrides to provide to node-lookml-parser
  * @param {string=}	options.dateOutput - Set to "none" to skip printing the date in the issues.md
  * @param {*=}		options.allowCustomRules - Experimental option. DO NOT USE TO RUN UNTRUSTED CODE. Pass a value to allow running of externally defined JS for custom rules
  * @param {*=}		options.jenkins - Deprecated. Use `output=jenkins,markdown` insead. Indicates that LAMS is being run by Jenkins and to include the build URL from ENV variables in the markdown output
@@ -67,6 +68,10 @@ module.exports = async function(
             source: options.source,
             conditionalCommentString: 'LAMS',
             fileOutput: 'array',
+            transformations: {
+                applyExtensionsRefinements: true,
+                ...(options.transformations||{})
+            },
             cwd,
             globOptions: {
                 ignore,
