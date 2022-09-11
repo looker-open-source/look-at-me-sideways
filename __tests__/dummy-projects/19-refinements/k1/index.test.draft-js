@@ -1,3 +1,5 @@
+// K1 is one of the more complex sets of rules, so while this failing test should be accurate, I am marking it as draft while I first work on other rules
+
 const {testName, lams, options, mocks} = require('../../../../lib/test-commons.js')(__dirname,{dirnameOffset:-2})
 
 describe('Projects', () => {
