@@ -40,13 +40,14 @@ The rule exemption syntax encourages developers to document the reason for each 
 
 ```lkml
 view: rollup {
-  derived_table: {
-    sql_trigger_value: SELECT CURRENT_DATE() ;;
-    # LAMS
-    # rule_exemptions: {
-    #  T1: "2018-11-12 - I can't use datagroups for this super special reason and Bob said it's ok"
-    # }
-    sql: SELECT ...
+  sql_table_name: my_table ;;
+
+  # LAMS
+  # rule_exemptions: {
+  #  K3: "2018-11-12 - Dimensions are out of order for reason X and Bob said it's ok"
+  # }
+  dimension: info {...}
+  ...
 ```
 
 Note: For large projects with many exemptions, we suggest starting the reasons with the Y-M-D formatted date on which they were added, for easier review in your issue report.
