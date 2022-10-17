@@ -97,7 +97,7 @@ module.exports = function(
 						});
 						continue;
 					}
-					let pksColumnDeclarations = pksForAlias.map((pk)=>parseInt(pk.match(/\d+/)||"1"));
+					let pksColumnDeclarations = pksForAlias.map((pk)=>parseInt(pk.match(/\d+/)||'1'));
 					let maxDeclaration = pksColumnDeclarations.reduce(max);
 					let minDeclaration = pksColumnDeclarations.reduce(min);
 					if (minDeclaration !== maxDeclaration) {
