@@ -173,4 +173,18 @@ This project is intended to be a safe, welcoming space for collaboration, and co
 [Contributer Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct). Concerns or
 incidents may be reported confidentially to fabio@looker.com.
 
+### Other LookML Linting Projects
+
+Like LAMS but looking to shop around a bit? The community has come up with a few othre LookML linting options:
+
+- https://github.com/rbob86/lookml-linter
+- https://github.com/ww-tech/lookml-tools/blob/master/README_LINTER.md
+- https://pypi.org/project/lookmlint/
+
+Or if you want to write your own, you may want to start with one of these LookML parsers:
+
+- https://www.npmjs.com/package/lookml-parser (JS, used by LAMS)
+- https://github.com/joshtemple/lkml (Python)
+- https://github.com/drewgillson/lkml (JS port of the above)
+
 `>_>`
