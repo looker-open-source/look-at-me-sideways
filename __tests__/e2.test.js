@@ -60,6 +60,20 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(error);
 		});
 
+		it('should pass if a many_to_one join correctly uses an implicit 1pk equality constraint', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {
+					join: users {
+						relationship: many_to_one
+						sql_on: \${users.pk_user_id} = \${orders.user_id} ;;
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(error);
+			expect(result).not.toContainMessage(error);
+		});
+
 		it('should pass if a many_to_one join correctly uses a 1pk equality constraint in reverse, or across lines', () => {
 			let result = rule(parse(`model: m {
 				explore: orders {
@@ -109,6 +123,18 @@ describe('Rules', () => {
 					join: users {
 						relationship: many_to_one
 						sql_on: \${users.id} = \${orders.pk1_id} ;;
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...error});
+		});
+
+		it('should error if a many_to_one join uses an implicit pk1 dimensions, but not on the "one" view', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {
+					join: users {
+						relationship: many_to_one
+						sql_on: \${users.id} = \${orders.pk_order_id} ;;
 					}
 				}
 			}`));
