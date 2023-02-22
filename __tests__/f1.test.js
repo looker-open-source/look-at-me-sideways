@@ -327,6 +327,18 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(error);
 		});
 
+		it('should not error for 2-part ._rendered_value references', () => {
+			let result = rule(parse(`files:{} files:{
+				view: foobar {
+					sql_table_name: foobar ;;
+					dimension: foo {}
+					dimension: bar { html: <b>{{foo._rendered_value}}</b> ;;}
+				}
+			}`));
+			expect(result).toContainMessage(summary(2, 0, 0));
+			expect(result).not.toContainMessage(error);
+		});
+
 		it('should not error for special-case 2-part references, even when there is additional whitespace', () => {
 			let result = rule(parse(`files:{} files:{
 				view: foo {
