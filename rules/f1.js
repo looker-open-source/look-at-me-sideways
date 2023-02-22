@@ -75,6 +75,7 @@ module.exports = function(
 						'_name',
 						'_filters',
 						'_parameter_value',
+						'_rendered_value',
 						'_label',
 					].includes(parts[parts.length - 1])
 					) {
