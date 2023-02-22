@@ -1,7 +1,26 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
 const getExemption = require('../lib/get-exemption.js');
+const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
+
 
 module.exports = function(
+	project,
+) {
+	let ruleDef = {
+		$name: "F1",
+		match: "$.model.*.view.*",
+		ruleFn
+	}
+	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
+
+	return {messages} 
+
+	function ruleFn(match, path, project){
+		return true
+	}
+}
+
+function old(
 	project,
 ) {
 	let messages = [];
