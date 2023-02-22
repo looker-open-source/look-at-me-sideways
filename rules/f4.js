@@ -1,11 +1,21 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
 const getExemption = require('../lib/get-exemption.js');
+const packageJson = require('../package.json');
 
 module.exports = function(
 	project,
 ) {
 	let messages = [];
 	let rule = 'F4';
+	let majorVersion = parseInt(packageJson.version.split('.')[0]);
+	const v3DimensionGroups = majorVersion >= 3 || !!(
+		project.manifest &&
+		project.manifest.rule &&
+		project.manifest.rule.F4 &&
+		project.manifest.rule.F4.options &&
+		project.manifest.rule.F4.options.v3_dimension_groups
+	);
+
 	let exempt;
 	if (exempt = getExemption(project.manifest, rule)) {
 		messages.push({
@@ -26,7 +36,8 @@ module.exports = function(
 				.concat(Object.values(view.dimension || {}))
 				.concat(Object.values(view.measure || {}))
 				.concat(Object.values(view.filter || {}))
-				.concat(Object.values(view.parameter || {}));
+				.concat(Object.values(view.parameter || {}))
+				.concat(v3DimensionGroups ? Object.values(view.dimension_group || {}) : []);
 			for (let field of fields) {
 				matchCt++;
 				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);

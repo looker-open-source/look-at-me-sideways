@@ -33,7 +33,7 @@ describe('Projects', () => {
 
 		const majorVersion = parseInt(packageJson.version.split(".")[0]);
 		if(majorVersion <= 2){
-			it("it should not error on rule F4 for dimension_groups without labels", ()=> {
+			it("v2: it should not error on rule F4 for dimension_groups without labels", ()=> {
 				expect({messages}).not.toContainMessage({
 					rule: "F4",
 					level: "error",
@@ -41,7 +41,7 @@ describe('Projects', () => {
 			});
 		}
 		else{
-			it("it should error on rule F4 for dimension_groups without labels", ()=> {
+			it("v3+: it should error on rule F4 for dimension_groups without labels", ()=> {
 				expect({messages}).toContainMessage({
 					rule: "F4",
 					level: "error",

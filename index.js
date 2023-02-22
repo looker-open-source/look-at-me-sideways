@@ -195,10 +195,10 @@ module.exports = async function(
             console.log('Checking custom rules...');
             for (let rule of Object.values(project.manifest.rule)) {
                 console.log('> ' + rule.$name);
-                if(rules.includes(rule.$name.toLowerCase()) && !rule.custom){
-                    console.log(`  Skipping ${rule.$name}: it is named like a built-in rule and is not 'custom:yes'`)
-                    continue
-                    }
+                if (rules.includes(rule.$name.toLowerCase()) && !rule.custom) {
+                    console.log(`  Skipping ${rule.$name}: it is named like a built-in rule and is not 'custom:yes'`);
+                    continue;
+                }
                 messages = messages.concat(checkCustomRule(rule, project));
             }
             console.log('> Custom rules done!');

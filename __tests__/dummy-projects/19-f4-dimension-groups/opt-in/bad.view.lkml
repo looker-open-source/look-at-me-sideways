@@ -1,4 +1,3 @@
-explore: bad {}
 view: bad {
   dimension_group: created {
     type: time
