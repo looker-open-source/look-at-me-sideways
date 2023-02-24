@@ -30,11 +30,10 @@ describe('Projects', () => {
 				location: "model:mixed/view:my_view/dimension:bad"
 			});
 		});
-		it("it should error once WITH exemption on rule types_required for dimension:exempt", ()=> {
+		it("it should not error (b/c of exemption) on rule types_required for dimension:exempt", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "types_required",
 				level: "error",
-				exempt: true,
 				location: "model:mixed/view:ok_view/dimension:foo"
 			});
 		});
