@@ -34,7 +34,7 @@ describe('Projects', () => {
 			expect({messages}).not.toContainMessage({
 				rule: "types_required",
 				level: "error",
-				location: "model:mixed/view:ok_view/dimension:foo"
+				location: "model:mixed/view:ok_view/dimension:exempt"
 			});
 		});
 	});
