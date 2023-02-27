@@ -24,25 +24,28 @@ describe('Projects', () => {
 		// 		description: "Evaluated 1 matches, with 1 exempt and 0 erroring"
 		// 	});
 		// });
+
+		const view = "model:mixed/view:my_view"
+
 		it("it should not error on rule types_require for dimension:ok", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "types_required",
 				level: "error",
-				location: "model:mixed/view:my_view/dimension:ok"
+				location: `${view}/dimension:ok`
 			});
 		});
 		it("it should error once without exemption on rule types_required for dimension:bad", ()=> {
 			expect({messages}).toContainMessage({
 				rule: "types_required",
 				level: "error",
-				location: "model:mixed/view:my_view/dimension:bad"
+				location: `${view}/dimension:bad`
 			});
 		});
 		it("it should not error (b/c of exemption) on rule types_required for dimension:exempt", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "types_required",
 				level: "error",
-				location: "model:mixed/view:ok_view/dimension:exempt"
+				location: `${view}/dimension:exempt`
 			});
 		});
 	});
