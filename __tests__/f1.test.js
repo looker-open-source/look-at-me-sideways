@@ -10,7 +10,7 @@ let error = {level: 'error'};
 let summary = (m=1, ex=0, er=1) => ({
 	rule: 'F1',
 	level: 'info',
-	description: `Evaluated ${m} matches, with ${ex} exempt and ${er} erroring`,
+	description: `Rule F1 was matched ${m} time(s), with ${ex} exemptions`,
 });
 
 describe('Rules', () => {
