@@ -40,13 +40,14 @@ The rule exemption syntax encourages developers to document the reason for each 
 
 ```lkml
 view: rollup {
-  derived_table: {
-    sql_trigger_value: SELECT CURRENT_DATE() ;;
-    # LAMS
-    # rule_exemptions: {
-    #  T1: "2018-11-12 - I can't use datagroups for this super special reason and Bob said it's ok"
-    # }
-    sql: SELECT ...
+  sql_table_name: my_table ;;
+
+  # LAMS
+  # rule_exemptions: {
+  #  K3: "2018-11-12 - Dimensions are out of order for reason X and Bob said it's ok"
+  # }
+  dimension: info {...}
+  ...
 ```
 
 Note: For large projects with many exemptions, we suggest starting the reasons with the Y-M-D formatted date on which they were added, for easier review in your issue report.
@@ -172,5 +173,19 @@ npm publish
 This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the
 [Contributer Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct). Concerns or
 incidents may be reported confidentially to fabio@looker.com.
+
+### Other LookML Linting Projects
+
+Like LAMS but looking to shop around a bit? The community has come up with a few othre LookML linting options:
+
+- https://github.com/rbob86/lookml-linter
+- https://github.com/ww-tech/lookml-tools/blob/master/README_LINTER.md
+- https://pypi.org/project/lookmlint/
+
+Or if you want to write your own, you may want to start with one of these LookML parsers:
+
+- https://www.npmjs.com/package/lookml-parser (JS, used by LAMS)
+- https://github.com/joshtemple/lkml (Python)
+- https://github.com/drewgillson/lkml (JS port of the above)
 
 `>_>`

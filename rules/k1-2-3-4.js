@@ -52,7 +52,7 @@ module.exports = function(
 			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 
 			/* Skip field-only views */
-			if (!view.derived_table && !view.sql_table_name && !view.extends) {
+			if (!view.derived_table && !view.sql_table_name || view.extends) {
 				messages.push({
 					location, path, rule: 'K1', level: 'verbose',
 					description: `Field-only view ${view.$name} is not subject to Primary Key Dimension rules K1-K4`,

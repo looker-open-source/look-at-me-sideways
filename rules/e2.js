@@ -19,7 +19,7 @@ module.exports = function(
 	let exemptionCt = 0;
 	let errorCt = 0;
 	let models = Object.values(project.model || {});
-	const pkRegex = /^([0-9]+pk|pk[0-9]+)_([a-z0-9A-Z_]+)$/;
+	const pkRegex = /^([0-9]+pk|pk[0-9]*)_([a-z0-9A-Z_]+)$/;
 	const isFieldRef = (ref) => !ref.match(/^TABLE$|^SUPER$|^EXTENDED$|\.SQL_TABLE_NAME$/);
 	const unique = (x, i, arr) => arr.indexOf(x)===i;
 	const min = (a, b) => a<b?a:b;
@@ -97,7 +97,7 @@ module.exports = function(
 						});
 						continue;
 					}
-					let pksColumnDeclarations = pksForAlias.map((pk)=>parseInt(pk.match(/\d+/)));
+					let pksColumnDeclarations = pksForAlias.map((pk)=>parseInt(pk.match(/\d+/)||'1'));
 					let maxDeclaration = pksColumnDeclarations.reduce(max);
 					let minDeclaration = pksColumnDeclarations.reduce(min);
 					if (minDeclaration !== maxDeclaration) {
