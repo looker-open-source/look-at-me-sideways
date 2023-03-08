@@ -10,24 +10,24 @@ let error = {level: 'error'};
 let summary = (m=1, ex=0, er=1) => ({
 	rule: 'F1',
 	level: 'info',
-	description: `Rule F1 was matched ${m} time(s), with ${ex} exemptions`,
+	description: `Rule F1 summary: ${m} matches, ${ex} matches exempt, and ${er} errors`,
 });
 
 describe('Rules', () => {
 	describe('F1', () => {
-		it('should not error if there are no files', () => {
+		it('should not error if the project is empty', () => {
 			let result = rule(parse(``));
 			expect(result).toContainMessage(summary(0, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error if there are no views', () => {
-			let result = rule(parse(`files:{} files:{}`));
+			let result = rule(parse(`model: my_model {}`));
 			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for a view with no fields', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo { sql_table_name: foo ;; }
 			}`));
 			expect(result).toContainMessage(summary(0, 0, 0));
@@ -35,17 +35,17 @@ describe('Rules', () => {
 		});
 
 		it('should not error for a view with no table (a.k.a. field-only view)', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo_bar { 
 					dimension: combine { sql: \${foo.amount} + \${bar.amount} ;; } 
 				}
 			}`));
-			expect(result).toContainMessage(summary(0, 0, 0));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
 
 		it('should not error for a field with no references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: foo { sql: 1 ;; }
@@ -56,7 +56,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a base-table view with a cross-view reference', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: \${baz.bat} ;; }
@@ -67,7 +67,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a derived-table view with a cross-view reference', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					derived_table: { sql: SELECT 1 ;;}
 					dimension: bar { sql: \${baz.bat} ;; }
@@ -77,19 +77,23 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
-		it('should error for an extended view with a cross-view reference', () => {
-			let result = rule(parse(`files:{} files:{
-				view: foo {
-					extends: [bar]
-					dimension: baz { sql: \${abc.xyz} ;; }
-				}
-			}`));
-			expect(result).toContainMessage(summary(1, 0, 1));
-			expect(result).toContainMessage({...F1, ...error});
-		});
+		//TODO: Expose assembleModels from parser to test extensions here without full parseFiles & dummy project test case
+		// it('should error for an extended view with a cross-view reference', () => {
+		// 	let result = rule(parse(`model: my_model {
+		// 		view: foo {
+		// 			extends: [bar]
+		// 			dimension: baz { sql: \${abc.xyz} ;; }
+		// 		}
+		// 		view: bar {
+		// 			sql_table_name: foo ;;
+		// 		}
+		// 	}`));
+		// 	expect(result).toContainMessage(summary(1, 0, 1));
+		// 	expect(result).toContainMessage({...F1, ...error});
+		// });
 
 		it('should error for a view with cross-view references in measures', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					measure: bar { sql: \${baz.bat} ;; }
@@ -100,7 +104,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a view with cross-view references in filters', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					filter: bar { sql: \${baz.bat} ;; }
@@ -111,10 +115,10 @@ describe('Rules', () => {
 		});
 
 		it('should not error for an F1 exempted view', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
-					extends: [bar]
-					rule_exemptions: {F1:"It is okay, this is extended."}
+					sql_table_name: foo ;;
+					rule_exemptions: {F1:"It's okay"}
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
 			}`));
@@ -123,9 +127,9 @@ describe('Rules', () => {
 		});
 
 		it('should error for an F1 exempted view if no reason is specified', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
-					extends: [bar]
+					sql_table_name: foo ;;
 					rule_exemptions: {F1:""}
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
@@ -135,9 +139,9 @@ describe('Rules', () => {
 		});
 
 		it('should error for an otherwise exempted view', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
-					extends: [bar]
+					sql_table_name: foo ;;
 					rule_exemptions: {X1: "Other rule"}
 					dimension: baz { sql: \${abc.xyz} ;; }
 				}
@@ -147,12 +151,12 @@ describe('Rules', () => {
 		});
 
 		it('should not error for an F1 exempted field', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
-					extends: [bar]
+					sql_table_name: foo ;;
 					dimension: baz { 
 						sql: \${abc.xyz} ;; 
-						rule_exemptions: {F1: "It is okay, this is extended"}
+						rule_exemptions: {F1: "It's okay"}
 					}
 				}
 			}`));
@@ -161,9 +165,9 @@ describe('Rules', () => {
 		});
 
 		it('should error for an otherwise exempted field', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
-					extends: [bar]
+					sql_table_name: foo ;;
 					dimension: baz {
 						sql: \${abc.xyz} ;;
 						rule_exemptions: {X1: "Other"}
@@ -174,35 +178,39 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
-		it('should not error for an F1 exempted project', () => {
-			let result = rule(parse(`files:{} files:{
-				view: foo {
-					extends: [bar]
-					dimension: baz { 
-						sql: \${abc.xyz} ;; 
-					}
-				}
-			}
-			manifest: {rule_exemptions: {F1: "It is okay, this is extended"}}`));
-			expect(result).not.toContainMessage(error);
-		});
+		// Note: Need to decide if this style of test still makes sense, since for performance reasons, we prefer to
+		//   short-circuit the entire rule application in case of project-level exemptions (and if we want to test it
+		//   with a manually called rule anyway, we would need to apply a redundant check in rule-match-evaluator.js)
+		//
+		// it('should not error for an F1 exempted project', () => {
+		// 	let result = rule(parse(`model: my_model {
+		// 		view: foo {
+		// 			sql_table_name: foo ;;
+		// 			dimension: baz { 
+		// 				sql: \${abc.xyz} ;; 
+		// 			}
+		// 		}
+		// 	}
+		// 	manifest: {rule_exemptions: {F1: "It's okay"}}`));
+		// 	expect(result).not.toContainMessage(error);
+		// });
 
-		it('should error for an otherwise exempted project', () => {
-			let result = rule(parse(`files:{} files:{
-				view: foo {
-					extends: [bar]
-					dimension: baz {
-						sql: \${abc.xyz} ;;
-					}
-				}
-			}
-			files: manifest {rule_exemptions: {X1: "Different exemption"}}`));
-			expect(result).toContainMessage(summary(1, 0, 1));
-			expect(result).toContainMessage({...F1, ...error});
-		});
+		// it('should error for an otherwise exempted project', () => {
+		// 	let result = rule(parse(`model: my_model {
+		// 		view: foo {
+		// 			sql_table_name: foo ;;
+		// 			dimension: baz {
+		// 				sql: \${abc.xyz} ;;
+		// 			}
+		// 		}
+		// 	}
+		// 	files: manifest {rule_exemptions: {X1: "Different exemption"}}`));
+		// 	expect(result).toContainMessage(summary(1, 0, 1));
+		// 	expect(result).toContainMessage({...F1, ...error});
+		// });
 
 		it('should error for a field with a non-special-case 2-part reference in sql {{}}', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: {{baz.bat}} ;; }
@@ -213,7 +221,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in sql {% %}', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: {%parameter baz.bat %} ;; }
@@ -224,7 +232,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in html ${}', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { html: \${baz.bat} ;; }
@@ -235,7 +243,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in html {{}}', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { html: {{baz.bat}} ;; }
@@ -246,7 +254,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in html {% %}', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { html: {%parameter baz.bat %} ;; }
@@ -257,7 +265,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for a field with a TABLE reference', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: foo { sql: \${TABLE.foo} ;; }
@@ -268,7 +276,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for references to its own default alias', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: 1 ;; }
@@ -280,7 +288,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for 2-part ._sql references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: 1 ;; }
@@ -292,7 +300,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for 2-part ._value references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: 1 ;; }
@@ -304,7 +312,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for 2-part ._name references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: 1 ;; }
@@ -316,7 +324,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for 2-part ._parameter_value references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					parameter: bar {}
@@ -328,7 +336,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for 2-part ._rendered_value references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foobar {
 					sql_table_name: foobar ;;
 					dimension: foo {}
@@ -340,7 +348,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for special-case 2-part references, even when there is additional whitespace', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar1 { sql: 1 ;; }
@@ -356,7 +364,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for 2-part ._in_query references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: baz { sql: {{bar._in_query}} ;;}
@@ -367,7 +375,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for 3-part cross-view special-suffix references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { sql: {{bat.baz._value}} ;;}
@@ -378,7 +386,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for 3-part same-view special-suffix references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar {}
@@ -390,7 +398,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for decimal numbers that look kind of like fields', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { type: number }
@@ -402,7 +410,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for decimal numbers that look kind of like fields in liquid', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: rad {}
@@ -414,7 +422,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a 2-part reference in label_from_parameter', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { label_from_parameter: baz.bat }
@@ -425,7 +433,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for a field with a 1-part reference in label_from_parameter', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { label_from_parameter: bat }
@@ -436,7 +444,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in link > url', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { 
@@ -449,7 +457,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a non-special-case 2-part reference in link > icon_url', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { 
@@ -462,7 +470,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for a field with a 1-part reference in link > url', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { 
@@ -475,7 +483,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for a field with a special-case 2-part reference in link > url', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { 
@@ -488,7 +496,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for a field with no-reference in link > icon_url', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { 
@@ -501,7 +509,7 @@ describe('Rules', () => {
 		});
 
 		it('should error for a field with a 2-part reference in filter (deprecated syntax)', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					measure: bar { filter: { field:bat.bax value: "0" } }
@@ -512,7 +520,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for a field with a 1-part reference in filter (deprecated syntax)', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					sql_table_name: foo ;;
 					measure: bar { filter: { field:bat value:"0" } }
@@ -521,5 +529,33 @@ describe('Rules', () => {
 			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage(error);
 		});
+
+		//TODO: Expose assembleModels from parser to test extensions here without full parseFiles & dummy project test case
+		// it('should not error for a view with extension:required', () => {
+		// 	let result = rule(parse(`model: my_model {
+		// 		view: foo {
+		// 			sql_table_name: foo ;;
+		// 			extension: required
+		// 			dimension: baz { sql: \${abc.xyz} ;; }
+		// 		}
+		// 	}`));
+		// 	expect(result).toContainMessage(summary(1, 0, 0));
+		// 	expect(result).not.toContainMessage(error);
+		// });
+
+		// it('should error for a view extending from an extension:required view', () => {
+		// 	let result = rule(parse(`model: my_model {
+		// 		view: foo {
+		// 			sql_table_name: foo ;;
+		// 			extension: required
+		// 			dimension: baz { sql: \${abc.xyz} ;; }
+		// 		}
+		// 		view: baz {
+		// 			extends: [foo]
+		// 		}
+		// 	}`));
+		// 	expect(result).toContainMessage(summary(2, 0, 1));
+		// 	expect(result).toContainMessage({...F1, ...error});
+		// });
 	});
 });

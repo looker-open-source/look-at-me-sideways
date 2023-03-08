@@ -48,7 +48,7 @@ Here is what each part of the rule definition means:
 
 - **Rule name:** Any LookML name for this rule. This name is included in LAMS usage reporting, if you have opted in to it. Names composed of a single letter followed by a number are reserved for future LAMS usage.
 - **description:** (Optional) A succint human-readable description, which will be shown to developers in LAMS' output
-- **match:** A JSONpath expression that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [below](#match-examples) for example match patterns.
+- **match:** A [JSONpath expression](https://www.npmjs.com/package/jsonpath-plus) that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [below](#match-examples) for example match patterns.
 - **expr_rule:** A [Liyad](https://github.com/shellyln/liyad) expression that defines the logic of the rule.
   - **Arguments:** Three arguments are made available to the expression:
     - `match`: The value matched by the match expression. (The expression is invoked once for each time the pattern is matched in your project)
@@ -74,11 +74,11 @@ Not all examples below have been tested, so if you find an issue, please [submit
 | JSONpath                                    | Description                                       |
 | ------------------------------------------- | ------------------------------------------------- |
 | `$.model.*`                                 | All models                                        |
-| `$.files[*].view.*`                         | All views across all files (once per declaration) |
+| `$.file.*.view.*`                           | All views across all files (once per declaration) |
 | `$.model.*.view.*`                          | All views included in models (once per inclusion) |
 | `$.model.*.explore.*`                       | All explores across all models                    |
 | `$.model.foo.explore.*`                     | All explores in the foo model                     |
-| `$.model.*.view.*['dimension','measure'].*` | All dimensions and all measures across all models |
+| `$.model.*.view.*[dimension,measure].*`     | All dimensions and all measures across all models |
 | `$.model[?(@.persist_for)]`                 | All models that declare persist_for               |
 
 ### Expression Examples

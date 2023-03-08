@@ -1,121 +1,82 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
 const getExemption = require('../lib/get-exemption.js');
 const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
-
+const deepGet = require('../lib/deep-get.js');
 
 module.exports = function(
 	project,
 ) {
 	let ruleDef = {
 		$name: "F1",
-		match: "$.model.*.view.*",
+		match: `$.model.*.view.*[dimension,dimension_group,measure,filter].*`,
+		matchAbstract: false,
 		ruleFn
 	}
-	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
+	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal',console})
 
 	return {messages} 
-
-	function ruleFn(match, path, project){
-		return true
-	}
 }
 
-function old(
-	project,
-) {
-	let messages = [];
-	let rule = 'F1';
-	let exempt;
-	if (exempt = getExemption(project.manifest, rule)) {
-		messages.push({
-			rule, exempt, level: 'info', location: 'project',
-			path: `/projects/${project.name}/files/manifest.lkml`,
-			description: 'Project-level rule exemption',
-		});
-		return {messages};
-	}
-	let matchCt = 0;
-	let exemptionCt = 0;
-	let errorCt = 0;
-	let files = project.files || [];
-	for (let file of files) {
-		let path = `/projects/${project.name}/files/${file.$file_path}`;
-		let views = Object.values(file.view || {});
-		for (let view of views) {
-			let location = `view:${view.$name}`;
-			if (!view.sql_table_name && !view.derived_table && !view.extends) {
-				messages.push({
-					location, path, rule: 'F1', level: 'verbose',
-					description: `Field-only view ${view.$name} is not subject to no-cross view references rule`,
-				});
-				continue;
-			}
-			let fields = []
-				.concat(Object.values(view.dimension || {}))
-				.concat(Object.values(view.measure || {}))
-				.concat(Object.values(view.filter || {}));
-			for (let field of fields) {
-				matchCt++;
-				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
-				if (exempt) {
-					exemptionCt++; continue;
-				}
-				let location = `view:${view.$name}/${field.$type}:${field.$name}`;
-				[field.sql,
-					field.html,
-					field.label_from_parameter && '{{' + field.label_from_parameter + '}}',
-					...[].concat(field.link||[]).map((link) => link.url),
-					...[].concat(field.link||[]).map((link) => link.icon_url),
-					// measure.*.filter has been deprecated and replaced by measure.*.filters, with a different syntax
-					// I am keeping this check around for historical consistency, but there should eventually be a rule
-					// to guard against the old syntax at all, and this could be updated accordingly.
-					...[].concat(field.filter||[]).map((filter) => '{{' + filter.field + '}}'),
-				].forEach((value) => {
-					if (!value || !value.replace) {
-						return;
-					}
-					let match = value
-						.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
-						.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/);
-					let parts = ((match || [])[2] || '').split('.').map((p)=>p.trim()).filter(Boolean);
-					if (!parts.length) {
-						return;
-					}
-					// Don't treat references to TABLE or to own default alias as cross-view
-					if (parts[0] === 'TABLE' || parts[0] === view.$name) {
-						parts.shift();
-					}
-					// Don't treat references to special properties as cross-view
-					// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
-					if ([
-						'SQL_TABLE_NAME',
-						'_sql',
-						'_value',
-						'_name',
-						'_filters',
-						'_parameter_value',
-						'_rendered_value',
-						'_label',
-					].includes(parts[parts.length - 1])
-					) {
-						parts.pop();
-					}
-					if (parts.length > 1) {
-						errorCt++;
-						messages.push({
-							location, path, rule, exempt, level: 'error',
-							description: `${field.$name} references another view, ${parts[0]},  via ${parts.join('.')}`,
-						});
-					}
-				});
-			}
+function ruleFn(match,path,project){
+	let view = deepGet(project, path.slice(0,4));
+	let field = match;
+
+	if (!view.sql_table_name && !view.derived_table) {
+		return {
+			level: 'verbose',
+			description: `Field-only view ${view.$name} is not subject to no-cross view references rule`,
 		}
 	}
-	messages.push({
-		rule, level: 'info',
-		description: `Evaluated ${matchCt} matches, with ${exemptionCt} exempt and ${errorCt} erroring`,
-	});
-	return {
-		messages,
-	};
-};
+
+	let messages = []
+	let referenceContainers = [
+		field.sql,
+		field.html,
+		field.label_from_parameter && '{{' + field.label_from_parameter + '}}',
+		...[].concat(field.link||[]).map((link) => link.url),
+		...[].concat(field.link||[]).map((link) => link.icon_url),
+		// measure.*.filter has been deprecated and replaced by measure.*.filters, with a different syntax
+		// I am keeping this check around for historical consistency, but there should eventually be a rule
+		// to guard against the old syntax at all, and this could be updated accordingly.
+		...[].concat(field.filter||[]).map((filter) => '{{' + filter.field + '}}'),
+	]
+	for(let referenceContainer of referenceContainers){
+		if (!referenceContainer || !referenceContainer.replace) {
+			continue;
+		}
+		//TODO: Currently only checking the first reference in each block/container, should loop through them all
+		let regexMatch = referenceContainer
+			.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
+			.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/);
+		let parts = ((regexMatch || [])[2] || '').split('.').map((p)=>p.trim()).filter(Boolean);
+		if (!parts.length) {
+			continue;
+		}
+		// Don't treat references to TABLE or to own default alias as cross-view
+		if (parts[0] === 'TABLE' || parts[0] === view.$name) {
+			parts.shift();
+		}
+		// Don't treat references to special properties as cross-view
+		// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
+		if ([
+			'SQL_TABLE_NAME',
+			'_sql',
+			'_value',
+			'_name',
+			'_filters',
+			'_parameter_value',
+			'_rendered_value',
+			'_label',
+		].includes(parts[parts.length - 1])
+		) {
+			parts.pop();
+		}
+		if (parts.length > 1) {
+			messages.push({
+				level: 'error',
+				description: `${field.$name} references another view, ${parts[0]},  via ${parts.join('.')}`,
+			});
+		}
+	}
+	return messages
+}
