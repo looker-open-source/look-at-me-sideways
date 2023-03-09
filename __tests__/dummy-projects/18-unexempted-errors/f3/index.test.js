@@ -26,7 +26,7 @@ describe('Projects', () => {
 			expect({messages}).toContainMessage({
 				rule: "F3",
 				level: "info",
-				description: "Evaluated 1 matches, with 0 exempt and 1 erroring"
+				description: "Rule F3 summary: 1 matches, 0 matches exempt, and 1 errors"
 			});
 		});
 

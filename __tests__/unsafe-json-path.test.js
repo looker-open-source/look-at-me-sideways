@@ -1,0 +1,29 @@
+/* Copyright (c) 2023 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
+const getProjectJsonpathMatches = require('../lib/custom-rule/get-project-jsonpath-matches.js');
+
+// describe('Rule Engine', () => {
+// 	describe('JSONPath Safety', () => {
+// 		it('should allow simple existence expressions', () => {
+//			getProjectJsonpathMatches({}, {$name:"simple_existence", match:"$..dimension.*[?(@.label)]"})
+// 		});
+
+// 		it('should allow simple string equality expressions', () => {
+//			getProjectJsonpathMatches({}, {$name:"simple_equality", match:"$..measure.*[?(@.type==='string')]"})
+// 		});
+
+// 		it('should not allow non-simple things in [(...)]', () => {
+//			getProjectJsonpathMatches({}, {$name:"nonsimple_value", match:"$..dimension.filters[(@.length-1)]"})
+// 		});
+
+// 		it('should not allow non-simple things in [?(...)]', () => {
+//			getProjectJsonpathMatches({}, {$name:"nonsimple_predicate", match:"$..dimension.filters[?(@.label.match(/pattern/))]"})
+// 		});
+
+// 		it('should not attempt to guess how to parse multiple [(...)] expressions and shold not allow them', () => {
+//			getProjectJsonpathMatches({}, {
+//				$name:"multiple_expressions", 
+//				match:"$.model.*.view[?(@.derived_table)].dimension.*[?(@.view_label)]"
+//			})
+// 		});
+// 	}
+// }
