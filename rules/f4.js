@@ -1,68 +1,21 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
-const getExemption = require('../lib/get-exemption.js');
-const packageJson = require('../package.json');
+
+const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 
 module.exports = function(
 	project,
 ) {
-	let messages = [];
-	let rule = 'F4';
-	let majorVersion = parseInt(packageJson.version.split('.')[0]);
-	const v3DimensionGroups = majorVersion >= 3 || !!(
-		project.manifest &&
-		project.manifest.rule &&
-		project.manifest.rule.F4 &&
-		project.manifest.rule.F4.options &&
-		project.manifest.rule.F4.options.v3_dimension_groups
-	);
-
-	let exempt;
-	if (exempt = getExemption(project.manifest, rule)) {
-		messages.push({
-			rule, exempt, level: 'info', location: 'project',
-			path: `/projects/${project.name}/files/manifest.lkml`,
-			description: 'Project-level rule exemption',
-		});
-		return {messages};
+	let ruleDef = {
+		$name: "F4",
+		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter][?(@.hidden!==true)]`,
+		matchAbstract: false,
+		expr_rule: `
+			($if ($boolean ::match:description)
+				true
+				($concat "Non-hidden field \`" ::match:$name "\` does not have a description")
+			)`
 	}
-	let matchCt = 0;
-	let exemptionCt = 0;
-	let errorCt = 0;
-	let files = project.files || [];
-	for (let file of files) {
-		let views = Object.values(file.view || {});
-		for (let view of views) {
-			let fields = []
-				.concat(Object.values(view.dimension || {}))
-				.concat(Object.values(view.measure || {}))
-				.concat(Object.values(view.filter || {}))
-				.concat(Object.values(view.parameter || {}))
-				.concat(v3DimensionGroups ? Object.values(view.dimension_group || {}) : []);
-			for (let field of fields) {
-				matchCt++;
-				let exempt = getExemption(field, rule) || getExemption(view, rule) || getExemption(file, rule);
-				if (exempt) {
-					exemptionCt++; continue;
-				}
+	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
 
-				let location = `view:${view.$name}/${field.$type}:${field.$name}`;
-				let path = `/projects/${project.name}/files/${file.$file_path}#${location}`;
-				if (!field.hidden && !field.description) {
-					errorCt++;
-					messages.push({
-						location, path, rule, exempt, level: 'error',
-						description: `${location} is missing a description`,
-						hint: 'Either apply a description or hide it',
-					});
-				}
-			}
-		}
-	}
-	messages.push({
-		rule, level: 'info',
-		description: `Evaluated ${matchCt} matches, with ${exemptionCt} exempt and ${errorCt} erroring`,
-	});
-	return {
-		messages,
-	};
-};
+	return {messages} 
+}

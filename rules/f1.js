@@ -12,7 +12,7 @@ module.exports = function(
 		matchAbstract: false,
 		ruleFn
 	}
-	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal',console})
+	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
 
 	return {messages} 
 }

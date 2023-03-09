@@ -4,7 +4,8 @@ const path= require('path')
 const options = {reporting:"no", cwd:__dirname}
 require('../../../lib/expect-to-contain-message');
 const log = x=>console.log(x)
-const testProjectName = __dirname.split(path.sep).slice(-1)[0];
+const testProjectName = __dirname.split(path.sep).slice(-2).join(" > ");
+
 
 describe('Projects', () => {
 	describe(testProjectName, () => {
@@ -16,11 +17,24 @@ describe('Projects', () => {
 		it("should not error out", ()=> {
 			expect(console.error).not.toHaveBeenCalled()
 		});
-		it("it should contain a path with the project name", ()=> {
+		it("it should not contain any unexpected parser (P0) errors", ()=> {
+			expect({messages}).not.toContainMessage({
+				rule: "P0",
+				level: "error"
+			});
+		});
+
+		it("it should not contain any parser syntax (P1) errors", ()=> {
+			expect({messages}).not.toContainMessage({
+				rule: "P1",
+				level: "error"
+			});
+		});
+
+		it("it should error on rule F4 for dimension_groups without descriptions", ()=> {
 			expect({messages}).toContainMessage({
-				rule: "F3",
+				rule: "F4",
 				level: "error",
-				path: "/projects/should_be_in_path/files/bad.view.lkml#view:bad/field:bad"
 			});
 		});
 	});

@@ -1,6 +1,7 @@
 /* Copyright (c) 2023 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
 const getProjectJsonpathMatches = require('../lib/custom-rule/get-project-jsonpath-matches.js');
 
+// TODO
 // describe('Rule Engine', () => {
 // 	describe('JSONPath Safety', () => {
 // 		it('should allow simple existence expressions', () => {

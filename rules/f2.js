@@ -15,7 +15,7 @@ module.exports = function(
 				true
 			)`
 	}
-	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal',console})
+	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
 
 	return {messages} 
 }
