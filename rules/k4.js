@@ -10,18 +10,15 @@ module.exports = function(
 		$name: "K4",
 		match: `$.model.*.view.*`,
 		matchAbstract: false,
-		ruleFn
+		expr_rule: `
+			($let view ::match)
+			($let dimensions ($object-values ::view:dimension))
+			($let pkDimensions ($filter dimensions (-> (dim) ($match "^([0-9]+pk|pk[0-9]*)_([a-z0-9A-Z_]+)$" ::dim:$name ))))
+			($let badDimensions ($filter pkDimensions (-> (dim) ($not ::dim:hidden))))
+			($map badDimensions (-> (dim) ($concat "PK dimension " ::dim:$name " is not hidden")))
+		`
 	}
 	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
 
 	return {messages} 
-}
-
-function ruleFn(match, path, project){
-	let view = match
-
-	let pkDimensions = (Object.values(view.dimension || {})).filter(pkNamingConvention);
-
-	let badDims = pkDimensions.filter((dim) => !dim.hidden);
-	return badDims.map(dim =>`PK dimension ${dim.$name} is not hidden`)
 }
