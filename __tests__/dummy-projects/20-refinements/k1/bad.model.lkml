@@ -1,3 +1,1 @@
-view: my_table {
-	sql_table_name: my_table ;;
-}
+include: "base.view.lkml"

@@ -82,7 +82,6 @@ module.exports = async function(
             // 	error: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-error'}),
             // },
         });
-        console.log(project.files)
         if (project.error) { // Fatal error
             throw (project.error);
         }
