@@ -45,9 +45,18 @@
 
 <h1 id="key-dimensions">Key Dimensions</h1>
 <p><b>Summary:</b> Implement consistent dimensions to communicate information about views' keys to developers who use the view</p>
-<details id="k1"> <!-- Primary keys required -->
-	<summary><b><a href="#k1">K1.</a></b> Views based on tables must define 1 or more Primary Key Dimensions.</summary>
+<details id="k1"> <!-- Primary key naming -->
+	<summary><b><a href="#k1">K1.</a></b> Views based on tables must define 1 or more Primary Key Dimensions named like <code>pk{n}_{key_name}</code>...</summary>
+
+	<p>..., where n is the total number of columns that form the primary key, and which may be omitted if it is 1, and key_name is any descriptive name.</p>
+
 	<p><b>Note:</b> "based on a table" could be either through a `sql_table_name`, `derived_table`, or implicit table name. Essentially, it's any view that's not a "field-only view" which will be joined using `join: {sql ;;}`</p>
+
+	<p><b>Rationale:</b> With this naming convention, anyone creating a join can conclusively find the correct logic without having to investigate:</p>
+
+	<img src="img/pk-dimension-suggested.png" width="381" height="117" />
+
+	<p>Additionally, anyone reading the join could conclusively verify it. </p>
 
 	<code class="block good">
 	view: carriers {
@@ -60,42 +69,32 @@
 	}
   	</code>
 
-	</details>
-<details id="k2"> <!-- Primary key naming -->
-	<summary><b><a href="#k2">K2.</a></b> Primary Key Dimensions must be named like <code>pk{n}_{key_name}</code>...</summary>
-	<p>..., where n is the total number of columns that form the primary key, and which may be omitted if it is 1, and key_name is any descriptive name.</p>
-	<p><b>Rationale:</b> With this naming convention, anyone creating a join can conclusively find the correct logic without having to investigate:</p>
-
-	<img src="img/pk-dimension-suggested.png" width="381" height="117" />
-
-	<p>Additionally, anyone reading the join could conclusively verify it. </p>
-
 	<code class="block good">
 	view: membership {
-	   sql_table_name: membership ;;
-	   dimension: pk2_user_id {hidden:yes sql:${TABLE}.user_id;;}
-	   dimension: pk2_group_id {hidden:yes sql:${TABLE}.group_id;;}
-	   dimension: user_x_group {
-	      hidden:yes
-	      primary_key: yes
-	      sql: ${pk2_user_id} || 'x' || ${pk2_group_id} ;;
-	   }
+		sql_table_name: membership ;;
+		dimension: pk2_user_id {hidden:yes sql:${TABLE}.user_id;;}
+		dimension: pk2_group_id {hidden:yes sql:${TABLE}.group_id;;}
+		dimension: user_x_group {
+			hidden:yes
+			primary_key: yes
+			sql: ${pk2_user_id} || 'x' || ${pk2_group_id} ;;
+		}
 	}
 
 	explore: invitations {
-	  join: membership {
-	    relationship: many_to_one
-	    sql_on: ${membership.pk2_user_id} = ${invitations.to_user_id}
-	      AND   ${membership.pk2_group_id} = ${invitations.group_id} ;;
-	    # ^ I can tell there MUST be only one membership. Looks good.
-	  }
+		join: membership {
+		relationship: many_to_one
+		sql_on: ${membership.pk2_user_id} = ${invitations.to_user_id}
+			AND   ${membership.pk2_group_id} = ${invitations.group_id} ;;
+		# ^ I can tell there MUST be only one membership. Looks good.
+		}
 	}
 	explore: users {
-	  join: membership {
-	    relationship: many_to_one
-	    sql_on: ${membership.pk2_user_id} = ${users.id} ;;
-	    # Uh-oh, something is wrong here!
-	  }
+		join: membership {
+		relationship: many_to_one
+		sql_on: ${membership.pk2_user_id} = ${users.id} ;;
+		# Uh-oh, something is wrong here!
+		}
 	}
 	</code>
 
@@ -108,6 +107,7 @@
 	<li> For keys with more than one column, this does mean you would need to define it in two ways. Once this way, and once as a single concatenated dimension with <code>primary_key: yes</code> (if necessary) so Looker can use it for generating symmetric aggregates. This is a small price to pay for the many instances of time saved looking up primary key information when writing/reading explores.</li>
 	<li> An earlier version of these guidelines specified a naming convention starting with <code>{n}pk</code>. This has been changed to reflect the fact that many databases do not allow column names to start with a number.</li>
 	</ul>
+
 	</details>
 <details id="k3"> <!-- Primary key location -->
 	<summary><b><a href="#k3">K3.</a></b> Primary Key Dimensions should be defined immediately following the table definition...</summary>
@@ -742,7 +742,8 @@
 <details>
 	<summary>Deprecated Rules</summary>
 	<ul>
-	<li>Rule F7 previously recommended proactively exposing "summary" measures for your dimensions. While summary measures can still be useful for select dimensions, the release of custom measures which explore users can automatically generate from a dimension in the Explore UI renders this practice no longer as important.</li>
+	<li><a href="#f7" id="f7" name="f7">F7</a> previously recommended proactively exposing "summary" measures for your dimensions. While summary measures can still be useful for select dimensions, the release of custom measures which explore users can automatically generate from a dimension in the Explore UI renders this practice no longer as important.</li>
+	<li><a href="#k2" id="k2" name="k2">K2</a> is a deprecated identifier for rule details that are now included under K1.</li>
 	</ul>
 	</details>
 

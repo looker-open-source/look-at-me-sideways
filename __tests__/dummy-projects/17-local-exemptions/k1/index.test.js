@@ -30,10 +30,10 @@ describe('Projects', () => {
 		});
 
 		it("it should provide correct aggregate info (1 match, 1 exempt, 0 error)", ()=> {
-			expect({messages}).not.toContainMessage({
-				rule: "F3",
+			expect({messages}).toContainMessage({
+				rule: "K1",
 				level: "info",
-				description: "Evaluated 1 matches, with 1 exempt and 0 erroring"
+				description: "Rule K1 summary: 1 matches, 1 matches exempt, and 0 errors"
 			});
 		});
 	});
