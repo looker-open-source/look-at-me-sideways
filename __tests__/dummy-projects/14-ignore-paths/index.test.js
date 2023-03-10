@@ -37,7 +37,7 @@ describe('Projects', () => {
 			expect({messages}).toContainMessage({
 				rule: "E1",
 				level: "info",
-				description: "Evaluated 1 matches, with 0 exempt and 0 erroring"
+				description: "Rule E1 summary: 1 matches, 0 matches exempt, and 0 errors"
 			});
 		});
 	});
