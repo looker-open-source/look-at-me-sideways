@@ -4,21 +4,19 @@ require('../lib/expect-to-contain-message');
 const rule = require('../rules/t1.js');
 const {parse} = require('lookml-parser');
 
+const T1 = {rule: "T1"}
+const error = {level: "error"}
+
+let summary = (m=1, ex=0, er=1) => ({
+	level: 'info',
+	description: `Rule T1 summary: ${m} matches, ${ex} matches exempt, and ${er} errors`,
+});
+
 describe('Rules', () => {
 	describe('T1', () => {
-		let failMessageT1 = {
-			rule: 'T1',
-			exempt: false,
-			level: 'error',
-		};
 
-		let passMessageT1 = {
-			rule: 'T1',
-			level: 'info',
-		};
-
-		it('should pass if datagroup_trigger or persist_for is used', () => {
-			let result = rule(parse(`files:{} files:{
+		it('should pass if datagroup_trigger is used', () => {
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					derived_table: {
 						sql: SELECT * 
@@ -27,9 +25,12 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(passMessageT1);
+			expect(result).toContainMessage(summary(1,0,0));
+			expect(result).not.toContainMessage({...T1, ...error});
+		});
 
-			result = rule(parse(`files:{} files:{
+		it('should pass if persist_for is used', () => {
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					derived_table: {
 						sql: SELECT * 
@@ -38,11 +39,12 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(passMessageT1);
+			expect(result).toContainMessage(summary(1,0,0));
+			expect(result).not.toContainMessage({...T1, ...error});
 		});
 
-		it('should not error on DTs', () => {
-			let result = rule(parse(`files:{} files:{
+		it('should not error on ephemeral DTs', () => {
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					derived_table: {
 						sql: SELECT * 
@@ -50,11 +52,12 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(passMessageT1);
+			expect(result).toContainMessage(summary(1,0,0));
+			expect(result).not.toContainMessage({...T1, ...error});
 		});
 
 		it('should error if sql_trigger_value is used', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foo {
 					derived_table: {
 						sql: SELECT * 
@@ -63,7 +66,8 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(failMessageT1);
+			expect(result).toContainMessage(summary(1,0,1));
+			expect(result).toContainMessage({...T1, ...error});
 		});
 	});
 });
