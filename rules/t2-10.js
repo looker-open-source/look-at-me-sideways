@@ -37,7 +37,9 @@ module.exports = function(
 	if (allExempted) {
 		return {messages};
 	}
-	let files = project.files || [];
+	let files = Object.entries(project.file || {})
+		.filter(([k,v])=>k[0]!=="$") //In case there is any meta-data, e.g. from our tests mocking the file representation
+		.map(([k,v])=>v);
 	let pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);
 	let unique = (x, i, arr) => arr.indexOf(x) == i;
 

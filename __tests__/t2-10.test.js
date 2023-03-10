@@ -28,49 +28,49 @@ describe('Rules', () => {
 		});
 
 		it('should not error if there are no views', () => {
-			let result = rule(parse(`files:{} files:{}`));
+			let result = rule(parse(`file:{ myexplore.explore: {}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should not error for a view with no table', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { dimension: foo {} }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should not error for plain table-reference sql_table_name', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { sql_table_name: my_schema.tbl ;; }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should error for bad sql_table_name-based transformations', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { sql_table_name: (
 					SELECT account_id, COUNT(*)
 					FROM users
 					GROUP BY 1
 				) ;; }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.pkColumnsRequired});
 		});
 
 		it('should error for bad derived_table-based transformations', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT account_id, COUNT(*)
 					FROM users
 					GROUP BY 1
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.pkColumnsRequired});
 		});
 
 
 		it('should exempt bad derived_table-based transformations with view exemptions', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { 
 					rule_exemptions: {T2: "Forget PKs"}
 					derived_table: { sql:
@@ -78,50 +78,52 @@ describe('Rules', () => {
 					FROM users
 					GROUP BY 1
 				;; } }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error, ...r.umbrellaRuleT2});
 			expect(result).not.toContainMessage({...error, ...r.pkColumnsRequired});
 		});
 
-
-		it('should exempt bad derived_table-based transformations with project exemptions', () => {
-			let result = rule(parse(`files:{} files:{
-				view: foo { 
-					derived_table: { sql:
-					SELECT account_id, COUNT(*)
-					FROM users
-					GROUP BY 1
-				;; } }
-			}
-			manifest: {rule_exemptions: {T2: "Forget PKs"}}`));
-			expect(result).not.toContainMessage({...error, ...r.umbrellaRuleT2});
-			expect(result).not.toContainMessage({...error, ...r.pkColumnsRequired});
-		});
+		// Note: Since project-level exemptions have been moved ahead of rule application for performance/short-circuting,
+		//		 this test is not currently representative of anything. May want to re-enable eventually by double checking
+		//		 for project-level exemptions
+		// it('should exempt bad derived_table-based transformations with project exemptions', () => {
+		// 	let result = rule(parse(`file:{ myview.view: {
+		// 		view: foo { 
+		// 			derived_table: { sql:
+		// 			SELECT account_id, COUNT(*)
+		// 			FROM users
+		// 			GROUP BY 1
+		// 		;; } }
+		// 	}
+		// 	manifest: {rule_exemptions: {T2: "Forget PKs"}}`));
+		// 	expect(result).not.toContainMessage({...error, ...r.umbrellaRuleT2});
+		// 	expect(result).not.toContainMessage({...error, ...r.pkColumnsRequired});
+		// });
 
 		it('should not error/error for single-column transformations', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT MAX(id)
 					FROM sessions
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...verbose, ...r.singleColumnExemption});
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should not error/error for single-table SELECT *+ transformations', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT *, DATE_DIFF(seconds, start, end) as duration
 					FROM sessions
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...verbose, ...r.starFromSingleTableExemption});
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should not error/error for a transformation containing correct pk columns', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						pk2_tenant_id, 
@@ -131,12 +133,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,2
 				;; } }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should error for a transformation containing misnumbered pk columns', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						pk1_tenant_id, 
@@ -146,12 +148,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,2
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.pkNamingConvention});
 		});
 
 		it('should error for a transformation where pk columns aren\'t first', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						pk2_tenant_id,
@@ -161,12 +163,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,3
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.pkColumnsFirst});
 		});
 
 		it('should error for a derived table missing the pk separator', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						pk2_tenant_id, 
@@ -175,12 +177,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,2
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.pkSeparator});
 		});
 
 		it('should error (and suggest an exemption) for ungrouped trasformations that it can\'t enforce', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						session.id as pk2_session_id, 
@@ -192,12 +194,12 @@ describe('Rules', () => {
 					LEFT JOIN events
 					  ON events.session_id = sessions.id
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.ungroupedQueries});
 		});
 
 		it('should error for grouped transformations that don\'t use a group as the first PK', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						ROW_NUMBER() OVER (PARTITION BY pk2_session_id) AS pk2_session_sequence,
@@ -210,12 +212,12 @@ describe('Rules', () => {
 					  ON events.session_id = sessions.id
 					GROUP BY session.id, events.id
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.groupedQueries});
 		});
 
 		it('should error for grouped transformations that don\'t use all groupings in PK and don\'t continue', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						sessions.user_id as pk1_user_id,
@@ -224,12 +226,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,2
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.continueWithWindow});
 		});
 
 		it('should error for grouped transformations that don\'t use all groupings in PK and continue with a non-window column', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						sessions.user_id as pk2_user_id,
@@ -239,12 +241,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,3
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.continueWithWindow});
 		});
 
 		it('should not error/error for ordinal-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						user_id as pk2_user_id,
@@ -254,12 +256,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,3
 				;; } }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should not error/error for expression-grouped transformations that don\'t use all groupings in PK but continue with a window column', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						user_id as pk2_user_id,
@@ -269,12 +271,12 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY user_id, date
 				;; } }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should error for each sequential subquery in a transformation', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					WITH missing AS (
 						SELECT account_id, COUNT(*)
@@ -292,13 +294,13 @@ describe('Rules', () => {
 					)
 					SELECT "foo" as bar
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.pkColumnsRequired});
 			expect(result).toContainMessage({...error, ...r.pkNamingConvention});
 		});
 
 		it('should not error if --- separator is used multiple times with leading commas', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					WITH step_1 AS (
 						SELECT
@@ -320,12 +322,12 @@ describe('Rules', () => {
 
 					SELECT "foo" as bar
 				;; } }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 
 		it('should error for each nested subquery in a transformation', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT "foo" as bar
 					FROM (
@@ -342,13 +344,13 @@ describe('Rules', () => {
 						GROUP BY 1
 					) as missing
 				;; } }
-			}`));
+			}}`));
 			expect(result).toContainMessage({...error, ...r.pkColumnsRequired});
 			expect(result).toContainMessage({...error, ...r.pkNamingConvention});
 		});
 
 		it('should not error based on SQL-like syntax in strings anywhere', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`file:{ myview.view: {
 				view: foo { derived_table: { sql:
 					SELECT
 						'String 1' as pk2_tenant_id, 
@@ -358,7 +360,7 @@ describe('Rules', () => {
 					FROM sessions
 					GROUP BY 1,2
 				;; } }
-			}`));
+			}}`));
 			expect(result).not.toContainMessage({...error});
 		});
 	});
