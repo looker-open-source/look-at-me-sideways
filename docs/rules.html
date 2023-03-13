@@ -30,10 +30,9 @@
 </style>
 <p style="font-size: 0.8em"><a href="https://github.com/looker-open-source/look-at-me-sideways">Look At Me Sideways</a> > </p>
 <h1>LAMS Style Guide</h1>
-<p>This is a style guide for <a href="https://www.looker.com/">Looker</a>'s LookML data modeling language. This style guide, as well as the associated <a href="https://github.com/looker-open-source/look-at-me-sideways">linter</a>, are designed to help make your LookML project more maintainable.</p>
+<p>This is a style guide for <a href="https://www.looker.com/">Looker</a>'s LookML data modeling language. This style guide, as well as the associated <a href="https://github.com/looker-open-source/look-at-me-sideways">linter, Look At Me Sideways (LAMS)</a>, are designed to help make your LookML project more maintainable.</p>
 <p>These rules are opinionated, and might imply significant changes to a LookML project that has been developed organically. We've tried to provide rationales throughout so you can come to your own conclusions. However, at their core, these rules are about making your LookML and SQL reusable, self-explanatory, and reliable.</p>
-<p>Whenever a rule says something "must" be done, there shouldn't be any exceptions within your project. These are rules that need to be followed consistently since others will rely upon them being followed in their work elsewhere. </p>
-<p>Whenever a rule says that something "should" be done, there may be reasons to deviate from these rules, and doing so will not break any assumptions elsewhere. Whenever the rule is not followed, a comment must be used to indicate the rationale to future readers of the code. When using the linter, this should be done using the <a href="https://github.com/looker-open-source/look-at-me-sideways#rule-exemption">LAMS rule_exemptions syntax</a>.</p>
+<p>Note that the LAMS linter does not fully implement the style guide. Rules that are provided below, but which are not implemented in the style guide are marked with a 💬. Some may be "not yet implemented", whereas others may be more qualitative in nature and intended only for human consideration.</p>
 
 <nav><ul>
 <li> <a href="#key-dimensions">Key Dimensions</a></li>
@@ -46,7 +45,7 @@
 <h1 id="key-dimensions">Key Dimensions</h1>
 <p><b>Summary:</b> Implement consistent dimensions to communicate information about views' keys to developers who use the view</p>
 <details id="k1"> <!-- Primary key naming -->
-	<summary><b><a href="#k1">K1.</a></b> Views based on tables must define 1 or more Primary Key Dimensions named like <code>pk{n}_{key_name}</code>...</summary>
+	<summary><b><a href="#k1">K1.</a></b> Views based on tables should define 1 or more Primary Key Dimensions named like <code>pk{n}_{key_name}</code>...</summary>
 
 	<p>..., where n is the total number of columns that form the primary key, and which may be omitted if it is 1, and key_name is any descriptive name.</p>
 
@@ -120,13 +119,13 @@
 	<p><b>Note:</b> If a column that is a primary key should be user facing, you may want to expose it via a separate dimension.</p>
 	</details>
 <details id="k5"> <!-- Distribution dimensions -->
-	<summary><b><a href="#k5">K5.</a></b> Views based on tables with a <a class="subtle" href="#glossary-dist-key">distribution key</a> should define a Distribution Key Dimension...</summary>
+	<summary><b><a href="#k5">K5.</a></b> Views based on tables with a <a class="subtle" href="#glossary-dist-key">distribution key</a> should define a Distribution Key Dimension... 💬</summary>
 	<p>...named like <code>pkd_{key_name}</code></p>
 	<p><b>Rationale:</b> By naming it similarly to Primary Keys, it will be suggested to anyone joining on a view as a possible join key. At the same time, the use of a `d` instead of a number allows it to be differentiated from a primary key</p>
 	<p><b>Note:</b> If your database supports multiple projections of data, you may want to come up with a more sophisticated naming scheme instead.</p>
 	</details>
 <details id="k6"> <!-- Sort/cluster dimensions -->
-	<summary><b><a href="#k6">K6.</a></b> Views based on tables with a <a class="subtle" href="#glossary-sort-key">sort/cluster key</a> should define one or more Sort/Cluster Key Dimensions</summary>
+	<summary><b><a href="#k6">K6.</a></b> Views based on tables with a <a class="subtle" href="#glossary-sort-key">sort/cluster key</a> should define one or more Sort/Cluster Key Dimensions 💬</summary>
 	<p>...named like <code>pkc_{key_name}</code></p>
 	<p><b>Rationale:</b> By naming it similarly to Primary Keys, it will be suggested to anyone joining on a view as a possible join key. At the same time, the use of a `c` instead of a number allows it to be differentiated from a primary key</p>
 	<p><b>Note:</b> The name for this concept varies greatly from database to database. "pkc" was chosen for cluster, in favor of "pks" which could be read as a "surrogate key".</p>
@@ -176,7 +175,7 @@
 	<p><b>Rationale:</b> Field-level view labels can't be overridden by a join. Prefer view-level view labels.</p>
 	</details>
 <details id="f3"> <!-- Count fields filtered -->
-	<summary><b><a href="#f3">F3.</a></b> All type:count measures must specify a filter</summary>
+	<summary><b><a href="#f3">F3.</a></b> All type:count measures should specify a filter</summary>
 	<p>"Plain" count fields can/should specify a filter of "primary key dimensions (or any non-nullable field) are not null"</p>
 	<p><b>Rationale:</b> By default Looker will implement any non-filtered & non-distinct count field as a `COUNT(*)`. Filtering such "plain" counts on PK IS NOT NULL ensures correct counts in all of the following uses of the field: Counting just that table, counting that table when joined on as a one-to-one-or-zero table, counting that table with symmetric aggregates when joined on as a many_to_one table, and counting that table in explores with join paths.</b>
 	<code class="block good">
@@ -196,13 +195,13 @@
 	<p><b>Note:</b> Think about the audience when you write a description. Information for end users can go in the description, whereas information for other developers can go in a LookML comment</p>
 	</details>
 <details id="f5"> <!-- ID fields hidden -->
-	<summary><b><a href="#f5">F5.</a></b> ID fields that do not have a business usage should be hidden</summary>
+	<summary><b><a href="#f5">F5.</a></b> ID fields that do not have a business usage should be hidden 💬</summary>
 	<code class="good block">
 	view: order_items { ... pk1_order_item_id {hidden:yes}}
 	</code>
 	</details>
 <details id="f6"> <!-- FK ID fields hidden -->
-	<summary><b><a href="#f6">F6.</a></b> ID fields that DO have a business usage should still be hidden when they are a foreign key</summary>
+	<summary><b><a href="#f6">F6.</a></b> ID fields that DO have a business usage should still be hidden when they are a foreign key 💬</summary>
 	<p><b>Rationale:</b> The ID field will make most sense for end users when they are exposed under the view for which they are a primary key.</p>
 	<code class="bad block">
 	view: order_items { ... dimension: order_id { ... description: "..." } }
@@ -216,13 +215,13 @@
 
 <h1 id="derived-tables">Derived Tables</h1>
 <p><b>Summary:</b> Restrict the ways in which you write the SQL for derived tables in order to make them more modular and their results more realiable and understandable.</p>
-<p><b>Note:</b> These rules in particular use a lot of "must" statements. This is for a reason. If they seem hard to comply with at first, they're trying to tell you something :)</p>
+<p><b>Note:</b> These rules may seem hard to comply with at first. Although they may represent a large change from your usual way of writing SQL, the change also brings a large positive impact.</p>
 <details id="t1"> <!-- Triggers use datagroups -->
 	<summary><b><a href="#t1">T1.</a></b> Triggered PDTs should use datagroups</summary>
 	<p><b>Rationale:</b> <code>sql_trigger_value</code> is an older construct and can have subtle timing issues when multiple tables interact.</p>
 	</details>
 <details id="t2"> <!-- Primary keys required -->
-	<summary><b><a href="#t2">T2.</a></b> Except for exceptions in T9 & T10, every query, derived table, CTE, or subquery must SELECT a set of primary key columns following rules T3-T8</summary>
+	<summary><b><a href="#t2">T2.</a></b> Except for exceptions in T9 & T10, every query, derived table, CTE, or subquery should SELECT a set of primary key columns following rules T3-T8</summary>
 	<p><b>Rationale:</b> Primary keys define a contract that allows anyone reviewing the logic of a query to evaluate it modularly.
 	Without them, any attempt to troubleshoot a query requires an arbitrarily deep investigation of related subqueries.
 	With them, each query and subquery can be evaluated independently against their declared PK and the declared PK's of the participating tables.</p>
@@ -265,7 +264,7 @@
 	</code>
 	</details>
 <details id="t3"> <!-- Primary key naming -->
-	<summary><b><a href="#t3">T3.</a></b> Primary key columns must be aliased AS pk{n}_{column_name}...</summary>
+	<summary><b><a href="#t3">T3.</a></b> Primary key columns should be aliased AS pk{n}_{column_name}...</summary>
 	<p>...where {n} is the total number of columns in the primary key</p>
 	<code class="good block">
 	view: events_rollup {derived_table: {sql:
@@ -303,7 +302,7 @@
 	</code>
 	</details>
 <details id="t4"> <!-- Primary key positioning -->
-	<summary><b><a href="#t4">T4.</a></b> Primary key columns must be the first columns in the SELECT clause</summary>
+	<summary><b><a href="#t4">T4.</a></b> Primary key columns should be the first columns in the SELECT clause</summary>
 	<code class="bad block">
 	derived_table: {sql:
 		SELECT
@@ -314,7 +313,7 @@
 	</code>
 	</details>
 <details id="t5"> <!-- Grouped PK starts... -->
-	<summary><b><a href="#t5">T5.</a></b> For grouped queries, the PK must start with one, more, or all of the grouped columns</summary>
+	<summary><b><a href="#t5">T5.</a></b> For grouped queries, the PK should start with one, more, or all of the grouped columns</summary>
 	<h5>Notes</h5>
 	<ul>
 	<li>In most cases, unless you <i>intend</i> to use a window function to create sequence numbers within a partition, the primary key should simply be ALL of the grouped by fields.</li>
@@ -379,7 +378,7 @@
 
 	</details>
 <details id="t6"> <!-- Ungrouped PK starts... -->
-	<summary><b><a href="#t6">T6.</a></b> For ungrouped queries, the PK must start with one, more, or all of the PK's from the many-joined tables</summary>
+	<summary><b><a href="#t6">T6.</a></b> For ungrouped queries, the PK should start with one, more, or all of the PK's from the many-joined tables</summary>
 	<p><b>Note:</b> This rule requires some reasoning to evaluate, but with proper PK information, can be done within the context of the current query. For example, the 1-to-1 full outer join example coalesces the PK's from the two sides of the join to come up with the effective primary key of the join.</p>
 	<code class="good block">
 	SELECT
@@ -427,8 +426,8 @@
 	</code>
 	</details>
 <details id="t7"> <!-- PK continues with window -->
-	<summary><b><a href="#t7">T7.</a></b> The PK must continue with a ROW_NUMBER, if...</summary>
-	<p>... T5/T6 did not use ALL available columns. The window function must have a PARTITION BY of the preceding PK columns (at least one required)</p>
+	<summary><b><a href="#t7">T7.</a></b> The PK should continue with a ROW_NUMBER, if...</summary>
+	<p>... T5/T6 did not use ALL available columns. The window function should have a PARTITION BY of the preceding PK columns (at least one required)</p>
 	<p><b>Note:</b> Actually, any window function that produces unique values for each row is acceptable, but this is almost always <code>ROW_NUMBER()</code>.
 	Make sure not to use a <code>RANK</code>-like window function instead of <code>ROW_NUMBER</code>. The former yields duplicate ranks when two rows match. (For example, "Monday, Monday, Tuesday" would have ranks of 1,1,3)</p>
 	<code class="good block">
@@ -505,8 +504,21 @@
 	<p>
 	</details>
 <details id="t11"><!-- Asserted uniques -->
-	<summary><b><a href="#t11">T11.</a></b> Aggregates which should produce a single value must be asserted</summary>
+	<summary><b><a href="#t11">T11.</a></b> Aggregates which should produce a single value should be asserted 💬</summary>
 	<p><b>Rationale:</b> Rather than trusting/hoping the data will be what you want, we can ensure it and prevent bad data from propagating upstream</p>
+	<code class="block good">
+		--BigQuery - More convenient syntax
+		SELECT
+			user_guid as pk1_user_guid,
+			---
+			COUNT(*) as events,
+			CASE WHEN MIN(account_id) &lt;> MAX(account_id)
+				THEN ERROR("Non-unique violation in view foo on column account_id for user_guid " || user_guid)
+				ELSE MIN(account_id)
+				END AS account_id
+		FROM events
+		GROUP BY user_guid
+	</code>
 	<p><b>Note:</b> In a dialect where dividing by zero throws an error, this is a good approach. If done in a PDT, the building of the new PDT will fail.</p>
 	<code class="block good">
 		-- If division by zero throws for your syntax
@@ -515,33 +527,20 @@
 			---
 			COUNT(*) as events,
 			MIN(account_id)
-			||SUBSTR('',0 / CASE WHEN MIN(account_id) &lt;> MAX(account_id) THEN 0 ELSE 1 END)
-			^Concat a zero length string for string types, or add 0 for integer types
-			AS account_id
-		FROM events
-		GROUP BY user_guid
-	</code>
-	<code class="block good">
-		--BigQuery - More convenient syntax
-		SELECT
-			user_guid as pk1_user_guid,
-			---
-			COUNT(*) as events,
-			CASE WHEN MIN(account_id) &lt;> MAX(account_id)
-			THEN ERROR("Key violation in view foo.bar (on column account_id)")
-			ELSE MIN(account_id)
-			END AS account_id
+				||SUBSTR('',0 / CASE WHEN MIN(account_id) &lt;> MAX(account_id) THEN 0 ELSE 1 END)
+				^Concat a zero length string for string types, or add 0 for integer types
+				AS account_id
 		FROM events
 		GROUP BY user_guid
 	</code>
 	</details>
 <details id="t12"><!-- No order by-->
-	<summary><b><a href="#t12">T12.</a></b> Queries should not have an ORDER BY clause</summary>
+	<summary><b><a href="#t12">T12.</a></b> Queries should not have an ORDER BY clause 💬</summary>
 		<p>...unless a limit is also used (which should itself be unusual)</p>
 		<p><b>Rationale:</b> We often order data when querying directly, but make sure to remove this ORDER BY clause when saving the query as a derived table, as the sort order does not ultimately affect the table, but does cause the query to use more resources.</p>
 	</details>
 <details id="t13"><!-- First/last via aggregates, not sorts -->
-	<summary><b><a href="#t13">T13.</a></b> First/last values should be selected via an aggregate function, not an ORDER BY</summary>
+	<summary><b><a href="#t13">T13.</a></b> First/last values should be selected via an aggregate function, not an ORDER BY 💬</summary>
 	<p><b>Rationale:</b> Sorting is much more resource intensive than a simple MIN/MAX (or FIRST/LAST if your dialect supports it).</p>
 	<code class="bad block">
 	derived_table: user_first_order {derived_table: {sql:
@@ -573,13 +572,13 @@
 	<p><b>Note:</b> If you want to select the min/max based on a different column, like date, see <a href="https://discourse.looker.com/t/only-measuring-the-latest-values/6719">this guide</a></p>
 	</details>
 <details id="t14"><!-- No dynamic persisted tables -->
-	<summary><b><a href="#t14">T14.</a></b> Persisted derived tables must not use liquid or "dynamic SQL"</summary>
+	<summary><b><a href="#t14">T14.</a></b> Persisted derived tables should not use liquid or "dynamic SQL" 💬</summary>
 	<p>To clarify, liquid/dynamic SQL in non-persisted, aka ephemeral, derived tables is fine.</p>
 	<p><b>Rationale:</b> Triggered persistent tables usually don't have the necessary explore context to correctly evaluate the dynamic logic. And even persists_for derived tables do not work as expected with dynamic SQL (confirmed as of v5.14)</p>
 	<p><b>Note:</b> One possible exception may be {{_model._name}}, but still be careful.</p>
 	</details>
 <details id="t15"><!-- UNION ALL -->
-	<summary><b><a href="#t15">T15.</a></b>UNION should not be used where UNION ALL is needed or sufficient</summary>
+	<summary><b><a href="#t15">T15.</a></b>UNION should not be used where UNION ALL is needed or sufficient 💬</summary>
 	<p><b>Rationale:</b> More often than not, developers use UNION instead of UNION ALL unintentionally, with terrible performance implications. Therefore, if you actually need a plain UNION, make that explicit in an accompanying comment.</p>
 	</details>
 <h1 id="explores">Explores</h1>
@@ -631,7 +630,7 @@
 
 	</details>
 <details id="e3"> <!-- Join on dist key and sort/cluster keys when possible -->
-	<summary><b><a href="#e3">E3.</a></b> Joins should use <a class="subtle" href="#glossary-dist-key">distribution keys</a> and <a class="subtle" href="#glossary-sort-key">sort/cluster keys</a> when possible</summary>
+	<summary><b><a href="#e3">E3.</a></b> Joins should use <a class="subtle" href="#glossary-dist-key">distribution keys</a> and <a class="subtle" href="#glossary-sort-key">sort/cluster keys</a> when possible 💬</summary>
 	<code class="good block">
 	explore: order_items {
 		join: orders {
@@ -665,7 +664,7 @@
 	<p><b>Note:</b> In the EAV example, even though the first part of the primary key, the distribution key, and the sort/cluster key all result in `entity_id`, writing them out multiple times with the different key dimensions communicates what they do to anyone reading the join, and should have negligible performance impact.</p>
 	</details>
 <details id="e4"> <!-- always_filter on sortkey -->
-	<summary><b><a href="#e4">E4.</a></b> Explores should declare `always_filter` on the base table's sort key / parition column / clustered index</summary>
+	<summary><b><a href="#e4">E4.</a></b> Explores should declare `always_filter` on the base table's sort key / parition column / clustered index 💬</summary>
 	<p>For small tables, this won't matter much, but for big tables it will make a big difference, so it's good to be in the habit.<p>
 	<code class="good block">
 	explore: events {
@@ -677,7 +676,7 @@
 	<p><b>Note:</b> This is all that's needed if the filtered table is the base of an explore with only left or inner joins. Otherwise, you can push the filter down into the sql_table_name (or derived table) using <code>{% condition view.always_filtered_field %} table.column {% endcondition %}</code></p>
 	</details>
 <details id="e5"> <!-- avoid multiplicative fanout -->
-	<summary><b><a href="#e5">E5.</a></b> Explores' joins must not cause multiplicative fanout or spurious relationships</summary>
+	<summary><b><a href="#e5">E5.</a></b> Explores' joins should not cause multiplicative fanout or spurious relationships 💬</summary>
 	<code class="bad block">
 	explore: users {
 		join: orders {
@@ -716,40 +715,50 @@
 	<p><b>Note:</b> The above strategy relies on enforcement of rule F3. See <a href="https://discourse.looker.com/t/a-cure-for-the-one-to-many-blues/6458">this article</a> for more details.</p>
 	</details>
 
-<h1 id="out-of-scope">Out of Scope</h1>
-<p>The following subjects are not in the scope of this ruleset, but are still valuable to know about! These contain links to the most useful resources I could find on these subjects<p>
-<details>
-	<summary>Change management</summary>
-	<p>This is a candidate for inclusion into a future version. Something akin to semver, but for data modeling. (Pull requests will be considered!)</p>
+
+
+<h1 id="whitespace">Whitespace</h1>
+<details id="w1">
+	<summary><b><a href="w1">W1.</a></b> Block Indentation</summary>
+	<p>Each LookML block within a file should add one level of indentation for any inner line breaks, except for the line containin the block's closing brace, which should be at the prior indentation.</p>
+
 	</details>
-<details>
-	<summary>Defining distribution, sort/cluster keys, indexes, etc</summary>
-	<p>While these are important, the strategy for these is too broad and complex to fit into this kind of ruleset.</p>
+<!-- <details id="w2">
+	<summary><b><a href="w2">W2.</a></b> Array Indentation</summary>
+	<p>...? </p>
 	</details>
-<details>
-	<summary>Whitespace, capitalization</summary>
-	<p>Looker's IDE makes whitespace variation less of an issue. If you are interested in a style guide that constrains whitespace, here's a possible <a href="https://gist.github.com/fredbenenson/7bb92718e19138c20591">SQL style guide</a></p>
+<details id="w3">
+	<summary><b><a href="w3">W3.</a></b> Indent with spaces</summary>
+	<p>.. </p>
 	</details>
-<details>
-	<summary>EAV Schemas</summary>
-	<p>Entity-Attribute-Value schemas come with their own modeling challenges, but are not relevant to many models, so I decided to leave them out of this ruleset, for now.</p>
-	<p>However, you can get some guidance by studying these two articles:
-	<ul>
-	<li><a href="https://discourse.looker.com/t/three-ways-to-model-eav-schemas-and-many-to-many-relationships/1780">EAV Modeling Options</a></li>
-	<li><a href="https://discourse.looker.com/t/a-tool-to-build-lookml-models-for-eav-schema/5146">Automating EAV Generation</a></li>
-	</ul>
+<details id="w4">
+	<summary><b><a href="w4">W4.</a></b> Space required around names</summary>
+	<p>.. </p>
 	</details>
-<details>
-	<summary>Deprecated Rules</summary>
-	<ul>
+<details id="w5">
+	<summary><b><a href="w5">W5.</a></b> No space in `type:` clauses</summary>
+	<p>.. </p>
+	</details>
+<details id="w6">
+	<summary><b><a href="w6">W6.</a></b> No linebreaks between an object/array's `type` and its opening bracket</summary>
+	<p>.. </p>
+	</details>
+<details id="w7">
+	<summary><b><a href="w4">W4.</a></b> No carriage returns</summary>
+	<p>.. </p>
+	</details>
+-->
+
+<h1 id="deprecated-rules">Deprecated Rules</h1>
+<ul>
 	<li><a href="#f7" id="f7" name="f7">F7</a> previously recommended proactively exposing "summary" measures for your dimensions. While summary measures can still be useful for select dimensions, the release of custom measures which explore users can automatically generate from a dimension in the Explore UI renders this practice no longer as important.</li>
 	<li><a href="#k2" id="k2" name="k2">K2</a> is a deprecated identifier for rule details that are now included under K1.</li>
 	</ul>
-	</details>
-
-<h1 id="terms">Glossary</h1>
-<details id="glossary-dist-key"><summary>Distribution key</summary> In Redshift, Vertica, MemSQL, MS PDW and possibly some others, data can be distributed according to a particular value. For simplicity, I use the name distribution key, though different dialects may have different names for this.</details>
-<details id="glossary-sort-key"><summary>Sort/cluster key</summary> Sort keys in Redshift, or partition & cluster columns in Big Query, clustered indexes in MS SQL Server or PDW, etc.</details>
-<details><summary>View</summary> I'm exclusively talking about LookML Views. Database views are not covered here</details>
-
+<h1 id="glossary">Glossary</h1>
+<ul>
+	<li>💬 - Rules marked with this symbol are not currently implemented (or may be unimplementable) in the linter.</li>
+	<li id="glossary-dist-key">Distribution key - In Redshift, Vertica, MemSQL, MS PDW and possibly some others, data can be distributed according to a particular value. For simplicity, I use the name distribution key, though different dialects may have different names for this.</li>
+	<li id="glossary-sort-key">Sort/cluster key - Sort keys in Redshift, or partition & cluster columns in Big Query, clustered indexes in MS SQL Server or PDW, etc.</li>
+	<li>View - The style guide deals exclusively with LookML Views. That is, database views are not in scope.</li>
+	</ul>
 </body></html>

@@ -32,7 +32,6 @@ describe('Projects', () => {
 		it("the file should contain $strings", ()=> {
 			expect({messages}).toContainMessage({
 				rule: "files_strings_present",
-				//location: "model:mixed",
 				level: "info",
 				description: "$strings is present"
 			});

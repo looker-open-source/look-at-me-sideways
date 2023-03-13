@@ -176,9 +176,10 @@ incidents may be reported confidentially to fabio@looker.com.
 
 ### Other LookML Linting Projects
 
-Like LAMS but looking to shop around a bit? The community has come up with a few othre LookML linting options:
+Interested in LookML linting but looking to shop around a bit? The community has come up with a few other options:
 
 - https://github.com/rbob86/lookml-linter
+- [Spectacles.dev](https://spectacles.dev)'s style validator
 - https://github.com/ww-tech/lookml-tools/blob/master/README_LINTER.md
 - https://pypi.org/project/lookmlint/
 

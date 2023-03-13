@@ -1,6 +1,6 @@
 
-# LAMS
-# rule: files_strings_present {
+#LAMS
+#rule: files_strings_present {
 #	match: "$.file.*"
 #	description: "Files should contain $strings."
 #	expr_rule:
@@ -12,4 +12,4 @@
 #			"No $strings found"
 #			)
 #	;;
-# }
+#}
