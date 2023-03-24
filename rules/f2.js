@@ -8,7 +8,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "F2",
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter].*`,
-		matchAbstract: false,
 		expr_rule: `
 			($if (!== ::match:view_label undefined)
 				($concat ::match:$name " contains a field-level view_label \`" ::match:view_label "\`")

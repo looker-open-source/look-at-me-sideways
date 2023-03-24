@@ -8,7 +8,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "F4",
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter][?(@.hidden!==true)]`,
-		matchAbstract: false,
 		expr_rule: `
 			($if ($boolean ::match:description)
 				true

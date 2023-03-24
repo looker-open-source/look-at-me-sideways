@@ -10,7 +10,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "E2",
 		match: `$.model.*.explore.*.join.*`,
-		matchAbstract: false,
 		ruleFn
 	}
 	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})

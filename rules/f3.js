@@ -8,7 +8,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "F3",
 		match: `$.model.*.view.*.measure[?(@.type==="count")]`,
-		matchAbstract: false,
 		expr_rule: `
 			($if (=== ::match:filters undefined)
 				($concat "Type:count measure \`" ::match:$name "\` does not have a filter applied")

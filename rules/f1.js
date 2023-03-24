@@ -9,7 +9,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "F1",
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter].*`,
-		matchAbstract: false,
 		ruleFn
 	}
 	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})

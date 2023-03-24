@@ -9,7 +9,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "K4",
 		match: `$.model.*.view.*`,
-		matchAbstract: false,
 		expr_rule: `
 			($let view ::match)
 			($let dimensions ($object-values ::view:dimension))

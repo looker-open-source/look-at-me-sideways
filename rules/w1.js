@@ -8,7 +8,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "W1",
 		match: `$.file..`,
-		matchAbstract: false,
 		ruleFn
 	}
 	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal', console})
@@ -18,7 +17,7 @@ module.exports = function(
 
 function ruleFn(match,path,project){
 	let object = match;
-	if(typeof object !== "object"){
+	if(!object || typeof object !== "object"){
 		return true;
 	}
 	if(!object.$strings){

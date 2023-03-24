@@ -9,7 +9,6 @@ module.exports = function(
 	let ruleDef = {
 		$name: "T1",
 		match: `$.model.*.view.*.derived_table`,
-		matchAbstract: false,
 		description: "Triggered PDTs should use datagroups",
 		expr_rule: `(=== ::match:sql_trigger_value undefined)`
 	}
