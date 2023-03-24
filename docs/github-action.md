@@ -30,7 +30,7 @@ jobs:
       with:
         node-version: '10.x'
     - name: Install LAMS
-      run: npm install -g @looker/look-at-me-sideways@2
+      run: npm install -g @looker/look-at-me-sideways@3
     - name: Run LAMS
       # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
       run: lams --reporting=... --report-license-key=... --report-user=...
