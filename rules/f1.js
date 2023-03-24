@@ -66,6 +66,7 @@ function ruleFn(match, path, project) {
 			'_parameter_value',
 			'_rendered_value',
 			'_label',
+			'_link',
 		].includes(parts[parts.length - 1])
 		) {
 			parts.pop();
