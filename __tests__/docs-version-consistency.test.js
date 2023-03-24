@@ -6,12 +6,11 @@ const packageJson = require('../package.json');
 const [major, minor, patch] = packageJson.version.split('.');
 const packageVersion = {major, minor, patch};
 const fileConfigs = [
-	{file: '../README.md'},
-	{file: '../docs/github-action.md'},
+	{file: '../README.md', major: '3'},
+	{file: '../docs/github-action.md', major: '3'},
 	{file: '../docs/gitlab-ci.md', major: '1'}, // Expecation of `major:"1"` should be removed once the doc is updated to v2
 	// '../docker/Dockerfile' // This doc does not yet use NPM. It should first be updated to use NPM.
 ];
-
 
 describe('Docs version consistency', () => {
 	fileConfigs.forEach((fileConfig)=>{
