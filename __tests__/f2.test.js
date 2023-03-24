@@ -4,8 +4,8 @@ require('../lib/expect-to-contain-message');
 const rule = require('../rules/f2');
 const {parse} = require('lookml-parser');
 
-const F2 = {rule:"F2"}
-const error = {level: "error"}
+const F2 = {rule: 'F2'};
+const error = {level: 'error'};
 let summary = (m=1, ex=0, er=1) => ({
 	...F2,
 	level: 'info',
@@ -51,7 +51,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage(summary(1, 0, 1));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		it('should error for a measure with a view_label', () => {
@@ -60,7 +60,7 @@ describe('Rules', () => {
 					measure: bar { view_label: "Foo2" }
 				}
 			}`));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		it('should error for a filter with a view label', () => {
@@ -69,7 +69,7 @@ describe('Rules', () => {
 					filter: bar { view_label: "Foo2" }
 				}
 			}`));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		it('should error for a parameter with a view label', () => {
@@ -78,7 +78,7 @@ describe('Rules', () => {
 					parameter: bar { view_label: "Foo2" }
 				}
 			}`));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		it('should error for an empty-string view_label', () => {
@@ -87,7 +87,7 @@ describe('Rules', () => {
 					dimension: bar { view_label: "" }
 				}
 			}`));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		it('should not error for an F2 exempted view', () => {
@@ -137,7 +137,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		it('should error for an otherwise exempted view', () => {
@@ -147,7 +147,7 @@ describe('Rules', () => {
 					dimension: bar { view_label: "Foo2" }
 				}
 			}`));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		it('should error for an otherwise exempted field', () => {
@@ -159,7 +159,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage({...F2,...error});
+			expect(result).toContainMessage({...F2, ...error});
 		});
 
 		// Manifest-level exemptions are currently not considered when the rule is manually invoked

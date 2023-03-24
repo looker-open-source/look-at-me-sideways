@@ -7,17 +7,17 @@ module.exports = function(
 	project,
 ) {
 	let ruleDef = {
-		$name: "K1",
+		$name: 'K1',
 		match: `$.model.*.view.*`,
-		ruleFn
-	}
-	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
+		ruleFn,
+	};
+	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
 
-	return {messages} 
-}
+	return {messages};
+};
 
-function ruleFn(match, path, project){
-	let view = match
+function ruleFn(match, path, project) {
+	let view = match;
 
 	const unique = (x, i, arr) => arr.indexOf(x) === i;
 
@@ -32,7 +32,7 @@ function ruleFn(match, path, project){
 	let pkDimensions = (Object.values(view.dimension || {})).filter(pkNamingConvention);
 
 	if (!pkDimensions.length) {
-		return `View ${view.$name} has no dimensions that follow the PK naming convetion`
+		return `View ${view.$name} has no dimensions that follow the PK naming convetion`;
 	}
 
 	let declaredNs = pkDimensions
@@ -41,13 +41,13 @@ function ruleFn(match, path, project){
 		.map((n) => (n===''?'1':n))
 		.filter(unique);
 	if (declaredNs.length > 1) {
-		return `Different PK dimensions in ${view.$name} declare different column counts: ${declaredNs.join(', ')}`
+		return `Different PK dimensions in ${view.$name} declare different column counts: ${declaredNs.join(', ')}`;
 	}
 
 	let n = parseInt(declaredNs[0]);
 	if (n != pkDimensions.length && n !== 0) {
-		return `View ${view.$name} has ${pkDimensions.length} PK dimension(s) but their names declare ${declaredNs[0]} columns`
+		return `View ${view.$name} has ${pkDimensions.length} PK dimension(s) but their names declare ${declaredNs[0]} columns`;
 	}
 
-	return true
+	return true;
 }

@@ -1,23 +1,22 @@
 /* Copyright (c)  Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
-const getExemption = require('../lib/get-exemption.js');
 
 const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
-//const deepGet = require('../lib/deep-get.js');
+// const deepGet = require('../lib/deep-get.js');
 
 module.exports = function(
 	project,
 ) {
 	let ruleDef = {
-		$name: "E1",
+		$name: 'E1',
 		match: `$.model.*.explore.*.join.*`,
-		ruleFn
-	}
-	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
+		ruleFn,
+	};
+	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
 
-	return {messages} 
-}
+	return {messages};
+};
 
-function ruleFn(match,path,project){
+function ruleFn(match, path, project) {
 	let join = match;
 
 	let sql = join.sql || join.sql_on || '';
@@ -26,5 +25,5 @@ function ruleFn(match,path,project){
 		.filter((ref) => !( // Two-part references to allow
 			ref.match(/^safe\./i) // BigQuery: https://cloud.google.com/bigquery/docs/reference/standard-sql/functions-and-operators#safe-prefix
 		));
-	return references.map(ref =>`${ref} should be referenced using the substitution operator`);
+	return references.map((ref) =>`${ref} should be referenced using the substitution operator`);
 }

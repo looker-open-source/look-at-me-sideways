@@ -4,8 +4,8 @@ require('../lib/expect-to-contain-message');
 const rule = require('../rules/t1.js');
 const {parse} = require('lookml-parser');
 
-const T1 = {rule: "T1"}
-const error = {level: "error"}
+const T1 = {rule: 'T1'};
+const error = {level: 'error'};
 
 let summary = (m=1, ex=0, er=1) => ({
 	level: 'info',
@@ -14,7 +14,6 @@ let summary = (m=1, ex=0, er=1) => ({
 
 describe('Rules', () => {
 	describe('T1', () => {
-
 		it('should pass if datagroup_trigger is used', () => {
 			let result = rule(parse(`model: my_model {
 				view: foo {
@@ -25,7 +24,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(summary(1,0,0));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage({...T1, ...error});
 		});
 
@@ -39,7 +38,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(summary(1,0,0));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage({...T1, ...error});
 		});
 
@@ -52,7 +51,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(summary(1,0,0));
+			expect(result).toContainMessage(summary(1, 0, 0));
 			expect(result).not.toContainMessage({...T1, ...error});
 		});
 
@@ -66,7 +65,7 @@ describe('Rules', () => {
 					}
 				}
 			}`));
-			expect(result).toContainMessage(summary(1,0,1));
+			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...T1, ...error});
 		});
 	});

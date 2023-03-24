@@ -70,7 +70,7 @@ module.exports = async function(
             fileOutput: 'by-name',
             transformations: {
                 applyExtensionsRefinements: true,
-                ...(options.transformations||{})
+                ...(options.transformations||{}),
             },
             cwd,
             globOptions: {

@@ -48,7 +48,7 @@ describe('Rules', () => {
 		// it('should not error for a measure with a type:count and 1 filter', () => {
 		// 	let result = rule(parse(`model: my_model {
 		// 		view: foo {
-		// 			measure: bar { 
+		// 			measure: bar {
 		// 				type: count
 		// 				filters: {
 		// 					field: id
@@ -64,7 +64,7 @@ describe('Rules', () => {
 		// it('should not error for a measure with a type:count and 2 filter', () => {
 		// 	let result = rule(parse(`model: my_model {
 		// 		view: foo {
-		// 			measure: bar { 
+		// 			measure: bar {
 		// 				type: count
 		// 				filters: {
 		// 					field: id

@@ -88,7 +88,7 @@ describe('Rules', () => {
 		//		 for project-level exemptions
 		// it('should exempt bad derived_table-based transformations with project exemptions', () => {
 		// 	let result = rule(parse(`file:{ myview.view: {
-		// 		view: foo { 
+		// 		view: foo {
 		// 			derived_table: { sql:
 		// 			SELECT account_id, COUNT(*)
 		// 			FROM users

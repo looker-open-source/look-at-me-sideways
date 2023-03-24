@@ -1,23 +1,22 @@
 /* Copyright (c)  Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
-const getExemption = require('../lib/get-exemption.js');
 
 const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
-//const deepGet = require('../lib/deep-get.js');
+// const deepGet = require('../lib/deep-get.js');
 
 module.exports = function(
 	project,
 ) {
 	let ruleDef = {
-		$name: "E2",
+		$name: 'E2',
 		match: `$.model.*.explore.*.join.*`,
-		ruleFn
-	}
-	let messages = checkCustomRule(ruleDef, project, {ruleSource:'internal'})
+		ruleFn,
+	};
+	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
 
-	return {messages} 
-}
+	return {messages};
+};
 
-function ruleFn(match,path,project){
+function ruleFn(match, path, project) {
 	const join = match;
 	const pkRegex = /^([0-9]+pk|pk[0-9]*)_([a-z0-9A-Z_]+)$/;
 	const isFieldRef = (ref) => !ref.match(/^TABLE$|^SUPER$|^EXTENDED$|\.SQL_TABLE_NAME$/);
@@ -38,8 +37,8 @@ function ruleFn(match,path,project){
 		].join('|'), 'g'), '[nonsql]');
 	let parensRegex = /\([\s\S]*?(?<!\\)\)/g;
 
-	let messages = []
-	let maybeNote = "";
+	let messages = [];
+	let maybeNote = '';
 	if (reducedSql.match(parensRegex)) {
 		maybeNote = '. Note: Equality constraints are only checked in the top-level of the ON clause (not within parentheses)';
 		while (reducedSql.match(parensRegex)) {
@@ -49,12 +48,12 @@ function ruleFn(match,path,project){
 
 	if (join.sql !== undefined && !reducedSql.match(/\bJOIN\b/)) {
 		// joins using 'sql' that do not actually result in a SQL JOIN, e.g. for field-only views
-		return {level: "verbose", description: `No relevant SQL detected${maybeNote}`};
+		return {level: 'verbose', description: `No relevant SQL detected${maybeNote}`};
 	}
 	if (reducedSql.match(/\bOR\b/i)) {
 		return 'Compound equality constraints are only established by AND\'ed equality expressions. Top-level OR is not allowed.';
 	}
-	
+
 	let constrainedRefs = (reducedSql.match(/(?<=[^><]=\s*\${).*?(?=})|(?<=\${).*?(?=}\s*=)/g)||[])
 		.filter(isFieldRef);
 	let [otherCardinality, ownCardinality] = (join.relationship || 'many_to_one').split('_to_');

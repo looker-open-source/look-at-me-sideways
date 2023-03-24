@@ -77,7 +77,7 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...F1, ...error});
 		});
 
-		//TODO: Expose assembleModels from parser to test extensions here without full parseFiles & dummy project test case
+		// TODO: Expose assembleModels from parser to test extensions here without full parseFiles & dummy project test case
 		// it('should error for an extended view with a cross-view reference', () => {
 		// 	let result = rule(parse(`model: my_model {
 		// 		view: foo {
@@ -186,8 +186,8 @@ describe('Rules', () => {
 		// 	let result = rule(parse(`model: my_model {
 		// 		view: foo {
 		// 			sql_table_name: foo ;;
-		// 			dimension: baz { 
-		// 				sql: \${abc.xyz} ;; 
+		// 			dimension: baz {
+		// 				sql: \${abc.xyz} ;;
 		// 			}
 		// 		}
 		// 	}
@@ -530,7 +530,7 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(error);
 		});
 
-		//TODO: Expose assembleModels from parser to test extensions here without full parseFiles & dummy project test case
+		// TODO: Expose assembleModels from parser to test extensions here without full parseFiles & dummy project test case
 		// it('should not error for a view with extension:required', () => {
 		// 	let result = rule(parse(`model: my_model {
 		// 		view: foo {

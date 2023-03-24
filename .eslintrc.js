@@ -18,6 +18,7 @@ module.exports = {
 		'max-len': 0,
 		'indent': ['error', 'tab'],
 		'no-tabs': 0,
+		'require-jsdoc': 0,
 	},
 	'plugins': [
 		'jest',
