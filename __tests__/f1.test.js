@@ -348,7 +348,7 @@ describe('Rules', () => {
 		});
 
 		it('should not error for 2-part ._link references', () => {
-			let result = rule(parse(`files:{} files:{
+			let result = rule(parse(`model: my_model {
 				view: foobar {
 					sql_table_name: foobar ;;
 					dimension: foo { drill_fields: [foo]}
