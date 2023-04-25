@@ -28,6 +28,13 @@ describe('Projects', () => {
 				level: "error"
 			});
 		});
+		it("it should match on F3 (counts must be filtered) once", ()=> {
+			expect({messages}).toContainMessage({
+				rule: "F3",
+				level: "info",
+				description: 'Rule F3 summary: 1 matches, 1 matches exempt, and 0 errors'
+			});
+		});
 		it("it should not error, because exempt, on F3 (counts must be filtered)", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "F3",

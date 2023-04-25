@@ -43,8 +43,7 @@ module.exports = async function(
         tracker,
     } = {},
 ) {
-    let messages = [];		// These are for the LookML developer who has attempted to lint a project
-    let lamsMessages = [];	// These are for the administrator who has invoked LAMS
+    let messages = [];
     try {
         fs = fs || require('fs');
         get = get || require('./lib/https-get.js');
@@ -76,11 +75,7 @@ module.exports = async function(
             globOptions: {
                 ignore,
             },
-            // console: {
-            // 	log: (msg) => { },
-            // 	warn: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-warning'}),
-            // 	error: (msg) => lamsMessages.push({message: msg && msg.message || msg, level: 'lams-error'}),
-            // },
+            // console: defaultConsole
         });
         if (project.error) { // Fatal error
             throw (project.error);
@@ -136,23 +131,46 @@ module.exports = async function(
 			|| 'unknown_project';
 
         console.log('Checking rules... ');
-        let rules = fs.readdirSync(path.join(__dirname, 'rules')).map((fileName) => fileName.match(/^(.*)\.js$/)).filter(Boolean).map((match) => match[1]);
-        for (let r of rules) {
-            try {
-                console.log('> ' + r.toUpperCase());
-                let rule = require('./rules/' + r + '.js');
-                let result = rule(project);
-                messages = messages.concat(result.messages.map((msg) => ({rule: r.toUpperCase(), ...(msg||{})})));
-            } catch (e) {
-                messages.push({
-                    rule: 'LAMS1',
-                    level: 'error',
-                    description: `LAMS error evaluating rule ${r.toUpperCase()}: ${e.message || e}`,
-                });
+
+        let builtInRuleNames =
+            fs.readdirSync(path.join(__dirname, 'rules'))
+            .map((fileName) => fileName.match(/^(.*)\.js$/)) //TODO: (v3) rename t2-10.js to just t2.js
+            .filter(Boolean)
+            .map((match) => match[1].toUpperCase());
+
+        if(!project.manifest){console.log(" > No project manifest available in which to find rule declarations/settings.")}
+        else if (!project.manifest.rule){console.log(" > No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to.")}
+
+        for (let rule of Object.values(project.manifest?.rule || {})) {
+            console.log('> ' + rule.$name);
+            if (rule.enabled === false) {continue;}
+            if (builtInRuleNames.includes(rule.$name.toLowerCase()) && !rule.custom) { // Built-in rule
+                if(rule.match || rule.expr_rule || rule.description){
+                    messages.push({
+                        rule: 'LAMS3',
+                        level: 'info',
+                        description: `Rule ${rule.$name} is a built-in rule. Some rule declaration properties (e.g. match, rule_expr) have been ignored.`,
+                    });
+                }
+                try {
+                    let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '.js');
+                    let result = ruleModule(project);
+                    messages = messages.concat(result.messages);
+                } catch (e) {
+                    messages.push({
+                        rule: 'LAMS1',
+                        level: 'error',
+                        description: `LAMS error evaluating rule ${r.toUpperCase()}: ${e.message || e}`,
+                    });
+                }
+            }
+            else {
+                messages = messages.concat(checkCustomRule(rule, project));
             }
         }
         console.log('> Rules done!');
 
+        // Legacy custom rules
         if (project.manifest && project.manifest.custom_rules) {
             console.warn('\x1b[33m%s\x1b[0m', 'Legacy (Javascript) custom rules are unsafe and may be removed in a future major version!');
             console.log('For details, see https://looker-open-source.github.io/look-at-me-sideways/customizing-lams.html');
@@ -185,7 +203,7 @@ module.exports = async function(
                         let msg = `URL #${u}: ${e && e.message || e}`;
                         console.error('> ' + msg);
                         messages.push({
-                            rule: 'LAMS1',
+                            rule: 'LAMS2',
                             level: 'error',
                             message: `An error occurred while checking legacy custom rule in ${msg}`,
                         });
@@ -196,18 +214,7 @@ module.exports = async function(
             }
         }
 
-        if (project.manifest && project.manifest.rule) {
-            console.log('Checking custom rules...');
-            for (let rule of Object.values(project.manifest.rule)) {
-                console.log('> ' + rule.$name);
-                if (rules.includes(rule.$name.toLowerCase()) && !rule.custom) {
-                    console.log(`  Skipping ${rule.$name}: it is named like a built-in rule and is not 'custom:yes'`);
-                    continue;
-                }
-                messages = messages.concat(checkCustomRule(rule, project));
-            }
-            console.log('> Custom rules done!');
-        }
+        // Output
         let errors = messages.filter((msg) => {
             return msg.level === 'error' && !msg.exempt;
         });
@@ -245,7 +252,7 @@ module.exports = async function(
 
         if (tracker.enabled) {
             await Promise.race([
-                tracker.track({messages, errors: lamsMessages}),
+                tracker.track({messages, errors: []}),
                 new Promise((res) => setTimeout(res, 2000)),
             ]);
         }
@@ -263,7 +270,7 @@ module.exports = async function(
             }
             if (tracker.enabled) {
                 e.isFatalError = true;
-                tracker.track({messages, errors: lamsMessages.concat(e)});
+                tracker.track({messages, errors: [e]});
             } else {
                 console.warn(`Error reporting is disabled. Run with --reporting=yes to report, or see PRIVACY.md for more info`);
             }
