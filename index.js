@@ -121,7 +121,7 @@ module.exports = async function(
         messages.push({...manifestInfo, description: `Manifest properties: ${manifestKeys.slice(0, 8).join(', ')}${manifestKeys.length>8?'...':''}`});
         if (project.manifest.rule) {
             const ruleKeys = Object.keys(project.manifest.rule).filter((key)=>key[0]!=='$');
-            messages.push({...manifestInfo, description: `Custom rules: ${ruleKeys.slice(0, 6).join(', ')}${ruleKeys.length>6?'...':''}`});
+            messages.push({...manifestInfo, description: `Rules: ${ruleKeys.slice(0, 6).join(', ')}${ruleKeys.length>6?'...':''}`});
         }
 
         project.name = false
@@ -144,7 +144,7 @@ module.exports = async function(
         for (let rule of Object.values(project.manifest?.rule || {})) {
             console.log('> ' + rule.$name);
             if (rule.enabled === false) {continue;}
-            if (builtInRuleNames.includes(rule.$name.toLowerCase()) && !rule.custom) { // Built-in rule
+            if (builtInRuleNames.includes(rule.$name) && !rule.custom) { // Built-in rule
                 if(rule.match || rule.expr_rule || rule.description){
                     messages.push({
                         rule: 'LAMS3',

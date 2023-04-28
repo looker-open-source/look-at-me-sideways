@@ -28,6 +28,13 @@ describe('Projects', () => {
 				level: "error"
 			});
 		});
+		it("it should match on T2 once", ()=> {
+			expect({messages}).toContainMessage({
+				rule: "T2",
+				level: "info",
+				description: 'Rule T2 summary: 1 matches, 1 matches exempt, and 0 errors'
+			});
+		});
 		it("it should not error, because T2 is exempt, on T8 (missing separator line)", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "T8",

@@ -28,6 +28,13 @@ describe('Projects', () => {
 				level: "error"
 			});
 		});
+		it("it should match on K3 once", ()=> {
+			expect({messages}).toContainMessage({
+				rule: "K3",
+				level: "info",
+				description: 'Rule K3 summary: 1 matches, 1 matches exempt, and 0 errors'
+			});
+		});
 		it("it should not error, because exempt, on K3 (key dimensions first)", ()=> {
 			expect({messages}).not.toContainMessage({
 				rule: "K3",
