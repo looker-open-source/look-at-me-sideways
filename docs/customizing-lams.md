@@ -3,39 +3,20 @@ favicon: img/logo.png
 ---
 # Customizing LAMS
 
-LAMS comes pre-bundled with a number of rules that reflect our opinionated best practices. However, sometimes these rules will not be right for your organization, or you may want to implement your own rules that may be highly specific to your project/model.
+LAMS comes pre-bundled with a number of rules that reflect our opinionated best practices. However, sometimes you may want to implement your own rules that may be highly specific to your project/model.
 
-LAMS offers a number of options to achieve this. (In addition to simply forking it)
+To handle this, LAMS offers the ability to extend it with custom rules written in a LISP-based expression, specified inline in your project manifest. (LAMS can also accept custom rules written in Javascript, hosted externally, although this approach is discouraged)
 
-- Project-level rule exemptions for rules that do not apply to you
-- Custom rules written in a LISP-based expression, specified inline in your project
-- Custom rules written in Javascript, hosted externally
+## Custom Rules
 
-## Project-level Rule Exemptions
-
-To opt-out of a rule for your entire project, just use the rule_exemption syntax in your project's [manifest.lkml](https://docs.looker.com/reference/manifest-reference). For example:
-
-```
-# In your manifest.lkml file
-
-# LAMS
-# rule_exemptions: {
-#  F2: "Any explanatory message you would like"
-#  F3: "Another explanatory message for a different rule"
-# }
-
-```
-
-## Expression Rules
-
-Expression-based rules (available as of version 1.0) can be declared within your LookML, and consist of four parts. By way of example:
+Expression-based rules can be declared within your manifest's LookML, and consist of four parts. By way of example:
 
 ```
 # in manifest.lkml
 
 # LAMS
 # rule: prod_connection {
-#  description: "Prod models must use prod connection"
+#  description: "Models must use prod connection"
 #  match: "$.model.*"
 #  expr_rule: ( === ::match:connection "prod" ) ;;
 # }
@@ -47,8 +28,9 @@ You can also quickly experiment with custom rule definitions in the [Rule Sandbo
 Here is what each part of the rule definition means:
 
 - **Rule name:** Any LookML name for this rule. This name is included in LAMS usage reporting, if you have opted in to it. Names composed of a single letter followed by a number are reserved for future LAMS usage.
+- **enabled:** (Optional) A yesno value that indicates whether to use the rule. (Default: yes)
 - **description:** (Optional) A succint human-readable description, which will be shown to developers in LAMS' output
-- **match:** A [JSONpath expression](https://www.npmjs.com/package/jsonpath-plus) that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [below](#match-examples) for example match patterns.
+- **match:** A [JSONpath expression](https://www.npmjs.com/package/jsonpath-plus) that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [Rule Matching](#rule-matching) below for more details and example match patterns.
 - **expr_rule:** A [Liyad](https://github.com/shellyln/liyad) expression that defines the logic of the rule.
   - **Arguments:** Three arguments are made available to the expression:
     - `match`: The value matched by the match expression. (The expression is invoked once for each time the pattern is matched in your project)
@@ -57,7 +39,7 @@ Here is what each part of the rule definition means:
   - **Return value**
     - **true** - If your expression returns true, the test will be passed
     - **false** - If your expression returns false, the test will be failed
-    - **string** - (Beta) If your expression returns a string, your test will be failed, and the string will be used as a description/message
+    - **string** - If your expression returns a string, your test will be failed, and the string will be used as a description/message
     - **object** - (Beta) An object can be returned, specifying any of the following properties: level (info/warn/error), exempt, path, location, description, rule
     - **array of objects** - (Beta) Like the above, but in case you need to emit multiple messages per match
     - The return formats marked Beta are not expected to change, but are currently untested and may change slightly for compatibility reasons without a major semver update
@@ -65,11 +47,15 @@ Here is what each part of the rule definition means:
 
 Disclaimer: Expression evaluation is powered by the [Liyad](https://github.com/shellyln/liyad) library. It both intends to prevent escalation of privleges, and, unlike Javascript evaluation, theoretically *can* do so. ([See my writeup on this](https://fabio-looker.github.io/data/2019-10-15-lams-customization-update/)). However, it is still a very new project, so evaluate it accordingly.
 
-### Match Examples
+### Rule Matching
 
-Note that while you can use unrooted paths to match things a bit more concisely (i.e. without the leading $.), using a rooted path means less ambiguity in case a LookML parameter is also valid in another context)
+The `match` property accepts a JSON Path expression. Further documentation about the JSON Path syntax can be found in the docs of the underlying library [jsonpath-plus](https://www.npmjs.com/package/jsonpath-plus).
 
-Not all examples below have been tested, so if you find an issue, please [submit an issue](https://github.com/looker-open-source/look-at-me-sideways/issues/new)!
+Additionally, to avoid potential code-execution issues, LAMS limits filtering expressions to a property existence check, or a single equality or inequality operation between a property and a string, boolean, or undefined literal.
+
+Note that while you can use unrooted paths to match things a bit more concisely (i.e. without the leading $.), using a rooted path means less ambiguity in case a LookML parameter is also valid in another context.
+
+#### Examples
 
 | JSONpath                                    | Description                                       |
 | ------------------------------------------- | ------------------------------------------------- |
@@ -132,7 +118,7 @@ E.g., does the label start with "Is" or "Has"? (Note that `$match` is a function
 (=== myvar "foo_bar")
 ```
 
-## Javascript Rules
+## Legacy Javascript Rules
 
 Disclaimer: The use of javascript rules are a security tradeoff. Fundamentally, evaluating Javascript code on your local machine and/or CI server gives that code a lot of access. And, this code can be altered by anyone with access to the server on which it is hosted, as well as any LookML developer with access to develop in the LookML project (even without deploy permissions). For this reason, expression based rules are preferred, and javascript-based rules may be deprecated in the future.
 
