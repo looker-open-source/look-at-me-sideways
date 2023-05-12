@@ -13,7 +13,7 @@ describe('Projects', () => {
 		beforeAll( async () => {
 			messages = await lams(options,{process, console})
 		})
-		it("should not fatally error out", ()=> {
+		it("should not console.error", ()=> {
 			expect(console.error).not.toHaveBeenCalled()
 		});
 		it("it should not error on rule guarded_check for model:ok", ()=> {
@@ -26,6 +26,7 @@ describe('Projects', () => {
 			expect({messages}).toContainMessage({
 				rule: "unguarded_check",
 				level: "error",
+				location: "model:ok/view:empty"
 			});
 		});
 	});

@@ -5,7 +5,7 @@ describe('Projects', () => {
 		let {spies, process, console} = mocks()
 		let messages
 		beforeAll( async () => {
-			messages = await lams(options,{process, console})
+			messages = await lams(options,{process, /*console*/})
 		})
 		it("should not error out", ()=> {
 			expect(console.error).not.toHaveBeenCalled()

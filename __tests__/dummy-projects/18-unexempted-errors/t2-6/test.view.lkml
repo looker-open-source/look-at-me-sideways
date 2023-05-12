@@ -2,7 +2,7 @@ view: user_product_affinity {
 	derived_table: {
 		# Would need this exemption to pass linting
 		# rule_exemptions: {
-		#	T8: "This DT is missing the --- separator from T8, but T8 is locally exempt"
+		#	T2.6: "This DT is missing the --- separator from T8, but T8 is locally exempt"
 		# }
 
 		sql:

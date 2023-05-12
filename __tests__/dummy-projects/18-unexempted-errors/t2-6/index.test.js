@@ -22,15 +22,15 @@ describe('Projects', () => {
 				level: "error"
 			});
 		});
-		it("it should on T8 (missing separator line)", ()=> {
+		it("it should error on T2.6 (missing separator line)", ()=> {
 			expect({messages}).toContainMessage({
-				rule: "T8",
+				rule: "T2.6",
 				level: "error"
 			});
 		});
 		it("it should provide correct aggregate info (1 match, 0 exempt, 1 error)", ()=> {
 			expect({messages}).not.toContainMessage({
-				rule: "F3",
+				rule: "T2",
 				level: "info",
 				description: "Evaluated 1 matches, with 0 exempt and 1 erroring"
 			});

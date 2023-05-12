@@ -10,7 +10,7 @@ module.exports = function(
 		match: `$.file..`,
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal', console});
+	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
 
 	return {messages};
 };

@@ -221,7 +221,7 @@
 	<p><b>Rationale:</b> <code>sql_trigger_value</code> is an older construct and can have subtle timing issues when multiple tables interact.</p>
 	</details>
 <details id="t2"> <!-- Primary keys required -->
-	<summary><b><a href="#t2">T2.</a></b> Except for exceptions in T9 & T10, every query, derived table, CTE, or subquery should SELECT a set of primary key columns following rules T3-T8</summary>
+	<summary><b><a href="#t2">T2.</a></b> Every derived table, CTE, or subquery should SELECT a set of primary key columns</summary>
 	<p><b>Rationale:</b> Primary keys define a contract that allows anyone reviewing the logic of a query to evaluate it modularly.
 	Without them, any attempt to troubleshoot a query requires an arbitrarily deep investigation of related subqueries.
 	With them, each query and subquery can be evaluated independently against their declared PK and the declared PK's of the participating tables.</p>
@@ -263,8 +263,8 @@
 		GROUP BY user_id ;;}
 	</code>
 	</details>
-<details id="t3"> <!-- Primary key naming -->
-	<summary><b><a href="#t3">T3.</a></b> Primary key columns should be aliased AS pk{n}_{column_name}...</summary>
+<details id="t2.1"> <!-- Primary key naming -->
+	<summary><b><a href="#t2.1">T2.1.</a></b> Primary key columns should be aliased AS pk{n}_{column_name}...</summary>
 	<p>...where {n} is the total number of columns in the primary key</p>
 	<code class="good block">
 	view: events_rollup {derived_table: {sql:
@@ -301,8 +301,8 @@
 		GROUP BY site,date ;;}
 	</code>
 	</details>
-<details id="t4"> <!-- Primary key positioning -->
-	<summary><b><a href="#t4">T4.</a></b> Primary key columns should be the first columns in the SELECT clause</summary>
+<details id="t2.2"> <!-- Primary key positioning -->
+	<summary><b><a href="#t2.2">T2.2.</a></b> Primary key columns should be the first columns in the SELECT clause</summary>
 	<code class="bad block">
 	derived_table: {sql:
 		SELECT
@@ -312,8 +312,8 @@
 		GROUP BY user_id ;;}
 	</code>
 	</details>
-<details id="t5"> <!-- Grouped PK starts... -->
-	<summary><b><a href="#t5">T5.</a></b> For grouped queries, the PK should start with one, more, or all of the grouped columns</summary>
+<details id="t2.3"> <!-- Grouped PK starts... -->
+	<summary><b><a href="#t2.3">T2.3.</a></b> For grouped queries, the PK should start with one, more, or all of the grouped columns</summary>
 	<h5>Notes</h5>
 	<ul>
 	<li>In most cases, unless you <i>intend</i> to use a window function to create sequence numbers within a partition, the primary key should simply be ALL of the grouped by fields.</li>
@@ -377,8 +377,8 @@
 	</code>
 
 	</details>
-<details id="t6"> <!-- Ungrouped PK starts... -->
-	<summary><b><a href="#t6">T6.</a></b> For ungrouped queries, the PK should start with one, more, or all of the PK's from the many-joined tables</summary>
+<details id="t2.4"> <!-- Ungrouped PK starts... -->
+	<summary><b><a href="#t2.4">T2.4.</a></b> For ungrouped queries, the PK should start with one, more, or all of the PK's from the many-joined tables</summary>
 	<p><b>Note:</b> This rule requires some reasoning to evaluate, but with proper PK information, can be done within the context of the current query. For example, the 1-to-1 full outer join example coalesces the PK's from the two sides of the join to come up with the effective primary key of the join.</p>
 	<code class="good block">
 	SELECT
@@ -425,8 +425,8 @@
 	  AND incremental.pk2_date = historical.pk2_date
 	</code>
 	</details>
-<details id="t7"> <!-- PK continues with window -->
-	<summary><b><a href="#t7">T7.</a></b> The PK should continue with a ROW_NUMBER, if...</summary>
+<details id="t2.5"> <!-- PK continues with window -->
+	<summary><b><a href="#t2.5">T2.5.</a></b> The PK should continue with a ROW_NUMBER, if...</summary>
 	<p>... T5/T6 did not use ALL available columns. The window function should have a PARTITION BY of the preceding PK columns (at least one required)</p>
 	<p><b>Note:</b> Actually, any window function that produces unique values for each row is acceptable, but this is almost always <code>ROW_NUMBER()</code>.
 	Make sure not to use a <code>RANK</code>-like window function instead of <code>ROW_NUMBER</code>. The former yields duplicate ranks when two rows match. (For example, "Monday, Monday, Tuesday" would have ranks of 1,1,3)</p>
@@ -454,8 +454,8 @@
 	</code>
 	<p>I only mention the above example because I've actually seen it used. The primary key for this is simply site,date,source. The ROW_NUMBER added as an afterthough is not a primary key. (In this ruleset, it is disallowed by rules T5/T6 which require one or more columns to precede the window function, if any)</p>
 	</details>
-<details id="t8"> <!-- PK ends with - - - -->
-	<summary><b><a href="#t8">T8.</a></b> Primary key columns end with "---" on its own line</summary>
+<details id="t2.6"> <!-- PK ends with - - - -->
+	<summary><b><a href="#t2.6">T2.6.</a></b> Primary key columns end with "---" on its own line</summary>
 	<code class="good block">
 	view: user_lifetime {derived_table: {sql:
 		SELECT
@@ -468,8 +468,8 @@
 	</code>
 	<p><b>Note:</b> This does not strictly need to immediately follow the columns required by rules T5 - T7. After, such columns, the PK may continue with 0, 1, or more aggregates, but this is rare, and in most cases such aggregates would not need to be in a primary key.</p>
 	</details>
-<details id="t9"> <!-- SELECT 1 col allowed -->
-	<summary><b><a href="#t9">T9.</a></b> Exception - Subqueries may SELECT a single column without declaring PKs</summary>
+<details id="t2.7"> <!-- SELECT 1 col allowed -->
+	<summary><b><a href="#t2.7">T2.7.</a></b> Exception - Subqueries may SELECT a single column without declaring PKs</summary>
 	<p><b>Rationale:</b> Often, short subqueries are desired for existence or scalar logic that are (a) not reused outside of the current query, and (b) simple enough to read and understand that they can be analyzed in the context of the containing query with little added complexity</p>
 	<code class="good block">
 	view: new_orders {derived_table:{sql:
@@ -491,8 +491,8 @@
 	</code>
 
 	</details>
-<details id="t10"><!-- SELECT * from one table allowed -->
-	<summary><b><a href="#t10">T10.</a></b> Exception - Queries may SELECT &#42;, plus any non-PK columns, FROM a single table/subquery</summary>
+<details id="t2.8"><!-- SELECT * from one table allowed -->
+	<summary><b><a href="#t2.8">T2.8.</a></b> Exception - Queries may SELECT &#42;, plus any non-PK columns, FROM a single table/subquery</summary>
 	<p><b>Rationale:</b> Since this style of query/subquery simply passes on the PK attributes of the referenced table/query, it's reasonable to save time writing this query and for readers of your query to go find that PK information in that single other table/query.</p>
 	<code class="good block">
 	view: customers {derived_table: {sql:

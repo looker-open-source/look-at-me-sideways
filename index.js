@@ -160,12 +160,12 @@ module.exports = async function(
                     messages.push({
                         rule: 'LAMS1',
                         level: 'error',
-                        description: `LAMS error evaluating rule ${r.toUpperCase()}: ${e.message || e}`,
+                        description: `LAMS error evaluating rule ${rule.$name.toUpperCase()}: ${e.message || e}`,
                     });
                 }
             }
             else {
-                messages = messages.concat(checkCustomRule(rule, project));
+                messages = messages.concat(checkCustomRule(rule, project,{console}));
             }
         }
         console.log('> Rules done!');

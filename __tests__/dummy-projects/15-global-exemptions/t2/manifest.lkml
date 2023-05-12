@@ -1,5 +1,6 @@
 
 # LAMS
-# rule_exemptions: {
-#	T8: "Only exempt one specific rule from T2-T10"
-# }
+#rule: T2 {}
+#rule_exemptions: {
+#	T2.6: "Only exempt one specific sub-rule from T2"
+#}
