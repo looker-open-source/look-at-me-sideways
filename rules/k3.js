@@ -8,7 +8,8 @@ module.exports = function(
 ) {
 	let ruleDef = {
 		$name: 'K3',
-		match: `$.model.*.view.*`,
+		//Unlike most other rules, this is by file, not by model, because it's interested in the lexical declaration, not the assembled model object
+		match: `$.file.*.view.*`,
 		ruleFn,
 	};
 	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});

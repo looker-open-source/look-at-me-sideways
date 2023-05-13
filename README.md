@@ -5,9 +5,9 @@
 LAMS is a style guide and linter for [Looker](https://looker.com/)'s LookML data modeling language. It is designed to help a team of developers to produce more maintainable LookML projects.
 
 - The [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html) alone can help your project, even without enforcement by the linter.
-- The linter can be configured to enforce rules from the style guide for all commits to your master branch.
+- The linter comes with a number of built-in rules from the style guide.
 - The linter also allows you to conveniently specify custom rules to enforce.
-- In addition to enforcing rules, the linter also produces markdown files to help developers navigate the project.
+- The linter can be deployed to enforce rules for all commits to your master branch.
 
 Interested? See a video of LAMS in action!
 
@@ -16,7 +16,7 @@ Interested? See a video of LAMS in action!
 ## Contents
 
 - [Functionality & Features](#functionality--features)
-	- [Predefined Linter Rules](#predefined-linter-rules)
+	- [Built-in Linter Rules](#built-in-linter-rules)
 	- [Rule Exemptions](#rule-exemptions)
 	- [Custom Rules](#custom-rules)
 	- [Output](#output)
@@ -26,15 +26,30 @@ Interested? See a video of LAMS in action!
 
 ## Functionality & Features
 
-### Predefined Linter Rules
+### Built-in Linter Rules
 
-The linter currently enforces rules K1-4, F1-4, E1-2, and T1-10 from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
+The linter comes with built-in rules that can enforce rules K1-4, F1-4, E1-2, T1-2, and W1 from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
 
-It currently does not resolve `extends` references, so if you are complying with a rule via extension, use a rule exemption as noted below.
+As of LAMS v3, you must opt-in via your `manifest.lkml` file to use the built-in rules. Here is an example declaration opting in to all the currently available built-in rules:
+
+```lkml
+#LAMS
+#rule: K1{} # Primary key naming
+#rule: K3{} # Primary keys first
+#rule: K4{} # Primary key hidden
+#rule: F1{} # No cross-view fields
+#rule: F2{} # No view-labeled fields
+#rule: F3{} # Count fields filtered
+#rule: F4{} # Description or hidden
+#rule: T1{} # Triggers use datagroups 
+#rule: T2{} # Primary keys in DT
+#rule: W1{} # Block indentation
+
+```
 
 ### Rule Exemptions
 
-You can opt-out of rules either globally or granularly using `rule_exemptions`.
+You can opt-out of rules granularly using `rule_exemptions`.
 
 The rule exemption syntax encourages developers to document the reason for each such exemption:
 
@@ -42,22 +57,17 @@ The rule exemption syntax encourages developers to document the reason for each 
 view: rollup {
   sql_table_name: my_table ;;
 
-  # LAMS
-  # rule_exemptions: {
-  #  K3: "2018-11-12 - Dimensions are out of order for reason X and Bob said it's ok"
-  # }
+  #LAMS
+  #rule_exemptions: {
+  #  K3: "2018-11-12 - Bob said it's ok"
+  #}
   dimension: info {...}
   ...
 ```
 
-Note: For large projects with many exemptions, we suggest starting the reasons with the Y-M-D formatted date on which they were added, for easier review in your issue report.
-
-If you want to entirely opt-out of checking a particular rule, you can specify the exemptions in your project's manifest.lkml file. See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for additional details.
-
 ### Custom Rules
 
 In addition to linting against its [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html), LAMS also lets you specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams).
-
 
 ### Output
 
