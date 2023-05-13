@@ -16,7 +16,7 @@ let summary = (m=1, ex=0, er=1) => ({
 describe('Rules', () => {
 	describe('K3', () => {
 		it('should pass if pks are defined first in view file', () => {
-			let result = rule(parse(`model: my_model {
+			let result = rule(parse(`file: {} file: {
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: 1pk_baz {}
@@ -27,7 +27,7 @@ describe('Rules', () => {
 		});
 
 		it('should error if pks are not defined first in view file', () => {
-			let result = rule(parse(`model: my_model {
+			let result = rule(parse(`file: {} file: {
 				view: foo {
 					sql_table_name: bar ;;
 					dimension: baz {}

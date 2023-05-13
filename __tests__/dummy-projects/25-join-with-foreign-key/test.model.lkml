@@ -1,3 +1,5 @@
+# See https://github.com/looker-open-source/look-at-me-sideways/issues/130
+
 view: order_items {}
 view: products {}
 

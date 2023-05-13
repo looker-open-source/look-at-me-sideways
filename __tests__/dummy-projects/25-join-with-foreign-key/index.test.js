@@ -38,7 +38,7 @@ describe('Projects', () => {
 		});
 
 		it("it should not error on E2", ()=> {
-			expect({messages}).toContainMessage({
+			expect({messages}).not.toContainMessage({
 				rule: "E2",
 				level: "error"
 			});
