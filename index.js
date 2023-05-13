@@ -134,18 +134,23 @@ module.exports = async function(
 
         let builtInRuleNames =
             fs.readdirSync(path.join(__dirname, 'rules'))
-            .map((fileName) => fileName.match(/^(.*)\.js$/)) //TODO: (v3) rename t2-10.js to just t2.js
-            .filter(Boolean)
-            .map((match) => match[1].toUpperCase());
+                .map((fileName) => fileName.match(/^(.*)\.js$/)) // TODO: (v3) rename t2-10.js to just t2.js
+                .filter(Boolean)
+                .map((match) => match[1].toUpperCase());
 
-        if(!project.manifest){console.log(" > No project manifest available in which to find rule declarations/settings.")}
-        else if (!project.manifest.rule){console.log(" > No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to.")}
+        if (!project.manifest) {
+            console.log(' > No project manifest available in which to find rule declarations/settings.');
+        } else if (!project.manifest.rule) {
+            console.log(' > No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to.');
+        }
 
-        for (let rule of Object.values(project.manifest?.rule || {})) {
+        for (let rule of Object.values(project.manifest && project.manifest.rule || {})) {
             console.log('> ' + rule.$name);
-            if (rule.enabled === false) {continue;}
+            if (rule.enabled === false) {
+                continue;
+            }
             if (builtInRuleNames.includes(rule.$name) && !rule.custom) { // Built-in rule
-                if(rule.match || rule.expr_rule || rule.description){
+                if (rule.match || rule.expr_rule || rule.description) {
                     messages.push({
                         rule: 'LAMS3',
                         level: 'info',
@@ -163,9 +168,8 @@ module.exports = async function(
                         description: `LAMS error evaluating rule ${rule.$name.toUpperCase()}: ${e.message || e}`,
                     });
                 }
-            }
-            else {
-                messages = messages.concat(checkCustomRule(rule, project,{console}));
+            } else {
+                messages = messages.concat(checkCustomRule(rule, project, {console}));
             }
         }
         console.log('> Rules done!');

@@ -1,5 +1,4 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
-const getExemption = require('../lib/get-exemption.js');
 const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 
 module.exports = function(
@@ -8,7 +7,7 @@ module.exports = function(
 	let ruleDef = {
 		$name: 'T2',
 		match: `$.model.*.view.*`,
-		description: "SQL transformations should apply primary key column conventions",
+		description: 'SQL transformations should apply primary key column conventions',
 		ruleFn,
 	};
 	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
@@ -20,12 +19,12 @@ const pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);
 const unique = (x, i, arr) => arr.indexOf(x) == i;
 
 function ruleFn(match, path, project) {
-	let messages = []
-	let view = match
+	let messages = [];
+	let view = match;
 	let sql = view.sql_table_name || view.derived_table && view.derived_table.sql;
 	if (!sql) {
 		return true;
-		}
+	}
 	// Initialize the "stuff to check" by removing any string literals, comments, & LookML
 	let remaining = sql
 		.replace(/\n\s*-- ?--*\s*\n/g, ',[sep],') // Allow some flexibility in separator because --- is a syntax error in MySQL
@@ -141,10 +140,10 @@ function ruleFn(match, path, project) {
 		}
 		rule = 'T2.4';
 		if (!groupings.length) {
-				messages.push({
-					rule, level: 'verbose',
-					description: `LAMS cannot currently enforce rule T2.4. Perhaps use a comment in ${view.$name} to communicate whether/how the rule is followed in "${snippet}..."`,
-				});
+			messages.push({
+				rule, level: 'verbose',
+				description: `LAMS cannot currently enforce rule T2.4. Perhaps use a comment in ${view.$name} to communicate whether/how the rule is followed in "${snippet}..."`,
+			});
 			continue;
 		}
 		let firstPksThatAreGroups = [];
@@ -190,5 +189,5 @@ function ruleFn(match, path, project) {
 			});
 		}
 	}
-	return messages
+	return messages;
 }

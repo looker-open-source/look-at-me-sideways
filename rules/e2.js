@@ -26,10 +26,10 @@ function ruleFn(match, path, project) {
 	const aliasFromRef = (ref) => ref.split('.')[0];
 
 	let joinSql = join.sql || join.sql_on || '';
-	if(joinSql.trim().length===0){
+	if (joinSql.trim().length===0) {
 		// Do not error on bare-joins
 		// Do not error on foreign_key joins (check those with a different rule)
-		return true
+		return true;
 	}
 	let allRefs = (joinSql.match(/(?<=\${).*?(?=})/g)||[]).filter(isFieldRef);
 	let reducedSql = joinSql
