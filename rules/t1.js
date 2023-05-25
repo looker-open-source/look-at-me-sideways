@@ -35,7 +35,7 @@ module.exports = function(
 			let location = 'view: ' + view.$name;
 			let path = '/projects/' + project.name + '/files/' + file.$file_path + '#view:' + view.$name;
 			if (!(view.derived_table.datagroup_trigger || view.derived_table.persist_for)
-				&& view.derived_table.sql_trigger_value) {
+				&& (view.derived_table.sql_trigger_value || view.derived_table.interval_trigger)) {
 				errorCt++;
 				messages.push({
 					location, path, rule, exempt, level: 'error',
