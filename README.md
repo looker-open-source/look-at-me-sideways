@@ -118,15 +118,15 @@ The following examples were prepared for v1 of LAMS, though updating them for v2
 - **on-parser-error** - Set to "info" to indicate that LookML parsing errors should not fail the linter, but yield an `info` level message instead (not all output modes display `info` level messages)
 - **verbose** - Set to also output `verbose` level messages, for output modes that support it (`lines`)
 - **date-output** - Set to "none" to skip printing the date at the top of the `issues.md` file.
-- **allow-custom-rules** - Experimental and not recommended. Used to approve the running of Javascript-based custom rules. DO NOT USE TO RUN UNTRUSTED CODE. See [custom rules](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for details.
+- **allow-custom-rules** - Experimental and not recommended. Used to approve the running of **Javascript-based** custom rules. DO NOT USE TO RUN UNTRUSTED CODE. See [custom rules](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for details.
 
 ### Manifest.lkml arguments
 
 If your LookML project doesn't have a manifest.lkml file, you may want to consider adding one! LAMS uses the following information from your project's mainfest.lkml file:
 
 - **name** - Recommended. A name for the project, used to generate links back to the project in mardown output. If the native LookML validator complains about an unnecessary project name, you can use a conditional #LAMS comment to specify it.
-- **rule_exemptions** - Optional. Used to entirely opt out of rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
-- **rule: rule_name** - Optional. Used to specify custom rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
+- **rule: rule_name** - Recommended. Used to opt-in to built-in rules and to specify custom rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
+- **rule_exemptions** - Optional. Originally used in 1 & v2 to opt-out of rules globally. A global opt-out can still be useful for opting-out of certain "sub rules" that a rule may return without opting-out of the entire rule.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
 
 ## About
 
@@ -141,7 +141,7 @@ LAMS respects user privacy. See [PRIVACY.md](https://github.com/looker-open-sour
 
 ### License
 
-LAMS is Copyright (c) 2018 Looker Data Sciences, Inc. and is licensed under the MIT License. See [LICENSE.txt](https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt) for license details.
+LAMS is Copyright (c) 2023 Looker Data Sciences, Inc. and is licensed under the MIT License. See [LICENSE.txt](https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt) for license details.
 
 ### Support
 
@@ -182,7 +182,7 @@ npm publish
 
 This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the
 [Contributer Covenant Code of Conduct](https://www.contributor-covenant.org/version/1/4/code-of-conduct). Concerns or
-incidents may be reported confidentially to fabio@looker.com.
+incidents may be reported confidentially to fabble@google.com.
 
 ### Other LookML Linting Projects
 
