@@ -8,8 +8,11 @@ module.exports = function(
 	let ruleDef = {
 		$name: 'T1',
 		match: `$.model.*.view.*.derived_table`,
-		description: 'Triggered PDTs should use datagroups',
-		expr_rule: `(=== ::match:sql_trigger_value undefined)`,
+		description: 'PDTs should not use legacy trigger mechanisms (use datagroups instead)',
+		expr_rule: `($all
+			(=== ::match:sql_trigger_value undefined)
+			(=== ::match:interval_trigger undefined)
+			)`,
 	};
 	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
 
