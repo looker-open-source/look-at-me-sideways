@@ -54,7 +54,8 @@ const AboutPage = ({setProject,setRule,setMatch,setTab}) => {
 			<code style={{whiteSpace:'pre-line'}}>
 			{`npm install -g lookml-parser
 				cd ~/your/project
-				lookml-parser --file-output=array --whitespace=4`}
+				lookml-parser --file-output=by-name --whitespace=4 --transform=x
+				# or --transform=xs if you wish to ignore/drop $strings data`}
 				</code>
 			<Typography>
 				Depending on your operating system, you may find it convenient to pipe the output of the parser directly to your clipboard

@@ -8,8 +8,8 @@ import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 
-import * as ruleEvaluator from '../../../lib/custom-rule/rule-evaluator.js'
-import * as getMatches from '../../../lib/custom-rule/get-matches.js'
+import * as ruleMatchEvaluator from '../../../lib/custom-rule/rule-match-evaluator.js'
+import * as getProjectJsonpathMatches from '../../../lib/custom-rule/get-project-jsonpath-matches.js'
 
 const columns = [
 	{width: 250, field:"path",headerName:"Path"},
@@ -103,7 +103,7 @@ const RulePage = ({
 				return setStatus(`Please provide a "Rule Expression" (Liyad expression)`)
 				}
 			
-			let matches = getMatches(project,ruleDef)
+			let matches = getProjectJsonpathMatches(project,ruleDef)
 			
 			if(!matches.length){
 				return setStatus(`No matches found for the provided Match expression`)
@@ -111,7 +111,7 @@ const RulePage = ({
 			
 			let rule
 			try{
-				rule = ruleEvaluator(ruleDef,project)
+				rule = ruleMatchEvaluator(ruleDef,project)
 				}
 			catch(e){
 				let ruleError = e && e.message || e;
