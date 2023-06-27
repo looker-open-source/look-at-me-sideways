@@ -28,7 +28,7 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: '16.x'
     - name: Install LAMS
       run: npm install -g @looker/look-at-me-sideways@3
     - name: Run LAMS
