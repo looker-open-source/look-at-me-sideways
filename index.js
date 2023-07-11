@@ -219,6 +219,7 @@ module.exports = async function(
         }
 
         // Output
+        const outputters = require('./lib/outputters/index.js');
         let errors = messages.filter((msg) => {
             return msg.level === 'error' && !msg.exempt;
         });
@@ -232,7 +233,7 @@ module.exports = async function(
             case '': break;
             case 'markdown': {
                 const {dateOutput} = options;
-                await outputMarkdown(messages, {dateOutput});
+                await outputters.markdown(messages, {dateOutput,console});
                 break;
             }
             case 'markdown-developer':
@@ -306,27 +307,6 @@ module.exports = async function(
             lamsErrors: 0,
         });
         fs.writeFileSync('results.json', json, 'utf8');
-    }
-
-    /**
-	 * Output markdown.md, primarily for reporting in native Looker IDE.
-	 *
-	 * @param {array}	messages	Array of messages
-	 * @param {object}	options 	Options
- 	 * @param {object}	options.dateOutput Whether to include a timestamp in the output. Including a timestamp may not be desireable when committing the markdown file to your repo as it creates otherwise unneccessary changes.
-	 * @return {void}
-	 */
-    async function outputMarkdown(messages, {dateOutput}) {
-        console.log('Writing issues.md...');
-        const asyncTemplates = require('./lib/templates.js');
-        const templates = await asyncTemplates;
-        const jobURL = process.env && process.env.BUILD_URL || undefined;
-        fs.writeFileSync('issues.md', templates.issues({
-            messages,
-            jobURL,
-            dateOutput,
-        }).replace(/\n\t+/g, '\n'));
-        console.log('> issues.md done');
     }
 
     /**
