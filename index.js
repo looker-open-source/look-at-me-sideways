@@ -237,7 +237,7 @@ module.exports = async function(
                 break;
             }
             case 'markdown-developer':
-                await outputDeveloperMarkdown(messages);
+                await outputters.markdownDeveloper(messages, {console});
                 break;
             case 'jenkins':
                 await outputJenkins(messages);
@@ -307,20 +307,6 @@ module.exports = async function(
             lamsErrors: 0,
         });
         fs.writeFileSync('results.json', json, 'utf8');
-    }
-
-    /**
-	 * Output developer.md, which may help developers navigate the project. Available for backwards compatibility, but generally less used.
-	 *
-	 * @param {array}	messages	Array of messages
-	 * @return {void}
-	 */
-    async function outputDeveloperMarkdown(messages) {
-        console.log('Writing developer.md files...');
-        const asyncTemplates = require('./lib/templates.js');
-        const templates = await asyncTemplates;
-        fs.writeFileSync('developer.md', templates.developer({messages}).replace(/\n\t+/g, '\n'));
-        console.log('> developer.md done');
     }
 
     /**
