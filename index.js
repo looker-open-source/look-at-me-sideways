@@ -240,7 +240,7 @@ module.exports = async function(
                 await outputters.markdownDeveloper(messages, {console});
                 break;
             case 'jenkins':
-                await outputJenkins(messages);
+                await outputters.jenkins(messages, {console});
                 break;
             case 'lines': {
                 const verbose = options.verbose || false;
@@ -287,27 +287,6 @@ module.exports = async function(
     }
 
     return;
-
-    /**
-	 * Output results.json for sample Jenkins configuration. To be used with markdown as well by default.
-	 *
-	 * @param {array}	messages	Array of messages
-	 * @return {void}
-	 */
-    async function outputJenkins(messages) {
-        let errors = messages.filter((msg) => {
-            return msg.level === 'error';
-        });
-        const buildStatus = errors.length ? 'FAILED' : 'PASSED';
-        console.log(`BUILD ${buildStatus}: ${errors.length} errors found. Check .md files for details.`);
-        let json = JSON.stringify({
-            buildStatus: buildStatus,
-            errors: errors.length,
-            warnings: 0,
-            lamsErrors: 0,
-        });
-        fs.writeFileSync('results.json', json, 'utf8');
-    }
 
     /**
 	 * Output errors to the command line in a legacy format. Available for backwards compatibility, but 'lines' is generally better.
