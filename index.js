@@ -248,7 +248,7 @@ module.exports = async function(
                 break;
             }
             case 'legacy-cli':
-                await outputLegacyCli(messages);
+                await outputters.legacyCli(messages);
                 break;
             default:
                 console.warn(`Unrecognized output mode: ${output}`);
@@ -287,23 +287,6 @@ module.exports = async function(
     }
 
     return;
-
-    /**
-	 * Output errors to the command line in a legacy format. Available for backwards compatibility, but 'lines' is generally better.
-	 *
-	 * @param {array}	messages	Array of messages
-	 * @return {void}
-	 */
-    function outputLegacyCli(messages) {
-        let maxArrayLength = 5000;
-        let errors = messages.filter((msg) => {
-            return msg.level === 'error';
-        });
-        if (errors.length) {
-            console.log('Errors:');
-            console.dir(errors, {maxArrayLength});
-        }
-    }
 
     /**
 	 * Output info and errors to the command line in a human-readable line-by-line format.
