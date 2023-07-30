@@ -231,6 +231,11 @@ module.exports = async function(
         for (let output of outputModes.split(',')) {
             switch (output) {
             case '': break;
+            case 'add-exemptions':{
+                const verbose = options.verbose || false;
+                await outputters.addExemptions(messages, {verbose, cwd, console})
+                break;
+            }
             case 'markdown': {
                 const {dateOutput} = options;
                 await outputters.markdown(messages, {dateOutput,console});
