@@ -41,6 +41,8 @@ As of LAMS v3, you must opt-in via your `manifest.lkml` file to use the built-in
 #rule: F2{} # No view-labeled fields
 #rule: F3{} # Count fields filtered
 #rule: F4{} # Description or hidden
+#rule: E1{} # Join with subst'n operator
+#rule: E2{} # Join on PK for "one" joins
 #rule: T1{} # Triggers use datagroups 
 #rule: T2{} # Primary keys in DT
 #rule: W1{} # Block indentation
