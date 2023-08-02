@@ -103,6 +103,7 @@ module.exports = async function(
         }
         console.log('> Parsing done!');
 
+        console.log('Getting manifest and exemption info...');
         // Loading project manifest settings
         const manifestInfo = {level: 'info', location: 'project'};
         if (project.manifest) {
@@ -124,11 +125,22 @@ module.exports = async function(
             messages.push({...manifestInfo, description: `Rules: ${ruleKeys.slice(0, 6).join(', ')}${ruleKeys.length>6?'...':''}`});
         }
 
+        //Loading central exemptions
+        {
+            const {lamsRuleExemptionsPath} = options
+            const loadLamsExemptions = require('./lib/loaders/lams-exemptions.js')
+            const result = await loadLamsExemptions({cwd, lamsRuleExemptionsPath})
+            messages = messages.concat(result.messages || [])
+            project.centralExemptions = result.centralExemptions
+        }
+
         project.name = false
 			|| project.manifest && project.manifest.project_name
 			|| options.projectName
 			|| (options.cwd || process.cwd() || '').split(path.sep).filter(Boolean).slice(-1)[0]	// The current directory. May not actually be the project name...
 			|| 'unknown_project';
+
+        console.log('> Manifest and exemptions done');
 
         console.log('Checking rules... ');
 
@@ -232,8 +244,8 @@ module.exports = async function(
             switch (output) {
             case '': break;
             case 'add-exemptions':{
-                const verbose = options.verbose || false;
-                await outputters.addExemptions(messages, {verbose, cwd, console})
+                const lamsRuleExemptionsPath = options.lamsRuleExemptionsPath;
+                await outputters.addExemptions(messages, {cwd, console, lamsRuleExemptionsPath})
                 break;
             }
             case 'markdown': {

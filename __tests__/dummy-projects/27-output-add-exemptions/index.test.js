@@ -6,9 +6,7 @@ require('../../../lib/expect-to-contain-message');
 const log = x=>console.log(x)
 const testProjectName = __dirname.split(path.sep).slice(-1)[0];
 const fs = require("node:fs/promises")
-const expectedOutput = `
-{"rule":"K1","location":"model:test/view:bad"}
-`;
+const expectedOutput = '{"rule":"K1","location":"model:test/view:bad"}\n';
 describe('Projects', () => {
 	describe(testProjectName, () => {
 		let {spies, process, console} = mocks()
@@ -18,8 +16,7 @@ describe('Projects', () => {
 				...defaultTestingOptions,
 				output: "add-exemptions"
 			}
-			const outputPath = path.resolve(__dirname,"lams-exemptions.ndjson") 
-			log(outputPath)
+			const outputPath = path.resolve(__dirname,"lams-exemptions.ndjson")
 			try{await fs.rm(outputPath, {force:true})}catch(e){}
 			messages1 = {messages: await lams(options,{process, console})}
 			output1 = await fs.readFile(outputPath,{encoding:"utf8"})
