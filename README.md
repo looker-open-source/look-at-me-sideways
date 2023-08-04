@@ -49,9 +49,13 @@ As of LAMS v3, you must opt-in via your `manifest.lkml` file to use the built-in
 
 ```
 
+### Custom Rules
+
+In addition to linting against its [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html), LAMS also lets you specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams).
+
 ### Rule Exemptions
 
-You can opt-out of rules granularly using `rule_exemptions`.
+You can opt-out of rules granularly by locally specifying `rule_exemptions`.
 
 The rule exemption syntax encourages developers to document the reason for each such exemption:
 
@@ -67,9 +71,15 @@ view: rollup {
   ...
 ```
 
-### Custom Rules
+(BETA) You can also opt-out of rules granularly from a centrally maintained `lams-exemptions.ndjson` file. Simply specify the rule name and location to exempt in a series of newline-terminated JSON objects:
 
-In addition to linting against its [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html), LAMS also lets you specify your own rules. See [Customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams).
+```js
+{"rule":"K3","location":"model:my_model/view:rollup"}
+{"rule":"K3","location":"model:my_other_model/view:foo"}
+
+```
+
+You may also apply rule_exemptions globally in your project.manifest, but this is generally unnecessary as of LAMS v3.
 
 ### Output
 
@@ -112,7 +122,7 @@ The following examples were prepared for v1 of LAMS, though updating them for v2
 - **reporting** - Required. One of `yes`, `no`, `save-yes`, or `save-no`. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **report-user** - An email address to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **report-license-key** - A Looker license key to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
-- **output** - A comma-separated string of output modes from among: `lines` (default), `markdown`, `markdown-developer`, `jenkins`, `legacy-cli`
+- **output** - A comma-separated string of output modes from among: `lines` (default), `markdown`, `markdown-developer`, `jenkins`, `legacy-cli`, or (BETA) `add-exemptions`
 - **source** - A glob specifying which files to read. Defaults to `**/{*.model,*.explore,*.view,manifest}.lkml`.
 - **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory.
 - **project-name** - An optional name for the project, used to generate links back to the project in mardown output. Specifying this in manifest.lkml is preferred.

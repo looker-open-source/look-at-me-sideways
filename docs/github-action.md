@@ -3,14 +3,14 @@ favicon: img/logo.png
 ---
 # Running LAMS via Github Actions
 
-This example shows how to run LAMS with Github Actions.
+- Inside your Github-connected LookML repo, you can specify [Github Actions](https://docs.github.com/en/actions) in `.github/workflows/main.yml`
+- Populate the parameters within the "Run LAMS" step (see `XXXXX` placeholders below)
+- Note: This configuration is helpful alongside pull requests. [Set "Pull Requests Required" within Looker](https://cloud.google.com/looker/docs/git-options#integrating_pull_requests_for_your_project).
+- Note: This configuration is helpful alongside Github's [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) feature
 
-Note: As compared to our dockerized Jenkins configuration, Github Actions is a quicker way to get set up, but may be slower since the former does not require as much set-up per run (Node.js installation, LAMS installation), and can run on a dedicated instance. 
+# Standard configuration
 
-## Instructions
-
-- Inside your Github-connected LookML repo, add the following file at `.github/workflows/main.yml`
-- Populate the parameters within the "Run LAMS" step & uncomment
+This configuration is useful alongside
 
 <!-- {% raw %} -->
 ```yaml
@@ -33,6 +33,10 @@ jobs:
       run: npm install -g @looker/look-at-me-sideways@3
     - name: Run LAMS
       # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
-      run: lams --reporting=... --report-license-key=... --report-user=...
+      run: lams --reporting=XXXXX --report-license-key=XXXXX --report-user=XXXXX
 ```
 <!-- {% endraw %}) -->
+
+# ([BETA](https://github.com/looker-open-source/look-at-me-sideways/issues/142)) Incremental configuration
+
+If at any point (for example, manually, or upon merging a set of changes), you wish to exempt all current errors in future runs, you can run LAMS with  `--output=add-exemptions` and add the resulting/updated exemptions file to your repo.
