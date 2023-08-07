@@ -39,4 +39,4 @@ jobs:
 
 # ([BETA](https://github.com/looker-open-source/look-at-me-sideways/issues/142)) Incremental configuration
 
-If at any point (for example, manually, or upon merging a set of changes), you wish to exempt all current errors in future runs, you can run LAMS with  `--output=add-exemptions` and add the resulting/updated exemptions file to your repo.
+If at any point (for example, manually, or upon merging a set of changes), you wish to exempt all current errors in future runs, you can run LAMS with  `--output=add-exemptions` and add the resulting/updated `lams-exemptions.ndjson` file to your repo.
