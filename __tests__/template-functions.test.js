@@ -1,5 +1,5 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
-const {groupBy} = require('../lib/template-functions.js');
+const {groupBy} = require('../lib/outputters/templating/template-functions.js');
 
 describe('Template Functions', () => {
 	describe('groupBy', () => {
