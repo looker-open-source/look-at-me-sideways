@@ -46,7 +46,7 @@ As of LAMS v3, you must opt-in via your `manifest.lkml` file to use the built-in
 #rule: E1{} # Join with subst'n operator
 #rule: E2{} # Join on PK for "one" joins
 #rule: E6{} # FK joins are m:1
-#rule: E7{} # Explore label 30-char max
+#rule: E7{} # Explore label 25-char max
 #rule: T1{} # Triggers use datagroups 
 #rule: T2{} # Primary keys in DT
 #rule: W1{} # Block indentation
