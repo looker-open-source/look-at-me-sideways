@@ -13,7 +13,7 @@ describe('Rules', () => {
 		it('should not match and pass if there are no models', () => {
 			let result = rule(parse(`file: foo{}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 0 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E7 summary: 0 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -21,7 +21,7 @@ describe('Rules', () => {
 		it('should not match and pass if there are no explores', () => {
 			let result = rule(parse(`model: foo {}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 0 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E7 summary: 0 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -31,7 +31,7 @@ describe('Rules', () => {
 				explore: orders {}
 			}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -41,7 +41,7 @@ describe('Rules', () => {
 				explore: datawarehouse_bigquery__schema_business__datamart_ecommerce__facts__orders {}
 			}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e7, ...error});
 		});
@@ -51,7 +51,7 @@ describe('Rules', () => {
 				explore: orders {label: "All Orders"}
 			}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -63,7 +63,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e7, ...error});
 		});
@@ -75,7 +75,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -87,7 +87,7 @@ describe('Rules', () => {
 				explore: orders {}
 			}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e7, ...error});
 		});
@@ -99,7 +99,7 @@ describe('Rules', () => {
 				explore: datawarehouse_bigquery__schema_business__datamart_ecommerce__facts__orders {}
 			}`));
 			expect(result).toContainMessage({...e7, ...info,
-				description: "Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});

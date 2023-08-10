@@ -13,7 +13,7 @@ describe('Rules', () => {
 		it('should not match and pass if there are no models', () => {
 			let result = rule(parse(`file: foo{}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -21,7 +21,7 @@ describe('Rules', () => {
 		it('should not match and pass if there are no explores', () => {
 			let result = rule(parse(`model: foo {}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -31,7 +31,7 @@ describe('Rules', () => {
 				explore: orders {}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -45,7 +45,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E6 summary: 0 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -59,7 +59,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -74,7 +74,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -89,7 +89,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 0 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 0 errors',
 			});
 			expect(result).not.toContainMessage(error);
 		});
@@ -104,7 +104,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e6, ...error});
 		});
@@ -119,7 +119,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e6, ...error});
 		});
@@ -134,7 +134,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e6, ...error});
 		});
@@ -149,7 +149,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e6, ...error});
 		});
@@ -163,7 +163,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage({...e6, ...info,
-				description: "Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors"
+				description: 'Rule E6 summary: 1 matches, 0 matches exempt, and 1 errors',
 			});
 			expect(result).toContainMessage({...e6, ...error});
 		});

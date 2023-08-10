@@ -18,11 +18,11 @@ module.exports = function(
 function ruleFn(match, path, project, options={}) {
 	const explore = match;
 	const label = explore.label
-		? {source:"label", text:explore.label}
-		: {source:"name",  text:explore.$name};
+		? {source: 'label', text: explore.label}
+		: {source: 'name', text: explore.$name};
 	const length = label.text.length;
 	const maxLength = options.maxLength || 25;
-	if(length > maxLength){
+	if (length > maxLength) {
 		return `Explore ${label.source}'s length (${length}) exceeds allowed length (${maxLength})`;
 	}
 	return true;
