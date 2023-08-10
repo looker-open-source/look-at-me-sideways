@@ -61,6 +61,17 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...K7, ...error});
 		});
 
+		it('should pass if no pk is defined, but a pk0 is declared', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: pk0_foo {}
+				}
+			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
+			expect(result).not.toContainMessage({...K7, ...error});
+		});
+
 		it('should fail if no pk is defined, including primary_key:no', () => {
 			let result = rule(parse(`model: my_model {
 				view: foo {

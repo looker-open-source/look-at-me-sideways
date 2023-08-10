@@ -15,6 +15,8 @@ module.exports = function(
 	return {messages};
 };
 
+const zeroPkRegex = /^(0pk|pk0)_[a-z0-9A-Z_]+$/;
+
 function ruleFn(match){
 	const view = match
 
@@ -28,6 +30,9 @@ function ruleFn(match){
 	const dimensions = Object.values(view.dimension)
 	const pkDims = dimensions.filter(d=>d.primary_key)
 	if(pkDims.length === 0){
+		if(dimensions.some(d=>d.$name.match(zeroPkRegex))){
+			return true
+		}
 		return "No primary_key:yes dimensions provided"
 	}
 	if(pkDims.length > 1){
