@@ -36,7 +36,9 @@ As of LAMS v3, you must opt-in via your `manifest.lkml` file to use the built-in
 #LAMS
 #rule: K1{} # Primary key naming
 #rule: K3{} # Primary keys first
-#rule: K4{} # Primary key hidden
+#rule: K4{} # Primary keys hidden
+#rule: K7{} # Provide one `primary_key`
+#rule: K8{} # `primary_key` uses PK dims
 #rule: F1{} # No cross-view fields
 #rule: F2{} # No view-labeled fields
 #rule: F3{} # Count fields filtered

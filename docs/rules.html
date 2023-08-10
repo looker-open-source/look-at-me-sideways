@@ -17,6 +17,7 @@
 	summary {margin-left:-3em; cursor: pointer}
 	a {color:#44B;}
 	a.subtle {color:#559; text-decoration: none;}
+	code{background-color: #EEF; color:#333;}
 	code.block {display:block; white-space: pre-wrap; max-width:90%;margin:1em 0 1.5em 0; tab-size:2em;}
 	code.good.block {background-color: #EFE; box-shadow: 2px 2px 10px 0px #9C9;}
 	code.good.block::before {content:"# GOOD:"}
@@ -45,17 +46,42 @@
 <h1 id="key-dimensions">Key Dimensions</h1>
 <p><b>Summary:</b> Implement consistent dimensions to communicate information about views' keys to developers who use the view</p>
 <details id="k1"> <!-- Primary key naming -->
-	<summary><b><a href="#k1">K1.</a></b> Views based on tables should define 1 or more Primary Key Dimensions named like <code>pk{n}_{key_name}</code>...</summary>
+	<summary><b><a href="#k1">K1.</a></b> Views should define 1 or more "Primary Key Dimensions" following a naming convention of <code>pk{n}_{key_name}</code>...</summary>
 
 	<p>..., where n is the total number of columns that form the primary key, and which may be omitted if it is 1, and key_name is any descriptive name.</p>
 
-	<p><b>Note:</b> "based on a table" could be either through a `sql_table_name`, `derived_table`, or implicit table name. Essentially, it's any view that's not a "field-only view" which will be joined using `join: {sql ;;}`</p>
+	<p><b>Note:</b> This applies to "regular" views that describe an underlying table, i.e. through a <code>sql_table_name</code>, <code>derived_table</code>, or implicit table name. In some cases, you may have a "field-only view", which would be joined using `<code>join: {sql: ;;}</code>`, for which this rule would not apply.</p>
 
 	<p><b>Rationale:</b> With this naming convention, anyone creating a join can conclusively find the correct logic without having to investigate:</p>
 
 	<img src="img/pk-dimension-suggested.png" width="381" height="117" />
 
 	<p>Additionally, anyone reading the join could conclusively verify it. </p>
+
+	<code class="bad block">
+	view: carriers {
+		sql_table_name: faa.carriers ;;
+		dimension: carrier_id {
+			hidden: yes
+			primary_key: yes
+			sql:${TABLE}.id;;
+		}
+	}
+	# ^ Altough `primary_key: yes` is used, the 
+	# naming convention has not been followed
+
+	explore: flights {
+		join: carriers {
+			relationship: many_to_one
+			sql_on: ${carriers.carrier_id}
+					= ${flights.carrier_id} ;;
+
+			# ^ is this logic right? I
+			# would need to inspect the
+			# view definition to confirm
+		}
+	}
+  	</code>
 
 	<code class="block good">
 	view: carriers {
@@ -66,13 +92,32 @@
 			sql:${TABLE}.id;;
 		}
 	}
+
+	explore: flights {
+		join: carriers {
+			relationship: many_to_one
+			sql_on: ${carriers.pk1_carrier_id}
+					= ${flights.carrier_id} ;;
+			  
+			# ^ I know the join cardinality 
+			# must be correct because I see it's
+			# joining on the primary key
+		}
+	}
   	</code>
 
 	<code class="block good">
+	# Example of a composite primary key
 	view: membership {
 		sql_table_name: membership ;;
-		dimension: pk2_user_id {hidden:yes sql:${TABLE}.user_id;;}
-		dimension: pk2_group_id {hidden:yes sql:${TABLE}.group_id;;}
+		dimension: pk2_user_id {
+			hidden:yes
+			sql:${TABLE}.user_id;;
+		}
+		dimension: pk2_group_id {
+			hidden:yes
+			sql:${TABLE}.group_id;;
+		}
 		dimension: user_x_group {
 			hidden:yes
 			primary_key: yes
@@ -83,16 +128,23 @@
 	explore: invitations {
 		join: membership {
 		relationship: many_to_one
-		sql_on: ${membership.pk2_user_id} = ${invitations.to_user_id}
-			AND   ${membership.pk2_group_id} = ${invitations.group_id} ;;
-		# ^ I can tell there MUST be only one membership. Looks good.
+		sql_on: ${membership.pk2_user_id}
+				= ${invitations.to_user_id}
+			AND ${membership.pk2_group_id}
+				= ${invitations.group_id} ;;
+		# ^ I can tell there MUST be only one membership
+		# for each row from the left table. Looks good.
 		}
 	}
+
 	explore: users {
 		join: membership {
 		relationship: many_to_one
 		sql_on: ${membership.pk2_user_id} = ${users.id} ;;
-		# Uh-oh, something is wrong here!
+
+		# ^ Without even examining the view, I can
+		# tell that something is wrong here!
+		# (And rule E2 can check this for me)
 		}
 	}
 	</code>
@@ -117,6 +169,14 @@
 	<summary><b><a href="#k4">K4.</a></b> Primary Keys Dimensions should be hidden</summary>
 	<p><b>Rationale:</b> The audience for PK information is developers. They use it to inform how to join and consume tables, and they can do so equally well with a hidden field.</p>
 	<p><b>Note:</b> If a column that is a primary key should be user facing, you may want to expose it via a separate dimension.</p>
+	</details>
+<details id="k7"> <!-- Provide one `primary_key` -->
+	<summary><b><a href="#k7">K7.</a></b> Views should declare exactly one <code>primary_key</code> dimension</summary>
+	<p></p>
+	</details>
+<details id="k8"> <!-- primary_key dim uses all PK dims -->
+	<summary><b><a href="#k8">K8.</a></b> The <code>primary_key</code> dimension must use or be the Primary Key Dimension(s)</summary>
+	<p></p>
 	</details>
 <details id="k5"> <!-- Distribution dimensions -->
 	<summary><b><a href="#k5">K5.</a></b> Views based on tables with a <a class="subtle" href="#glossary-dist-key">distribution key</a> should define a Distribution Key Dimension... 💬</summary>
