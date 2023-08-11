@@ -172,11 +172,83 @@
 	</details>
 <details id="k7"> <!-- Provide one `primary_key` -->
 	<summary><b><a href="#k7">K7.</a></b> Views should declare exactly one <code>primary_key</code> dimension</summary>
-	<p></p>
+	<p>...unless the view declares that it has no primary key via a <code>pk0_</code> named dimension.</p>
+	<code class="bad block">
+		# Missing a primary_key:yes dimension
+
+		view: users {
+			sql_table_name: users ;;
+		}
+		</code>
+	<code class="good block">
+		view: users {
+			sql_table_name: users ;;
+			dimension: pk1_user_id {
+				primary_key: yes
+				hidden: yes
+				sql: ${TABLE}.user_id ;;
+			}
+		}
+		</code>
+	<code class="bad block">
+		# Too many primary_key:yes dimensions
+
+		view: users {
+			sql_table_name: users ;;
+			dimension: pk1_user_id {
+				primary_key: yes
+				hidden: yes
+				sql: ${TABLE}.user_id ;;
+			}
+			dimension: id {
+				primary_key: yes
+				sql: ${TABLE}.user_id ;;
+			}
+		}
+		</code>
+	<code class="good block">
+		view: log_events {
+			sql_table_name: log_events ;;
+			dimension: pk0_user_id {
+				hidden: yes
+			}
+		}
+		</code>
 	</details>
 <details id="k8"> <!-- primary_key dim uses all PK dims -->
 	<summary><b><a href="#k8">K8.</a></b> The <code>primary_key</code> dimension must use or be the Primary Key Dimension(s)</summary>
-	<p></p>
+	<p>In the case of a simple, 1-column primary key, this simply means the Primary Key Dimension and the <code>primary_key:yes</code> dimension are the same dimension</p>
+
+	<code class="good block">
+		view: users {
+			sql_table_name: users ;;
+			dimension: pk1_user_id {
+				primary_key: yes
+				hidden: yes
+				sql: ${TABLE}.user_id ;;
+			}
+		}
+		</code>
+	<p>However, for composite primary keys, you should ensure that the <code>primary_key:yes</code> dimension uses all of the Primary Key Dimensions in its <code>sql</code>:</p>
+
+	<code class="good block">
+		view: memberships {
+			sql_table_name: memberships ;;
+			dimension: pk2_user_id {
+				hidden: yes
+				sql: ${TABLE}.user_id ;;
+			}
+			dimension: pk2_group_id {
+				hidden: yes
+				sql: ${TABLE}.group_id ;;
+			}
+			dimension: membership_id {
+				hidden: yes
+				primary_key: yes
+				sql: ${pk2_user_id} || "-" || ${pk2_group_id} ;;
+			}
+		}
+		</code>
 	</details>
 <details id="k5"> <!-- Distribution dimensions -->
 	<summary><b><a href="#k5">K5.</a></b> Views based on tables with a <a class="subtle" href="#glossary-dist-key">distribution key</a> should define a Distribution Key Dimension... 💬</summary>
@@ -231,7 +303,7 @@
 	</code>
 	</details>
 <details id="f2"> <!-- No view-labeled fields -->
-	<summary><b><a href="#f2">F2.</a></b> Fields should not contain a view_label.</summary>
+	<summary><b><a href="#f2">F2.</a></b> Fields should not contain a <code>view_label</code>.</summary>
 	<p><b>Rationale:</b> Field-level view labels can't be overridden by a join. Prefer view-level view labels.</p>
 	</details>
 <details id="f3"> <!-- Count fields filtered -->
