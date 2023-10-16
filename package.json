@@ -29,7 +29,7 @@
     "linter"
   ],
   "author": "Fabio Beltramini",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/looker-open-source/look-at-me-sideways/issues"
   },
