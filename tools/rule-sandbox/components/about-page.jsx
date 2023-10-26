@@ -48,14 +48,21 @@ const AboutPage = ({setProject,setRule,setMatch,setTab}) => {
 			<Typography variant="h4">Project</Typography>	
 			<Typography>
 					To get started, you will need to provide a LookML project to lint against, under the project tab.
-					To avoid having to abstract and display a view of multiple, the app currently accepts a JSON representation of your entire project, as output by
+					To avoid having to abstract and display a view of multiple files, the app instead accepts a JSON representation of your entire project, as output by
 					node-lookml-parser, rather than the raw LookML. So, you will want to run the parser on your project from the command line.
 				</Typography>
+			<Typography>For LAMS v3+ users:</Typography>	
 			<code style={{whiteSpace:'pre-line'}}>
 			{`npm install -g lookml-parser
 				cd ~/your/project
 				lookml-parser --file-output=by-name --whitespace=4 --transform=x
 				# or --transform=xs if you wish to ignore/drop $strings data`}
+				</code>
+			<Typography>For LAMS v2 users:</Typography>	
+			<code style={{whiteSpace:'pre-line'}}>
+			{`npm install -g lookml-parser
+				cd ~/your/project
+				lookml-parser --file-output=array --whitespace=4`}
 				</code>
 			<Typography>
 				Depending on your operating system, you may find it convenient to pipe the output of the parser directly to your clipboard
