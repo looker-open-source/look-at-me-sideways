@@ -44,34 +44,40 @@ function ruleFn(match, path, project) {
 			continue;
 		}
 		// TODO: Currently only checking the first reference in each block/container, should loop through them all
-		let regexMatch = referenceContainer
+    let regexMatch = referenceContainer
 			.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
-			.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/);
-		let parts = ((regexMatch || [])[2] || '').split('.').map((p)=>p.trim()).filter(Boolean);
-		if (!parts.length) {
+			.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%|\}\})/);
+    let partsList = ((regexMatch || [])[2] || '').split(' ').filter(str => str.includes('.')).map((p)=>p.split('.')).filter(Boolean);
+
+		if (!partsList.length) {
 			continue;
 		}
-		// Don't treat references to TABLE or to own default alias as cross-view
-		if (parts[0] === 'TABLE' || parts[0] === view.$name) {
-			parts.shift();
-		}
-		// Don't treat references to special properties as cross-view
-		// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
-		if ([
-			'SQL_TABLE_NAME',
-			'_sql',
-			'_value',
-			'_name',
-			'_filters',
-			'_parameter_value',
-			'_rendered_value',
-			'_label',
-			'_link',
-		].includes(parts[parts.length - 1])
-		) {
-			parts.pop();
-		}
-		if (parts.length > 1) {
+
+    filteredPartsList = partsList.filter((parts) => {
+      if (parts[0] === 'TABLE' || parts[0] === view.$name) {
+        return false;
+      }
+      // Don't treat references to TABLE or to own default alias as cross-view
+      // Don't treat references to special properties as cross-view
+      // Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
+      if ([
+        'SQL_TABLE_NAME',
+        '_sql',
+        '_value',
+        '_name',
+        '_filters',
+        '_parameter_value',
+        '_rendered_value',
+        '_label',
+        '_link',
+      ].includes(parts[parts.length - 1])
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+		if (filteredPartsList.length > 1) {
 			messages.push({
 				level: 'error',
 				description: `${field.$name} references another view, ${parts[0]},  via ${parts.join('.')}`,
