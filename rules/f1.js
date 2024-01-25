@@ -43,20 +43,30 @@ function ruleFn(match, path, project) {
 		if (!referenceContainer || !referenceContainer.replace) {
 			continue;
 		}
-		// TODO: Currently only checking the first reference in each block/container, should loop through them all
-		let regexMatch = referenceContainer
-			.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
-			.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%|\}\})/);
-		let partsList = ((regexMatch || [])[2] || '').split(' ').filter(str => str.includes('.')).map((p)=>p.split('.')).filter(Boolean);
 
-		if (!partsList.length) {
+		referenceContainer = referenceContainer.replace(/\b\d+\.\d+\b/g, ''); // Remove decimals
+
+		let regexPattern = /(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/g;
+
+		let matches = [];
+		let match;
+		while ((match = regexPattern.exec(referenceContainer)) !== null) {
+			matches.push(...match[2].trim().split(' ').filter((str) => str.includes('.')).filter(Boolean));
+		}
+		// remove duplicates
+		let fieldPaths = matches.filter((item, index) => matches.indexOf(item) === index);
+
+		if (!fieldPaths.length) {
 			continue;
 		}
-		
-		filteredPartsList = partsList.filter((parts) => {
+
+		// filter out field paths that don't reference another view
+		let crossViewFieldPaths = fieldPaths.filter((fieldPath) => {
+			let parts = fieldPath.split('.');
 			if (parts[0] === 'TABLE' || parts[0] === view.$name) {
 				return false;
 			}
+
 			// Don't treat references to TABLE or to own default alias as cross-view
 			// Don't treat references to special properties as cross-view
 			// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
@@ -77,10 +87,12 @@ function ruleFn(match, path, project) {
 			return true;
 		});
 
-		if (filteredPartsList.length > 1) {
+		if (crossViewFieldPaths.length > 0) {
+			// only report the first cross-view reference error
+			let parts = crossViewFieldPaths[0].split('.');
 			messages.push({
 				level: 'error',
-				description: `${field.$name} references another view, ${parts[0]},  via ${parts.join('.')}`,
+				description: `${field.$name} references another view, ${parts[0]},  via ${crossViewFieldPaths[0]}`,
 			});
 		}
 	}
