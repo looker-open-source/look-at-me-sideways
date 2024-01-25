@@ -53,8 +53,8 @@ function ruleFn(match, path, project) {
 		while ((match = regexPattern.exec(referenceContainer)) !== null) {
 			matches.push(...match[2].trim().split(' ').filter((str) => str.includes('.')).filter(Boolean));
 		}
-		// remove duplicates
-		let fieldPaths = matches.filter((item, index) => matches.indexOf(item) === index);
+
+		let fieldPaths = [...new Set(matches)]; // remove duplicates
 
 		if (!fieldPaths.length) {
 			continue;
