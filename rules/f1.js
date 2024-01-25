@@ -70,7 +70,7 @@ function ruleFn(match, path, project) {
 			// Don't treat references to TABLE or to own default alias as cross-view
 			// Don't treat references to special properties as cross-view
 			// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
-			if ([
+			if (parts.length == 2 && [
 				'SQL_TABLE_NAME',
 				'_sql',
 				'_value',
