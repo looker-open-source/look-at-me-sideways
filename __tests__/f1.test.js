@@ -542,6 +542,44 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(error);
 		});
 
+		it('should not error for fields with multiple references in html {% %}', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { 
+            html: {% if bat._value == "usd" or bat._value == "cad" %}
+              <p>\${{rendered_value}}</p>
+              {% elsif bat._value == "eur" %}
+              <p>€{{rendered_value}}</p>
+              {% else %}
+              <p>{{rendered_value}}</p>
+              {% endif %} ;;
+          }
+				}
+			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
+			expect(result).toContainMessage({...F1});
+		});
+
+		it('should error for 3-part cross-view special-suffix with multiple references in html {% %}', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: bar { 
+            html: {% if bat._value == "usd" or baz.bat._value == "cad" %}
+              <p>\${{rendered_value}}</p>
+              {% elsif bat._value == "eur" %}
+              <p>€{{rendered_value}}</p>
+              {% else %}
+              <p>{{rendered_value}}</p>
+              {% endif %} ;;
+          }
+				}
+			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
+			expect(result).toContainMessage({...F1, ...error});
+		});
+
 		// TODO: Expose assembleModels from parser to test extensions here without full parseFiles & dummy project test case
 		// it('should not error for a view with extension:required', () => {
 		// 	let result = rule(parse(`model: my_model {
