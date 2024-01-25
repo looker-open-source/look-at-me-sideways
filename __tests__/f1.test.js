@@ -547,14 +547,14 @@ describe('Rules', () => {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { 
-            html: {% if bat._value == "usd" or bat._value == "cad" %}
-              <p>\${{rendered_value}}</p>
-              {% elsif bat._value == "eur" %}
-              <p>€{{rendered_value}}</p>
-              {% else %}
-              <p>{{rendered_value}}</p>
-              {% endif %} ;;
-          }
+						html: {% if bat._value == "usd" or bat._value == "cad" %}
+							<p>\${{rendered_value}}</p>
+							{% elsif bat._value == "eur" %}
+							<p>€{{rendered_value}}</p>
+							{% else %}
+							<p>{{rendered_value}}</p>
+							{% endif %} ;;
+						}
 				}
 			}`));
 			expect(result).toContainMessage(summary(1, 0, 0));
@@ -566,14 +566,14 @@ describe('Rules', () => {
 				view: foo {
 					sql_table_name: foo ;;
 					dimension: bar { 
-            html: {% if bat._value == "usd" or baz.bat._value == "cad" %}
-              <p>\${{rendered_value}}</p>
-              {% elsif bat._value == "eur" %}
-              <p>€{{rendered_value}}</p>
-              {% else %}
-              <p>{{rendered_value}}</p>
-              {% endif %} ;;
-          }
+						html: {% if bat._value == "usd" or baz.bat._value == "cad" %}
+							<p>\${{rendered_value}}</p>
+							{% elsif bat._value == "eur" %}
+							<p>€{{rendered_value}}</p>
+							{% else %}
+							<p>{{rendered_value}}</p>
+							{% endif %} ;;
+						}
 				}
 			}`));
 			expect(result).toContainMessage(summary(1, 0, 1));
