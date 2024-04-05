@@ -106,7 +106,7 @@ module.exports = function(
 						let parts = crossViewFieldPaths[0].split('.');
 						errorCt++;
 						messages.push({
-							rule, level: 'error',
+							rule, location, level: 'error',
 							description: `${field.$name} references another view, ${parts[0]},  via ${crossViewFieldPaths[0]}`,
 						});
 					}
@@ -115,7 +115,7 @@ module.exports = function(
 		}
 	}
 	messages.push({
-		rule, location, level: 'info',
+		rule, level: 'info',
 		description: `Evaluated ${matchCt} matches, with ${exemptionCt} exempt and ${errorCt} erroring`,
 	});
 	return {
