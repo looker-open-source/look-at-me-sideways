@@ -103,5 +103,15 @@ describe('Rules', () => {
 			});
 			expect(result).not.toContainMessage(error);
 		});
+
+		it('should pass concise explore labels, regardless of emojis in label (issue 171)', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {label: "All Orders 🤑"}
+			}`));
+			expect(result).toContainMessage({...e7, ...info,
+				description: 'Rule E7 summary: 1 matches, 0 matches exempt, and 0 errors',
+			});
+			expect(result).not.toContainMessage(error);
+		});
 	});
 });
