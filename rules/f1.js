@@ -43,38 +43,57 @@ function ruleFn(match, path, project) {
 		if (!referenceContainer || !referenceContainer.replace) {
 			continue;
 		}
-		// TODO: Currently only checking the first reference in each block/container, should loop through them all
-		let regexMatch = referenceContainer
-			.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
-			.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/);
-		let parts = ((regexMatch || [])[2] || '').split('.').map((p)=>p.trim()).filter(Boolean);
-		if (!parts.length) {
+
+		referenceContainer = referenceContainer.replace(/\b\d+\.\d+\b/g, ''); // Remove decimals
+
+		let regexPattern = /(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/g;
+
+		let matches = [];
+		let match;
+		while ((match = regexPattern.exec(referenceContainer)) !== null) {
+			matches.push(...match[2].trim().split(' ').filter((str) => str.includes('.')).filter(Boolean));
+		}
+
+		let fieldPaths = [...new Set(matches)]; // remove duplicates
+
+		if (!fieldPaths.length) {
 			continue;
 		}
-		// Don't treat references to TABLE or to own default alias as cross-view
-		if (parts[0] === 'TABLE' || parts[0] === view.$name) {
-			parts.shift();
-		}
-		// Don't treat references to special properties as cross-view
-		// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
-		if ([
-			'SQL_TABLE_NAME',
-			'_sql',
-			'_value',
-			'_name',
-			'_filters',
-			'_parameter_value',
-			'_rendered_value',
-			'_label',
-			'_link',
-		].includes(parts[parts.length - 1])
-		) {
-			parts.pop();
-		}
-		if (parts.length > 1) {
+
+		// find all of the field paths that uses cross view references
+		let crossViewFieldPaths = fieldPaths.filter((fieldPath) => {
+			let parts = fieldPath.split('.');
+
+			// Don't treat references to TABLE or to own default alias as cross-view
+			if (parts[0] === 'TABLE' || parts[0] === view.$name) {
+				return false;
+			}
+
+			// Don't treat references to special properties as cross-view
+			// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
+			if (parts.length == 2 && [ // only matches the fields that have two parts
+				'SQL_TABLE_NAME',
+				'_sql',
+				'_value',
+				'_name',
+				'_filters',
+				'_parameter_value',
+				'_rendered_value',
+				'_label',
+				'_link',
+			].includes(parts[parts.length - 1])
+			) {
+				return false;
+			}
+			return true;
+		});
+
+		if (crossViewFieldPaths.length > 0) {
+			// only report the first cross-view reference error
+			let parts = crossViewFieldPaths[0].split('.');
 			messages.push({
 				level: 'error',
-				description: `${field.$name} references another view, ${parts[0]},  via ${parts.join('.')}`,
+				description: `${field.$name} references another view, ${parts[0]},  via ${crossViewFieldPaths[0]}`,
 			});
 		}
 	}
