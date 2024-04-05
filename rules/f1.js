@@ -42,7 +42,7 @@ module.exports = function(
 					exemptionCt++; continue;
 				}
 				let location = `view:${view.$name}/${field.$type}:${field.$name}`;
-				[field.sql,
+				let referenceContainers = [field.sql,
 					field.html,
 					field.label_from_parameter && '{{' + field.label_from_parameter + '}}',
 					...[].concat(field.link||[]).map((link) => link.url),
@@ -51,45 +51,66 @@ module.exports = function(
 					// I am keeping this check around for historical consistency, but there should eventually be a rule
 					// to guard against the old syntax at all, and this could be updated accordingly.
 					...[].concat(field.filter||[]).map((filter) => '{{' + filter.field + '}}'),
-				].forEach((value) => {
-					if (!value || !value.replace) {
-						return;
+				];
+				for (let referenceContainer of referenceContainers) {
+					if (!referenceContainer || !referenceContainer.replace) {
+						continue;
 					}
-					let match = value
-						.replace(/\b\d+\.\d+\b/g, '') // Remove decimals
-						.match(/(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/);
-					let parts = ((match || [])[2] || '').split('.').map((p)=>p.trim()).filter(Boolean);
-					if (!parts.length) {
-						return;
+			
+					referenceContainer = referenceContainer.replace(/\b\d+\.\d+\b/g, ''); // Remove decimals
+			
+					let regexPattern = /(\$\{|\{\{|\{%)\s*(([^.{}]+)(\.[^.{}]+)+)\s*(%\}|\})/g;
+			
+					let matches = [];
+					let match;
+					while ((match = regexPattern.exec(referenceContainer)) !== null) {
+						matches.push(...match[2].trim().split(' ').filter((str) => str.includes('.')).filter(Boolean));
 					}
-					// Don't treat references to TABLE or to own default alias as cross-view
-					if (parts[0] === 'TABLE' || parts[0] === view.$name) {
-						parts.shift();
+			
+					let fieldPaths = [...new Set(matches)]; // remove duplicates
+			
+					if (!fieldPaths.length) {
+						continue;
 					}
-					// Don't treat references to special properties as cross-view
-					// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
-					if ([
-						'SQL_TABLE_NAME',
-						'_sql',
-						'_value',
-						'_name',
-						'_filters',
-						'_parameter_value',
-						'_rendered_value',
-						'_label',
-						'_link',
-					].includes(parts[parts.length - 1])
-					) {
-						parts.pop();
-					}
-					if (parts.length > 1) {
+			
+					// find all of the field paths that uses cross view references
+					let crossViewFieldPaths = fieldPaths.filter((fieldPath) => {
+						let parts = fieldPath.split('.');
+			
+						// Don't treat references to TABLE or to own default alias as cross-view
+						if (parts[0] === 'TABLE' || parts[0] === view.$name) {
+							return false;
+						}
+			
+						// Don't treat references to special properties as cross-view
+						// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
+						if (parts.length == 2 && [ // only matches the fields that have two parts
+							'SQL_TABLE_NAME',
+							'_sql',
+							'_value',
+							'_name',
+							'_filters',
+							'_parameter_value',
+							'_rendered_value',
+							'_label',
+							'_link',
+						].includes(parts[parts.length - 1])
+						) {
+							return false;
+						}
+						return true;
+					});
+			
+					if (crossViewFieldPaths.length > 0) {
+						// only report the first cross-view reference error
+						let parts = crossViewFieldPaths[0].split('.');
 						errorCt++;
 						messages.push({
-							location, path, rule, exempt, level: 'error',
-							description: `${field.$name} references another view, ${parts[0]},  via ${parts.join('.')}`,
+							rule, level: 'error',
+							description: `${field.$name} references another view, ${parts[0]},  via ${crossViewFieldPaths[0]}`,
 						});
 					}
-				});
+				}
 			}
 		}
 	}
