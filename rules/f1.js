@@ -63,11 +63,12 @@ function ruleFn(match, path, project) {
 		// find all of the field paths that uses cross view references
 		let crossViewFieldPaths = fieldPaths.filter((fieldPath) => {
 			let parts = fieldPath.split('.');
+
+			// Don't treat references to TABLE or to own default alias as cross-view
 			if (parts[0] === 'TABLE' || parts[0] === view.$name) {
 				return false;
 			}
 
-			// Don't treat references to TABLE or to own default alias as cross-view
 			// Don't treat references to special properties as cross-view
 			// Note: view._in_query,_is_filtered,_is_selected should not be allowed in fields
 			if (parts.length == 2 && [ // only matches the fields that have two parts
