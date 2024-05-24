@@ -1,19 +1,19 @@
 {
   "name": "@looker/look-at-me-sideways",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@looker/look-at-me-sideways",
-      "version": "3.1.3",
+      "version": "3.1.4",
       "license": "MIT",
       "dependencies": {
         "dot": "^1.1.3",
         "fromentries": "^1.3.2",
         "jsonpath-plus": "^7.2.0",
         "liyad": "^0.2.4",
-        "lookml-parser": "^6.8.1",
+        "lookml-parser": "^6.8.2",
         "minimist": "^1.2.6",
         "require-from-string": "^2.0.2"
       },
@@ -3806,9 +3806,9 @@
       "dev": true
     },
     "node_modules/lookml-parser": {
-      "version": "6.8.1",
-      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.8.1.tgz",
-      "integrity": "sha512-YmS/Evxn3o/51zZ8U96ONDEH3kwdgz45AfR+mSBrvbmrecvA/T8K7ucRoKKI1NrXEUP3yRgrD1TNrOBnRRlocQ==",
+      "version": "6.8.2",
+      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.8.2.tgz",
+      "integrity": "sha512-iuhCtKrbr4iuQ1DkiHi4y3yepK5PqttEdZMYP8w9gpm0tr0cB4rAqqpHIcndoiy+m6wnS3UfhjK3pFP8AIrXow==",
       "dependencies": {
         "bluebird": "^3.5.1",
         "glob": "^7.1.2",
@@ -7959,9 +7959,9 @@
       "dev": true
     },
     "lookml-parser": {
-      "version": "6.8.1",
-      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.8.1.tgz",
-      "integrity": "sha512-YmS/Evxn3o/51zZ8U96ONDEH3kwdgz45AfR+mSBrvbmrecvA/T8K7ucRoKKI1NrXEUP3yRgrD1TNrOBnRRlocQ==",
+      "version": "6.8.2",
+      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-6.8.2.tgz",
+      "integrity": "sha512-iuhCtKrbr4iuQ1DkiHi4y3yepK5PqttEdZMYP8w9gpm0tr0cB4rAqqpHIcndoiy+m6wnS3UfhjK3pFP8AIrXow==",
       "requires": {
         "bluebird": "^3.5.1",
         "glob": "^7.1.2",
