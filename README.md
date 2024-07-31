@@ -130,7 +130,9 @@ The following examples were prepared for v1 of LAMS, though updating them for v2
 - **source** - A glob specifying which files to read. Defaults to `**/{*.model,*.explore,*.view,manifest}.lkml`.
 - **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory.
 - **project-name** - An optional name for the project, used to generate links back to the project in mardown output. Specifying this in manifest.lkml is preferred.
-- **manifest** - A JSON-encoded object to override any properties that are normally set via the manifest.lkml file.
+- **manifest** - [Deprecated. Use manifest-defaults and/or manifest-overrides instead.] A JSON-encoded object to override any properties that are normally set via the manifest.lkml file.
+- **manifest-defaults** - A file path or JSON-encoded object of default manifest values which may be overriden by the project manifest. The target file may be a JSON file, or a YAML file if the `js-yaml` optional peer dependency is installed.
+- **manifest-overrides** - A file path or JSON-encoded object of manifest values that override values set by the project manifest. The target file may be a JSON file, or a YAML file if the `js-yaml` optional peer dependency is installed.
 - **on-parser-error** - Set to "info" to indicate that LookML parsing errors should not fail the linter, but yield an `info` level message instead (not all output modes display `info` level messages)
 - **verbose** - Set to also output `verbose` level messages, for output modes that support it (`lines`)
 - **date-output** - Set to "none" to skip printing the date at the top of the `issues.md` file.
