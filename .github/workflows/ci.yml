@@ -23,6 +23,8 @@ jobs:
           npm ci
       - name: Lint
         run: npm run lint
+      - name: Install js-yaml (optional dependency)
+        run: npm install --no-save js-yaml
       - name: Run tests
         run: npm test
         env:
