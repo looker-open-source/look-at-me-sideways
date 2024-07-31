@@ -144,6 +144,10 @@ If your LookML project doesn't have a manifest.lkml file, you may want to consid
 - **rule: rule_name** - Recommended. Used to opt-in to built-in rules and to specify custom rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
 - **rule_exemptions** - Optional. Originally used in 1 & v2 to opt-out of rules globally. A global opt-out can still be useful for opting-out of certain "sub rules" that a rule may return without opting-out of the entire rule.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
 
+### Optional Dependencies
+
+- `js-yaml` is not automatically installed with LAMS, but you may explicitly install it if you want to write custom rules that lint against the contents of a LookML Dashboard, which is a YAML-based file. In this case, also make sure to pass a `source` argument, as the default `source` does not includes `.dashboard.lookml` files.
+
 ## About
 
 ### Release Notes

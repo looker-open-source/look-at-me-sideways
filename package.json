@@ -39,7 +39,7 @@
     "fromentries": "^1.3.2",
     "jsonpath-plus": "^7.2.0",
     "liyad": "^0.2.4",
-    "lookml-parser": "^6.8.2",
+    "lookml-parser": "^6.9.1",
     "minimist": "^1.2.6",
     "require-from-string": "^2.0.2"
   },
