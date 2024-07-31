@@ -736,7 +736,6 @@
       "version": "0.6.0",
       "resolved": "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.6.0.tgz",
       "integrity": "sha512-JQlEKbcgEUjBFhLIF4iqM7u/9lwgHRBcpHrmUNCALK0Q3amXN6lxdoXLnF0sm11E9VqTmBALR87IlUg1bZ8A9A==",
-      "deprecated": "Use @eslint/config-array instead",
       "dev": true,
       "dependencies": {
         "@humanwhocodes/object-schema": "^1.2.0",
@@ -751,7 +750,6 @@
       "version": "1.2.1",
       "resolved": "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz",
       "integrity": "sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==",
-      "deprecated": "Use @eslint/object-schema instead",
       "dev": true
     },
     "node_modules/@istanbuljs/load-nyc-config": {
@@ -1236,7 +1234,6 @@
       "version": "2.0.5",
       "resolved": "https://registry.npmjs.org/abab/-/abab-2.0.5.tgz",
       "integrity": "sha512-9IK9EadsbHo6jLWIpxpR6pL0sazTXV6+SQv25ZB+F7Bj9mJNaOc4nCRabwd5M/JwmUa8idz6Eci6eKfJryPs6Q==",
-      "deprecated": "Use your platform's native atob() and btoa() methods instead",
       "dev": true
     },
     "node_modules/acorn": {
@@ -1871,7 +1868,6 @@
       "version": "2.0.1",
       "resolved": "https://registry.npmjs.org/domexception/-/domexception-2.0.1.tgz",
       "integrity": "sha512-yxJ2mFy/sibVQlu5qHjOkf9J3K6zgmCxgJ94u2EdvDOV09H+32LtRswEcUsmUWN72pVLOEnTSRaIVVzVQgS0dg==",
-      "deprecated": "Use your platform's native DOMException instead",
       "dev": true,
       "dependencies": {
         "webidl-conversions": "^5.0.0"
@@ -2460,7 +2456,6 @@
       "version": "7.1.2",
       "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz",
       "integrity": "sha512-MJTUg1kjuLeQCJ+ccE4Vpa6kKVXkPYJ2mOCQyUuKLcLQsdrMCpBPUi8qVE6+YuaJkozeA9NusTAw3hLr8Xe5EQ==",
-      "deprecated": "Glob versions prior to v9 are no longer supported",
       "dependencies": {
         "fs.realpath": "^1.0.0",
         "inflight": "^1.0.4",
@@ -2647,7 +2642,6 @@
       "version": "1.0.6",
       "resolved": "https://registry.npmjs.org/inflight/-/inflight-1.0.6.tgz",
       "integrity": "sha1-Sb1jMdfQLQwJvJEKEHW6gWW1bfk=",
-      "deprecated": "This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.",
       "dependencies": {
         "once": "^1.3.0",
         "wrappy": "1"
@@ -3418,7 +3412,6 @@
       "version": "7.2.0",
       "resolved": "https://registry.npmjs.org/glob/-/glob-7.2.0.tgz",
       "integrity": "sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==",
-      "deprecated": "Glob versions prior to v9 are no longer supported",
       "dev": true,
       "dependencies": {
         "fs.realpath": "^1.0.0",
@@ -4359,7 +4352,6 @@
       "version": "3.0.2",
       "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-3.0.2.tgz",
       "integrity": "sha512-JZkJMZkAGFFPP2YqXZXPbMlMBgsxzE8ILs4lMIX/2o0L9UBw9O/Y3o6wFw/i9YLapcUJWwqbi3kdxIPdC62TIA==",
-      "deprecated": "Rimraf versions prior to v4 are no longer supported",
       "dev": true,
       "dependencies": {
         "glob": "^7.1.3"
@@ -4375,7 +4367,6 @@
       "version": "7.2.0",
       "resolved": "https://registry.npmjs.org/glob/-/glob-7.2.0.tgz",
       "integrity": "sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==",
-      "deprecated": "Glob versions prior to v9 are no longer supported",
       "dev": true,
       "dependencies": {
         "fs.realpath": "^1.0.0",
@@ -4653,7 +4644,6 @@
       "version": "7.2.0",
       "resolved": "https://registry.npmjs.org/glob/-/glob-7.2.0.tgz",
       "integrity": "sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==",
-      "deprecated": "Glob versions prior to v9 are no longer supported",
       "dev": true,
       "dependencies": {
         "fs.realpath": "^1.0.0",
@@ -4839,7 +4829,6 @@
       "version": "1.0.2",
       "resolved": "https://registry.npmjs.org/w3c-hr-time/-/w3c-hr-time-1.0.2.tgz",
       "integrity": "sha512-z8P5DvDNjKDoFIHK7q8r8lackT6l+jo/Ye3HOle7l9nICP9lf1Ci25fy9vHd0JOWewkIFzXIEig3TdKT7JQ5fQ==",
-      "deprecated": "Use your platform's native performance.now() and performance.timeOrigin.",
       "dev": true,
       "dependencies": {
         "browser-process-hrtime": "^1.0.0"
