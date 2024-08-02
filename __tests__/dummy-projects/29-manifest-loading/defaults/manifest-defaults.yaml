@@ -1,0 +1,10 @@
+rule:
+  no_override:
+    match: "$"
+    rule_expr: "false"
+  partial_override:
+    match: "$"
+    rule_expr: "false"
+  full_override:
+    match: "$"
+    rule_expr: "false"
