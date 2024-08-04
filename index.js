@@ -103,18 +103,17 @@ module.exports = async function(
 		}
 		console.log('> Parsing done!');
 
-		
+
 		/* Loading project manifest settings */ {
 			console.log('Getting manifest and rule info...');
 			const loadManifest = require('./lib/loaders/manifest/manifest.js');
 			const loadManifestResult = await loadManifest(project, {
 				cwd,
 				manifestDefaults: options.manifestDefaults,
-				manifestOverrides: options.manifest
-			},{process});
+				manifestOverrides: options.manifest,
+			}, {process});
 			project.manifest = loadManifestResult.manifest;
 			messages = messages.concat(loadManifestResult.messages);
-			
 		}
 
 		/* Loading central exemptions */ {
