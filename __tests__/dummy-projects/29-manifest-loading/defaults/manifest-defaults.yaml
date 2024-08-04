@@ -1,10 +1,10 @@
 rule:
   no_override:
     match: "$"
-    rule_expr: "false"
+    expr_rule: "false"
   partial_override:
     match: "$"
-    rule_expr: "false"
+    expr_rule: "false"
   full_override:
     match: "$"
-    rule_expr: "false"
+    expr_rule: "false"

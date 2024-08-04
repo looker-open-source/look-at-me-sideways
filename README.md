@@ -30,7 +30,7 @@ Interested? See a video of LAMS in action!
 
 The linter comes with built-in rules that can enforce rules K1-4, F1-4, E1-2, T1-2, and W1 from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
 
-As of LAMS v3, you must opt-in via your `manifest.lkml` file to use the built-in rules. Here is an example declaration opting in to all the currently available built-in rules:
+As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to use the built-in rules. Here is an example declaration opting in to all the currently available built-in rules:
 
 ```lkml
 #LAMS
@@ -49,7 +49,6 @@ As of LAMS v3, you must opt-in via your `manifest.lkml` file to use the built-in
 #rule: E7{} # Explore label 25-char max
 #rule: T1{} # Triggers use datagroups 
 #rule: T2{} # Primary keys in DT
-#rule: W1{} # Block indentation
 #rule: W1{} # Block indentation
 ```
 
@@ -80,10 +79,7 @@ view: rollup {
 ```js
 {"rule":"K3","location":"model:my_model/view:rollup"}
 {"rule":"K3","location":"model:my_other_model/view:foo"}
-
 ```
-
-You may also apply rule_exemptions globally in your project.manifest, but this is generally unnecessary as of LAMS v3.
 
 ### Output
 
@@ -111,9 +107,9 @@ cd <your-lookml-project>
 lams
 ```
 
-- **[Github Action](https://looker-open-source.github.io/look-at-me-sideways/github-action)** - This option is very quick to get started if you're using Github, and offers a compromise between convenience of setup and per-commit run performance.
+- **[Github Action](https://looker-open-source.github.io/look-at-me-sideways/github-action)** - This option is commonly used among LAMS users, and has an up-to-date and convenient deployment example.
 
-The following examples were prepared for v1 of LAMS, though updating them for v2+ should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
+The remaining examples were prepared for v1 of LAMS, though updating them for v2+ should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
 
 - **[GitLab CI](https://looker-open-source.github.io/look-at-me-sideways/gitlab-ci)** - A community-contributed configuration for GitLab, which offers similarly low overhead as our dockerized Jenkins configuration
 - **[Dockerized Jenkins Server](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md)** - We have provided a Docker image with an end-to-end configuration including a Jenkins server, LAMS, and Github protected branches & status checks configuration. 
@@ -137,17 +133,27 @@ The following examples were prepared for v1 of LAMS, though updating them for v2
 - **date-output** - Set to "none" to skip printing the date at the top of the `issues.md` file.
 - **allow-custom-rules** - Experimental and not recommended. Used to approve the running of **Javascript-based** custom rules. DO NOT USE TO RUN UNTRUSTED CODE. See [custom rules](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for details.
 
-### Manifest.lkml arguments
+### Manifest configuration
 
-If your LookML project doesn't have a manifest.lkml file, you may want to consider adding one! LAMS uses the following information from your project's mainfest.lkml file:
+More complex configurations, such as [custom rule definitions](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams), are provided in a manifest file. These may be provided either directly in your project's native `manifest.lkml` file using `#LAMS` conditional comments, or in a separate file specified by the `manifest` parameter.
+
+If you have a small number of declarations, the native `manifest.lkml` file is a convenient place to add them.
+
+If you are managing many declarations, you may want to consider installing `js-yaml` to maintain manifest configurations in a separate YAML file, to benefit from improved legibility and syntax highlighting. In this case, provide the path to the file in the `manifest` command-line argument. 
+
+In case both files are provided, declarations from both sources will be used, with the latter taking precedence. Similarly, the `manifest-defaults` command-line argument can be used to provide declarations with a lower priority than the native `manifest.lkml`.
+
+The manifest can provide the following declarations:
 
 - **name** - Recommended. A name for the project, used to generate links back to the project in mardown output. If the native LookML validator complains about an unnecessary project name, you can use a conditional #LAMS comment to specify it.
 - **rule: rule_name** - Recommended. Used to opt-in to built-in rules and to specify custom rules.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
-- **rule_exemptions** - Optional. Originally used in 1 & v2 to opt-out of rules globally. A global opt-out can still be useful for opting-out of certain "sub rules" that a rule may return without opting-out of the entire rule.  See [customizing LAMS](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams)
+- **rule_exemptions** - Optional. Originally used in v1 & v2 to opt-out of rules globally. A global opt-out can still be useful for opting-out of certain "sub rules" that a rule may return without opting-out of the entire rule.
 
 ### Optional Dependencies
 
-- `js-yaml` is not automatically installed with LAMS, but you may explicitly install it if you want to write custom rules that lint against the contents of a LookML Dashboard, which is a YAML-based file. In this case, also make sure to pass a `source` argument, as the default `source` does not includes `.dashboard.lookml` files.
+- `js-yaml` is not automatically installed with LAMS, but you may explicitly install it:
+  - if you want to maintain your manifest configuration in YAML
+  - if you want to write custom rules that lint against the contents of a LookML Dashboard, which is a YAML-based file. In this case, also make sure to pass a `source` argument, as the default `source` does not includes `.dashboard.lookml` files.
 
 ## About
 

@@ -1,8 +1,9 @@
 # LAMS
-# rule: partial_override { 
+# rule: ok { 
+#	match: "$"	
 #	expr_rule: true ;;
 # }
-# rule: full_override {
+# rule: bad {
 #	match: "$"
 #	expr_rule: true ;;
 #}
