@@ -5,11 +5,13 @@ favicon: img/logo.png
 
 LAMS comes pre-bundled with a number of rules that reflect our opinionated best practices. However, sometimes you may want to implement your own rules that may be highly specific to your project/model.
 
-To handle this, LAMS offers the ability to extend it with custom rules written in a LISP-based expression, specified inline in your project manifest. (LAMS can also accept custom rules written in Javascript, hosted externally, although this approach is discouraged)
+To handle this, LAMS offers the ability to extend it with custom rules written in a LISP-based expression, specified in a manifest.
 
 ## Custom Rules
 
-Expression-based rules can be declared within your manifest's LookML, and consist of four parts. By way of example:
+# Quickstart
+
+Expression-based rules can be declared within your manifest's LookML. By way of example:
 
 ```
 # in manifest.lkml
@@ -23,7 +25,25 @@ Expression-based rules can be declared within your manifest's LookML, and consis
 
 ```
 
-You can also quickly experiment with custom rule definitions in the [Rule Sandbox](tools/rule-sandbox)
+Alternately, you can maintain them in YAML for nicer syntax:
+
+```
+# in a YAML file passed to the `manifest` argument (requires installing js-yaml)
+
+rule:
+  prod_connection:
+    description: Models must use prod connection
+    match: "$.model.*"
+    expr_rule: |
+      ( === ::match:connection "prod" )
+
+```
+
+### Rule Sandbox
+
+You can quickly experiment with custom rule definitions in the [Rule Sandbox](tools/rule-sandbox)
+
+### Rule Reference
 
 Here is what each part of the rule definition means:
 
@@ -43,9 +63,9 @@ Here is what each part of the rule definition means:
     - **object** - (Beta) An object can be returned, specifying any of the following properties: level (info/warn/error), exempt, path, location, description, rule
     - **array of objects** - (Beta) Like the above, but in case you need to emit multiple messages per match
     - The return formats marked Beta are not expected to change, but are currently untested and may change slightly for compatibility reasons without a major semver update
-  - **Language functions** - LAMS includes a command-line script, `rule-functions-doc.js`, that you can call for a comprehensive list of available functions. But, see [expression examples below](#expression-examples) for some common and useful ones!
+  - **Language functions** - The FN Docs tab in [Rule Sandbox](tools/rule-sandbox) has a list of all available top-level functions. And, see [expression examples below](#expression-examples) for some common and useful ones!
 
-Disclaimer: Expression evaluation is powered by the [Liyad](https://github.com/shellyln/liyad) library. It both intends to prevent escalation of privleges, and, unlike Javascript evaluation, theoretically *can* do so. ([See my writeup on this](https://fabio-looker.github.io/data/2019-10-15-lams-customization-update/)). However, it is still a very new project, so evaluate it accordingly.
+Security Disclaimer: Expression evaluation is powered by the [Liyad](https://github.com/shellyln/liyad) library. It both intends to prevent escalation of privleges, and, unlike Javascript evaluation, theoretically *can* do so. ([See my writeup on this](https://fabio-looker.github.io/data/2019-10-15-lams-customization-update/)). However, it is still a very new project, so evaluate it accordingly.
 
 ### Rule Matching
 
@@ -116,6 +136,28 @@ E.g., does the label start with "Is" or "Has"? (Note that `$match` is a function
 ```lisp
 ($let myvar (+ ::match:foo "_bar") )
 (=== myvar "foo_bar")
+```
+
+### Lambdas and Iteration
+
+```lisp
+($let urls ($map links (-> (link) ::link:url)))
+($let badUrls ($filter urls (-> (url) ($match "^http://" url))))
+($if ::badUrls:length
+	($concat "Links must not use insecure HTTP: " ($join ::badUrls ", "))
+	true
+)
+```
+
+### Accessing JavaScript methods
+
+The below example calls JavaScript's native String.prototype.localeCompare method for sorting:
+
+```lisp
+($let dim-names ($object-keys ($any ::match:dimension (#))))
+($let alphabetically (-> (a b) ($__call a localeCompare b)))
+($let sorted-names ($sort dim-names alphabetically))
+(== ($join dim-names ",") ($join sorted-names ","))
 ```
 
 ## Legacy Javascript Rules

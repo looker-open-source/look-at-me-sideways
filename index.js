@@ -103,30 +103,20 @@ module.exports = async function(
 		}
 		console.log('> Parsing done!');
 
-		console.log('Getting manifest and exemption info...');
-		// Loading project manifest settings
-		const manifestInfo = {level: 'info', location: 'project'};
-		if (project.manifest) {
-			messages.push({...manifestInfo, description: `Project manifest settings read from ${project.manifest.$file_path}`});
-		} else {
-			messages.push({...manifestInfo, description: `No manifest.lkml file available`});
-		}
-		if (options.manifest) {
-			messages.push({...manifestInfo, description: `Project manifest settings read from LAMS invocation arguments`});
-		}
-		project.manifest = {
-			...(project.manifest||{}),
-			...(options.manifest||{}),
-		};
-		const manifestKeys = Object.keys(project.manifest).filter((key)=>key[0]!=='$');
-		messages.push({...manifestInfo, description: `Manifest properties: ${manifestKeys.slice(0, 8).join(', ')}${manifestKeys.length>8?'...':''}`});
-		if (project.manifest.rule) {
-			const ruleKeys = Object.keys(project.manifest.rule).filter((key)=>key[0]!=='$');
-			messages.push({...manifestInfo, description: `Rules: ${ruleKeys.slice(0, 6).join(', ')}${ruleKeys.length>6?'...':''}`});
+
+		/* Loading project manifest settings */ {
+			console.log('Getting manifest and rule info...');
+			const loadManifest = require('./lib/loaders/manifest/manifest.js');
+			const loadManifestResult = await loadManifest(project, {
+				cwd,
+				manifestDefaults: options.manifestDefaults,
+				manifestOverrides: options.manifest,
+			}, {process});
+			project.manifest = loadManifestResult.manifest;
+			messages = messages.concat(loadManifestResult.messages);
 		}
 
-		// Loading central exemptions
-		{
+		/* Loading central exemptions */ {
 			const {lamsRuleExemptionsPath} = options;
 			const loadLamsExemptions = require('./lib/loaders/lams-exemptions.js');
 			const result = await loadLamsExemptions({cwd, lamsRuleExemptionsPath});

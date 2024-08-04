@@ -1,0 +1,4 @@
+rule:
+  bad:
+    match: "$"
+    expr_rule: "false"
