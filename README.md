@@ -58,18 +58,16 @@ In addition to linting against its [style guide](https://looker-open-source.gith
 
 ### Rule Exemptions
 
-You can opt-out of rules granularly by locally specifying `rule_exemptions`.
+You can opt-out of rules granularly by locally specifying rule exemptions.
 
-The rule exemption syntax encourages developers to document the reason for each such exemption:
+The rule exemption syntax encourages developers (optionally) to document the reason for each such exemption:
 
 ```lkml
 view: rollup {
   sql_table_name: my_table ;;
 
-  #LAMS
-  #rule_exemptions: {
-  #  K3: "2018-11-12 - Bob said it's ok"
-  #}
+  #LAMS exempt: K3 {why: "Bob said it's ok"}
+
   dimension: info {...}
   ...
 ```
