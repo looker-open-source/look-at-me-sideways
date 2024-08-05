@@ -1,6 +1,6 @@
 {
   "name": "@looker/look-at-me-sideways",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "A judgmental little LookML linter >_>",
   "main": "index.js",
   "directories": {
