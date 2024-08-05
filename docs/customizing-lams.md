@@ -28,7 +28,8 @@ Expression-based rules can be declared within your manifest's LookML. By way of 
 Alternately, you can maintain them in YAML for nicer syntax:
 
 ```
-# in a YAML file passed to the `manifest` argument (requires installing js-yaml)
+# in a YAML file passed to the `manifest` argument
+# (requires installing js-yaml)
 
 rule:
   prod_connection:
@@ -48,8 +49,9 @@ You can quickly experiment with custom rule definitions in the [Rule Sandbox](to
 Here is what each part of the rule definition means:
 
 - **Rule name:** Any LookML name for this rule. This name is included in LAMS usage reporting, if you have opted in to it. Names composed of a single letter followed by a number are reserved for future LAMS usage.
-- **enabled:** (Optional) A yesno value that indicates whether to use the rule. (Default: yes)
+- **allow_exemptions:** (Optional) A yesno value that indicates whether to respect rule exemption declarations. (Default: yes)
 - **description:** (Optional) A succint human-readable description, which will be shown to developers in LAMS' output
+- **enabled:** (Optional) A yesno value that indicates whether to use the rule. (Default: yes)
 - **match:** A [JSONpath expression](https://www.npmjs.com/package/jsonpath-plus) that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [Rule Matching](#rule-matching) below for more details and example match patterns.
 - **expr_rule:** A [Liyad](https://github.com/shellyln/liyad) expression that defines the logic of the rule.
   - **Arguments:** Three arguments are made available to the expression:

@@ -1,0 +1,5 @@
+
+rule: explore_description {
+	match: "$.model.*.explore.*"
+	expr_rule: (!== ::match:description undefined) ;;
+}

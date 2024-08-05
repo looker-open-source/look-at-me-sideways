@@ -1,0 +1,11 @@
+
+rule: require_persist_for {
+	match: "$.model.*"
+	expr_rule: (!== ::match:persist_for undefined) ;;
+}
+
+rule: really_require_persist_for {
+	match: "$.model.*"
+	expr_rule: (!== ::match:persist_for undefined) ;;
+	allow_exemptions: no
+}
