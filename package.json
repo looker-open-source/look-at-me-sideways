@@ -37,7 +37,7 @@
   "dependencies": {
     "dot": "^1.1.3",
     "fromentries": "^1.3.2",
-    "jsonpath-plus": "^7.2.0",
+    "jsonpath-plus": "^10.0.0",
     "liyad": "^0.2.4",
     "lookml-parser": "^6.10.0",
     "minimist": "^1.2.6",
