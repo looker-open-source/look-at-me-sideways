@@ -1,0 +1,6 @@
+
+rule: explore_from {
+	match: "$.model.*.explore[?(@.from!==undefined)]"
+	expr_rule: (!== ::match:view_name undefined) ;;
+	description: "Explores that declare a `from` view should also declare a `view_name` (usually with the same value)"
+}
