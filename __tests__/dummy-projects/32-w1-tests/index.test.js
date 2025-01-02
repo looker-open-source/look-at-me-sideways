@@ -50,5 +50,13 @@ describe('Projects', () => {
 			});
 		});
 
+		it("it should not error for 04-new-cc-indented-space.view", ()=> {
+			expect({messages}).not.toContainMessage({
+				rule: "W1",
+				level: "error",
+				location:"file:04-new-cc-indented-space.view/view:foo"
+			});
+		});
+
 	});
 });
