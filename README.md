@@ -158,7 +158,7 @@ The manifest can provide the following declarations:
 ### Release Notes
 
 - [v2](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2)
-- [v3](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v3)
+- [v3+](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v3)
 
 ### Privacy Policy
 
