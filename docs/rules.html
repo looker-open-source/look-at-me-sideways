@@ -18,7 +18,7 @@
 	a {color:#44B;}
 	a.subtle {color:#559; text-decoration: none;}
 	code{background-color: #EEF; color:#333;}
-	code.block {display:block; white-space: pre-wrap; max-width:90%;margin:1em 0 1.5em 0; tab-size:2em;}
+	code.block {display:block; white-space: pre-wrap; max-width:90%;margin:1em 0 1.5em 0; tab-size:2em;box-shadow: 2px 2px 10px 0px #99C;}
 	code.good.block {background-color: #EFE; box-shadow: 2px 2px 10px 0px #9C9;}
 	code.good.block::before {content:"# GOOD:"}
 	code.good.block.sql::before {content:"-- GOOD:"}
@@ -925,20 +925,73 @@
 <p>This section provides a set of rules across different objects to suggest introducing hierarchy whenever the number of object/sub objects grows large.</p>
 
 
-<details id="h1">
-	<summary><b><a href="#h1">H1.</a></b> Hoist identifiers</summary>
-	<p></p>
+<details id="h1"> <!-- Hoist identifiers -->
+	<summary><b><a href="#h1">H1.</a></b> Hoist identifier dimensions via labeling</summary>
+	<p>Wrap a view's identifying dimensions (ID, name, etc) in square brackets to visually distinguish them and hoist them to the top of the field picker. This may be done either directly on the dimension's label, or on a group label.</p>
+	<p><b>Rationale:</b> This provides a visual hint to explore users about the subject and structure of each view.</p>
+	<p>For views without primary keys or identifiers, there are no fields to hoist. If a view declares 0 primary keys via a <a href="#k1">pk-naming convention</a>, LAMS will not require any hoisting.</p>
+	<p><b>Note: </b>LAMS will not identify <i>which</i> fields should be hoisted, just suggest that some should be hoisted when none are found.</p>
+	<p><b>Note: </b>LAMS configuration can specify different prefixes/sufixes to use instead of the suggested square brackets by specifying the desired characters in </code>prefix</code> and <code>suffix</code> options. Simply make sure to use a prefix that sorts higher than other typically used characters</p>
+	<code class="block">
+	# Providing a custom format in manifest.lkml
+
+	#LAMS
+	#rule: H1 {options: {prefix: " 🔑" suffix: ""}}
+	</code>
 	</details>
-<details id="h2">
-	<summary><b><a href="#h2">H2.</a></b> Group fields</summary>
-	<p></p>
+<details id="h2"> <!-- Group fields -->
+	<summary><b><a href="#h2">H2.</a></b> Group fields, when too many</summary>
+	<p>When the number of dimensions/measures in a view's field picker exceeds 20, use `group_label` to reduce clutter.</p>
+	<p><b>Note: </b>LAMS configuration can specify a different threshold to use instead of 20:</p>
+	<code class="block">
+	# Providing options in manifest.lkml
+
+	#LAMS
+	#rule: H2 {options: {threshold: 30}}
+	</code>
 	</details>
-<details id="h3">
-	<summary><b><a href="#h3">H3.</a></b> Super-group fields</summary>
-	<p></p>
+<details id="h3"> <!-- Sort group groups -->
+	<summary><b><a href="#h3">H3.</a></b> Super-group groups, when too many</summary>
+	<p>When already using group_label (or when having a number of dimension groups), if the number of groups under a view's field picker exceeds 8, use label prefixes to sort and organize groups. Separate the prefix with " > " to visually indicate hierarchy.</p>
+	<code class="block bad">
+		# Labels below aligned to help illustrate field picker
+		dimension: annual_contract_value {        group_label: "ACV" ...}
+		dimension: widgets_annual_contract_value {group_label: "ACV" ...}
+		dimension_group: close_date {             group_label: "Close" ...}
+		dimension: incremental_acv {              group_label: "IACV" ...}
+		dimension: widgets_incremental_acv {      group_label: "IACV" ...}
+		dimension_group: start_date {             group_label: "Start" ...}
+		dimension: total_contract_value {         group_label: "TCV" ...}
+		dimension: widgets_tv {                   group_label: "TCV" ...}
+		...
+	</code>
+	<code class="block good">
+		# Labels below aligned to help illustrate field picker
+		dimension_group: close_date {             group_label: "Dates > Close" ...}
+		dimension_group: start_date {             group_label: "Dates > Start" ...}
+		dimension: annual_contract_value {        group_label: "Value > ACV" ...}
+		dimension: widgets_annual_contract_value {group_label: "Value > ACV" ...}
+		dimension: incremental_acv {              group_label: "Value > IACV" ...}
+		dimension: widgets_incremental_acv {      group_label: "Value > IACV" ...}
+		dimension: total_contract_value {         group_label: "Value > TCV" ...}
+		dimension: widgets_tv {                   group_label: "Value > TCV" ...}
+	</code>
+
+	<p><b>Note: </b>LAMS configuration can specify a different threshold to use instead of 8, and a different delimiter to use:</p>
+	<code class="block">
+	# Providing options in manifest.lkml
+
+	#LAMS
+	#rule: H3 {options: {threshold: 12 delimiter: ": "}}
+	</code>
 	</details>
-<details id="h4">
-	<summary><b><a href="#h4">H4.</a></b> Hoist main view</summary>
+<details id="h4"> <!-- Group more -->
+	<summary><b><a href="#h3">H4.</a></b> Group more, when still too many</summary>
+	<p>When already using group_label and/or sorting groups, if the number of options under a view's field picker still exceeds 30, group fields into your available groups more proactively.</p>
+	<p><b>Rationale:</b> The prior two rules provide a first line of defense by alerting developers to available features they may not know to use. However, if after making those options available, the number of options presented to a user at a time is still too large, this rule encourages developers to explicitly target reducing that overall number. Accordingly the threshold is set slightly higher.</p>
+	</details>
+<details id="h">
+	<summary><b><a href="#h">H.</a></b> Hoist main view</summary>
 	<p></p>
 	</details>
 <details id="h5">
