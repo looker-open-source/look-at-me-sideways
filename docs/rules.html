@@ -950,9 +950,9 @@
 	#rule: H2 {options: {threshold: 30}}
 	</code>
 	</details>
-<details id="h3"> <!-- Sort group groups -->
-	<summary><b><a href="#h3">H3.</a></b> Super-group groups, when too many</summary>
-	<p>When already using group_label (or when having a number of dimension groups), if the number of groups under a view's field picker exceeds 8, use label prefixes to sort and organize groups. Separate the prefix with " > " to visually indicate hierarchy.</p>
+<details id="h3"> <!-- Sort-group groups -->
+	<summary><b><a href="#h3">H3.</a></b> Sort-group groups, when too many</summary>
+	<p>When already using group_label (or when having a number of dimension groups), if the number of groups under a view's field picker exceeds 10, use label prefixes to sort and organize groups. Separate the prefix with " > " to visually indicate hierarchy.</p>
 	<code class="block bad">
 		# Labels below aligned to help illustrate field picker
 		dimension: annual_contract_value {        group_label: "ACV" ...}
@@ -977,7 +977,7 @@
 		dimension: widgets_tv {                   group_label: "Value > TCV" ...}
 	</code>
 
-	<p><b>Note: </b>LAMS configuration can specify a different threshold to use instead of 8, and a different delimiter to use:</p>
+	<p><b>Note: </b>LAMS configuration can specify a different threshold to use instead of 10, and a different delimiter to use:</p>
 	<code class="block">
 	# Providing options in manifest.lkml
 
@@ -986,24 +986,42 @@
 	</code>
 	</details>
 <details id="h4"> <!-- Group more -->
-	<summary><b><a href="#h3">H4.</a></b> Group more, when still too many</summary>
+	<summary><b><a href="#h4">H4.</a></b> Group more, when still too many</summary>
 	<p>When already using group_label and/or sorting groups, if the number of options under a view's field picker still exceeds 30, group fields into your available groups more proactively.</p>
 	<p><b>Rationale:</b> The prior two rules provide a first line of defense by alerting developers to available features they may not know to use. However, if after making those options available, the number of options presented to a user at a time is still too large, this rule encourages developers to explicitly target reducing that overall number. Accordingly the threshold is set slightly higher.</p>
 	</details>
-<details id="h">
-	<summary><b><a href="#h">H.</a></b> Hoist main view</summary>
-	<p></p>
-	</details>
-<details id="h5">
-	<summary><b><a href="#h5">H5.</a></b> Super-group views</summary>
-	<p></p>
+<details id="h5"> <!-- Hoist main view -->
+	<summary><b><a href="#h5">H5.</a></b> Hoist main view</summary>
+	<p>Wrap an explore's base view in square brackets to visually distinguish it and hoist it to the top of the field picker.</p>
+	<p>The rule may be ignored for explores that have no joins, and for hidden explores.</p>
+	<p><b>Rationale:</b> Many or most explores in Looker follow a snowflake schema - a central fact table, and a number of many-to-one dimensional joins. Hoisting the main view that the explore represents to the top of the field picker helps visually reinforce the central/primary nature of that view within the explore.</p>
+	<code class="block good">
+	explore: orders {
+		view_label: "[Orders]"
+		...
+	</code>
+	<p><b>Note: </b>LAMS configuration can specify different prefixes/sufixes to use instead of the suggested square brackets. Make sure to use a prefix that sorts higher than other typically used characters</p>
+	<code class="block">
+	# Providing custom options in manifest.lkml
+
+	#LAMS
+	#rule: H5 {options: {
+	#   prefix: " 🔑"
+	#   suffix: ""
+	#   enforceHidden: yes
+	#}}
+	</code>
 	</details>
 <details id="h6">
-	<summary><b><a href="#h6">H6.</a></b> Group explores</summary>
+	<summary><b><a href="#h6">H.</a></b> Sort-group views</summary>
+	<p>When the numer of views in an explore's field picker exceeds 10, use label prefixes to sort and organize groups.</p>
+	</details>
+<details id="h">
+	<summary><b><a href="#h">H.</a></b> Group explores</summary>
 	<p></p>
 	</details>
-<details id="h7">
-	<summary><b><a href="#h7">H7.</a></b> Super-group explores</summary>
+<details id="h">
+	<summary><b><a href="#h7">H.</a></b> Super-group explores</summary>
 	<p></p>
 	</details>
 

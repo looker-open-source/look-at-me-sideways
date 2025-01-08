@@ -15,7 +15,7 @@ module.exports = function(
 };
 
 function ruleFn(match, path, project, options={}) {
-	const threshold = !isNaN(options.threshold) ? parseInt(options.threshold) : 8;
+	const threshold = !isNaN(options.threshold) ? parseInt(options.threshold) : 10;
 	const delimiter = options.delimiter || " > "
 	const view = match;
 
