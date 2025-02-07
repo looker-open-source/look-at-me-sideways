@@ -921,7 +921,7 @@
 	</details>
 
 <h1 id="hierarchy">Hierarchy</h1>
-<p>A key principle to avoid overwhelming users and to help them quickly find what they need, is to limit the number of available options at any given time. Besides entirely hiding things, the best way to do this is by adding hierarchy.</p>
+<p>A key principle to avoid overwhelming users and to help them quickly find what they need is to limit the number of available options at any given time. Besides entirely hiding things, the best way to do this is by adding hierarchy.</p>
 <p>This section provides a set of rules across different objects to suggest introducing hierarchy whenever the number of object/sub objects grows large.</p>
 
 
@@ -1006,25 +1006,46 @@
 
 	#LAMS
 	#rule: H5 {options: {
-	#   prefix: " 🔑"
+	#   prefix: " 📊"
 	#   suffix: ""
 	#   enforceHidden: yes
 	#}}
 	</code>
 	</details>
-<details id="h6">
+<details id="h6"> <!-- Sort-group views -->
 	<summary><b><a href="#h6">H.</a></b> Sort-group views</summary>
-	<p>When the numer of views in an explore's field picker exceeds 10, use label prefixes to sort and organize groups.</p>
-	</details>
-<details id="h">
-	<summary><b><a href="#h">H.</a></b> Group explores</summary>
-	<p></p>
-	</details>
-<details id="h">
-	<summary><b><a href="#h7">H.</a></b> Super-group explores</summary>
-	<p></p>
-	</details>
+	<p>When the numer of views in an explore's field picker exceeds 20, use label prefixes to sort and organize groups.</p>
+	<code class="block good">
+	explore: orders {
+		join: user {}
+		join: first_orders {
+			view_label: "User > First Order"
+		}
+		join: first_orders {
+			view_label: "User > First Order"
+		}
+		...
+	</code>
+	<p><b>Note: </b>LAMS configuration can specify a different delimiter</p>
+	<code class="block">
+	# Providing custom options in manifest.lkml
 
+	#LAMS rule: H6 {options: {threshold: 10 delimiter: ": "}}
+	</code>
+	</details>
+<details id="h7"> <!-- Group explores -->
+	<summary><b><a href="#h7">H7.</a></b> Group explores</summary>
+	<p>When the number of visible explores in a model exceeds 10, use group_label to organize explores</p>
+	<p><b>Rationale:</b> Consolidate and group the number of options presented to users to create a more approachable explore picker.</p>
+	<p><b>Note:</b> The explore picker is populated from across multiple projects, so linting any one project can only work as a warning flag. You should evaluate your model naming/grouping while considering all projects in your instance and use the threshold option for more granular control on a per-project basis.</p>
+	</details>
+<!-- Sort-group explores
+<details id="h">
+	<summary><b><a href="#h">H.</a></b> Sort-group explores</summary>
+	<p>When the number of visible models and explore groups exceeds 10, use label prefixes to organize explore groups</p>
+	<p>Note: Although the intent of this rule is to create a more approachable explore picker for users, the explore picker is populated from multiple projects, so linting any one project can only work as a warning flag. You should evaluate the impliction of model naming/grouping while considering all projects in your instance and use the threshold option for more granular control on a per-project basis.</p>
+	</details>
+	-->
 <h1 id="whitespace">Whitespace</h1>
 <p><b>Note:</b> To enable the linter to effectively enforce whitespace-related rules, you may have to consider how conditional comments (e.g. `#LAMS`) will be pre-processed. The parser will preserve whitespace before the comment on each line, and will consume the comment character (#), the conditional comment token, and up to one space or tab character. For multi-line commented blocks, it will visually appear that there is one additional level of indentation. See <a href="https://github.com/looker-open-source/look-at-me-sideways/blob/master/__tests__/dummy-projects/33-w1-tests/">test project #33</a> for an example.</p>
 <details id="w1">

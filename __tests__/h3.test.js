@@ -43,13 +43,28 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...h3, ...error});
 		});
 
-		it('should pass views with <=10 dimension_groups>', () => {
+		it('should pass views with <=10 dimension_groups', () => {
 			let result = rule(parse(`model: m {
 				view: my_view {
 					dimension_group: dg1 {} dimension_group: dg2 {} dimension_group: dg3 {}
 					dimension_group: dg4 {} dimension_group: dg5 {} dimension_group: dg6 {}
 					dimension_group: dg7 {} dimension_group: dg8 {} dimension_group: dg9 {}
 					dimension_group: dg10 {} 
+				}
+			}`));
+			expect(result).toContainMessage({...h3, ...info,
+				description: `Rule ${r} summary: 1 matches, 0 matches exempt, and 0 errors`,
+			});
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should pass views with hidden dimension_groups', () => {
+			let result = rule(parse(`model: m {
+				view: my_view {
+					dimension_group: dg1 {} dimension_group: dg2 {} dimension_group: dg3 {}
+					dimension_group: dg4 {} dimension_group: dg5 {} dimension_group: dg6 {}
+					dimension_group: dg7 {} dimension_group: dg8 {} dimension_group: dg9 {}
+					dimension_group: dg10 {} dimension_group: dg11 {hidden: yes}
 				}
 			}`));
 			expect(result).toContainMessage({...h3, ...info,
@@ -138,19 +153,17 @@ describe('Rules', () => {
 		it('should pass views using sort groups to comply with the threshold', () => {
 			let result = rule(parse(`model: m {
 				view: accounts {
-					view: accounts {
-						dimension: g1d1 {group_label: "A > G1"} dimension: g1d2 {group_label: "A > G1"}
-						dimension: g2d1 {group_label: "A > G2"} dimension: g2d2 {group_label: "A > G2"}
-						dimension: g3d1 {group_label: "G3"} dimension: g3d2 {group_label: "G3"}
-						dimension: g4d1 {group_label: "G4"} dimension: g4d2 {group_label: "G4"}
-						dimension: g5d1 {group_label: "G5"} dimension: g5d2 {group_label: "G5"}
-						dimension: g6d1 {group_label: "G6"} dimension: g6d2 {group_label: "G6"}
-						dimension: g7d1 {group_label: "G7"} dimension: g7d2 {group_label: "G7"}
-						dimension: g8d1 {group_label: "G8"} dimension: g8d2 {group_label: "G8"}
-						dimension: g9d1 {group_label: "G9"} dimension: g9d2 {group_label: "G9"}
-						dimension: g9d1 {group_label: "G10"} dimension: g9d2 {group_label: "G10"}
-						dimension: g9d1 {group_label: "G11"} dimension: g9d2 {group_label: "G11"}
-					}
+					dimension: g1d1 {group_label: "A > G1"} dimension: g1d2 {group_label: "A > G1"}
+					dimension: g2d1 {group_label: "A > G2"} dimension: g2d2 {group_label: "A > G2"}
+					dimension: g3d1 {group_label: "G3"} dimension: g3d2 {group_label: "G3"}
+					dimension: g4d1 {group_label: "G4"} dimension: g4d2 {group_label: "G4"}
+					dimension: g5d1 {group_label: "G5"} dimension: g5d2 {group_label: "G5"}
+					dimension: g6d1 {group_label: "G6"} dimension: g6d2 {group_label: "G6"}
+					dimension: g7d1 {group_label: "G7"} dimension: g7d2 {group_label: "G7"}
+					dimension: g8d1 {group_label: "G8"} dimension: g8d2 {group_label: "G8"}
+					dimension: g9d1 {group_label: "G9"} dimension: g9d2 {group_label: "G9"}
+					dimension: g9d1 {group_label: "G10"} dimension: g9d2 {group_label: "G10"}
+					dimension: g9d1 {group_label: "G11"} dimension: g9d2 {group_label: "G11"}
 				}
 			}`));
 			expect(result).toContainMessage({...h3, ...info,
@@ -186,19 +199,17 @@ describe('Rules', () => {
 			manifest: {rule: H3 {options: {delimiter: ": "}}}
 			model: m {
 				view: accounts {
-					view: accounts {
-						dimension: g1d1 {group_label: "A: G1"} dimension: g1d2 {group_label: "A: G1"}
-						dimension: g2d1 {group_label: "A: G2"} dimension: g2d2 {group_label: "A: G2"}
-						dimension: g3d1 {group_label: "G3"} dimension: g3d2 {group_label: "G3"}
-						dimension: g4d1 {group_label: "G4"} dimension: g4d2 {group_label: "G4"}
-						dimension: g5d1 {group_label: "G5"} dimension: g5d2 {group_label: "G5"}
-						dimension: g6d1 {group_label: "G6"} dimension: g6d2 {group_label: "G6"}
-						dimension: g7d1 {group_label: "G7"} dimension: g7d2 {group_label: "G7"}
-						dimension: g8d1 {group_label: "G8"} dimension: g8d2 {group_label: "G8"}
-						dimension: g9d1 {group_label: "G9"} dimension: g9d2 {group_label: "G9"}
-						dimension: g9d1 {group_label: "G10"} dimension: g9d2 {group_label: "G10"}
-						dimension: g9d1 {group_label: "G11"} dimension: g9d2 {group_label: "G11"}
-					}
+					dimension: g1d1 {group_label: "A: G1"} dimension: g1d2 {group_label: "A: G1"}
+					dimension: g2d1 {group_label: "A: G2"} dimension: g2d2 {group_label: "A: G2"}
+					dimension: g3d1 {group_label: "G3"} dimension: g3d2 {group_label: "G3"}
+					dimension: g4d1 {group_label: "G4"} dimension: g4d2 {group_label: "G4"}
+					dimension: g5d1 {group_label: "G5"} dimension: g5d2 {group_label: "G5"}
+					dimension: g6d1 {group_label: "G6"} dimension: g6d2 {group_label: "G6"}
+					dimension: g7d1 {group_label: "G7"} dimension: g7d2 {group_label: "G7"}
+					dimension: g8d1 {group_label: "G8"} dimension: g8d2 {group_label: "G8"}
+					dimension: g9d1 {group_label: "G9"} dimension: g9d2 {group_label: "G9"}
+					dimension: g9d1 {group_label: "G10"} dimension: g9d2 {group_label: "G10"}
+					dimension: g9d1 {group_label: "G11"} dimension: g9d2 {group_label: "G11"}
 				}
 			}`));
 			expect(result).toContainMessage({...h3, ...info,
