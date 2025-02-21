@@ -32,7 +32,7 @@ function ruleFn(match, path, project) {
 	let pkDimensions = (Object.values(view.dimension || {})).filter(pkNamingConvention);
 
 	if (!pkDimensions.length) {
-		return `View ${view.$name} has no dimensions that follow the PK naming convetion`;
+		return `View ${view.$name} has no dimensions that follow the PK naming convention`;
 	}
 
 	let declaredNs = pkDimensions

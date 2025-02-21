@@ -52,12 +52,14 @@ Here is what each part of the rule definition means:
 - **allow_exemptions:** (Optional) A yesno value that indicates whether to respect rule exemption declarations. (Default: yes)
 - **description:** (Optional) A succint human-readable description, which will be shown to developers in LAMS' output
 - **enabled:** (Optional) A yesno value that indicates whether to use the rule. (Default: yes)
+- **options:** (Optional) An object containing rule-specific key-value pairs that further specify rule behavior. Typically relevant for built-in rules that wish to allow for some degree of flexibility.
 - **match:** A [JSONpath expression](https://www.npmjs.com/package/jsonpath-plus) that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [Rule Matching](#rule-matching) below for more details and example match patterns.
 - **expr_rule:** A [Liyad](https://github.com/shellyln/liyad) expression that defines the logic of the rule.
-  - **Arguments:** Three arguments are made available to the expression:
+  - **Arguments:** Four arguments are made available to the expression:
     - `match`: The value matched by the match expression. (The expression is invoked once for each time the pattern is matched in your project)
     - `path`: An array containing the path to the matched LookML. For example, `['$','model','my_model']`
     - `project`: The entire LookML project, in case you need to further reference any data from it within each match
+    - `options`: An object containing any options defined in the rule configuration.
   - **Return value**
     - **true** - If your expression returns true, the test will be passed
     - **false** - If your expression returns false, the test will be failed

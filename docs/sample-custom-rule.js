@@ -1,6 +1,8 @@
 /* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
 
-/*	This sample custom rule checks all models for a hypothetical naming convention
+/*	THIS SAMPLE IS FOR THE DEPRECATED JAVASCRIPT-BASED RULES MECHANISM
+
+	This sample custom rule checks all models for a hypothetical naming convention
 	within the model's connection string to ensure that users developing against
 	a staging/dev connection don't accidentally push that connection to prod
 
