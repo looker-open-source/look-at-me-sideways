@@ -2,13 +2,12 @@ require('../lib/expect-to-contain-message');
 
 const rule = require('../rules/h4.js');
 const {parse} = require('lookml-parser');
-const r='H4'
+const r='H4';
 
 describe('Rules', () => {
 	describe(r, () => {
 		let info = {level: 'info'};
 		let error = {level: 'error'};
-		let verbose = {level: 'verbose'};
 		let h4 = {rule: 'H4'};
 
 		it('should not match and pass if there are no models', () => {
@@ -189,6 +188,5 @@ describe('Rules', () => {
 			});
 			expect(result).not.toContainMessage(error);
 		});
-
 	});
 });

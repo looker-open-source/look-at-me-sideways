@@ -3,7 +3,7 @@ require('../lib/expect-to-contain-message');
 
 const rule = require('../rules/h1.js');
 const {parse} = require('lookml-parser');
-const r='H1'
+const r='H1';
 
 describe('Rules', () => {
 	describe(r, () => {

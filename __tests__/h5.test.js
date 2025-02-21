@@ -2,7 +2,7 @@ require('../lib/expect-to-contain-message');
 
 const rule = require('../rules/h5.js');
 const {parse} = require('lookml-parser');
-const r='H5'
+const r='H5';
 
 describe('Rules', () => {
 	describe(r, () => {

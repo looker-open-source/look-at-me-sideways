@@ -15,23 +15,25 @@ module.exports = function(
 };
 
 function ruleFn(match, path, project, options={}) {
-	const prefix = options.prefix!==undefined ? options.prefix : "["
-	const suffix = options.suffix!==undefined ? options.suffix : "]"
-	const enforceHidden = options.enforceHidden!==undefined ? options.enforceHidden : false
+	const prefix = options.prefix!==undefined ? options.prefix : '[';
+	const suffix = options.suffix!==undefined ? options.suffix : ']';
+	const enforceHidden = options.enforceHidden!==undefined ? options.enforceHidden : false;
 	const explore = match;
 
-	if(!explore.join){
-		return true
+	if (!explore.join) {
+		return true;
 	}
 
-	if(explore.hidden && !enforceHidden){
-		return true
+	if (explore.hidden && !enforceHidden) {
+		return true;
 	}
 
-	const maybePrefix = explore.view_label?.slice(0,prefix.length)
-	const maybeSuffix = suffix.length===0 ? "" : explore.view_label?.slice(0-suffix.length)
+	const maybePrefix = explore.view_label?.slice(0, prefix.length);
+	const maybeSuffix = suffix.length===0 ? '' : explore.view_label?.slice(0-suffix.length);
 
-	if(maybePrefix === prefix && maybeSuffix === suffix){return true}
-	
-	return `Hoist view in explore by using view_label like \`${prefix}...${suffix}\``
+	if (maybePrefix === prefix && maybeSuffix === suffix) {
+		return true;
+	}
+
+	return `Hoist view in explore by using view_label like \`${prefix}...${suffix}\``;
 }

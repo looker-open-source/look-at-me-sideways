@@ -3,13 +3,12 @@ require('../lib/expect-to-contain-message');
 
 const rule = require('../rules/h6.js');
 const {parse} = require('lookml-parser');
-const r='H6'
+const r='H6';
 
 describe('Rules', () => {
 	describe(r, () => {
 		let info = {level: 'info'};
 		let error = {level: 'error'};
-		let verbose = {level: 'verbose'};
 		let h6 = {rule: 'H6'};
 
 		it('should not match and pass if there are no models', () => {
@@ -185,6 +184,5 @@ describe('Rules', () => {
 			});
 			expect(result).not.toContainMessage(error);
 		});
-
 	});
 });
