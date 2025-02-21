@@ -28,9 +28,9 @@ Interested? See a video of LAMS in action!
 
 ### Built-in Linter Rules
 
-The linter comes with built-in rules that can enforce rules K1-4, F1-4, E1-2, T1-2, and W1 from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
+The linter comes with built-in rules that can enforce some rules from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
 
-As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to use the built-in rules. Here is an example declaration opting in to all the currently available built-in rules:
+As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to use the built-in rules. Since the rules are opinionated, you likely want to pick and choose the ones that make sense for you. Here is an example declaration opting in to all the currently available built-in rules:
 
 ```lkml
 #LAMS
@@ -49,6 +49,12 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 #rule: E7{} # Explore label 25-char max
 #rule: T1{} # Triggers use datagroups 
 #rule: T2{} # Primary keys in DT
+#rule: H1{} # Hoist identifiers
+#rule: H2{} # Group fields
+#rule: H3{} # Sort-group groups
+#rule: H4{} # Group more
+#rule: H5{} # Hoist main view
+#rule: H6{} # Sort-group views
 #rule: W1{} # Block indentation
 ```
 

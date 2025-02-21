@@ -40,7 +40,9 @@
 <li> <a href="#other-fields">Other Fields</a></li>
 <li> <a href="#derived-tables">Derived Tables</a></li>
 <li> <a href="#explores">Explores</a></li>
-<li> <a href="#out-of-scope">Out of Scope</a></li>
+<li> <a href="#hierarchy">Hierarchy</a></li>
+<li> <a href="#whitespace">Whitespace</a></li>
+<li> <a href="#deprecated-rules">Deprecated Rules</a></li>
 </ul></nav>
 
 <h1 id="key-dimensions">Key Dimensions</h1>
@@ -1013,7 +1015,7 @@
 	</code>
 	</details>
 <details id="h6"> <!-- Sort-group views -->
-	<summary><b><a href="#h6">H.</a></b> Sort-group views</summary>
+	<summary><b><a href="#h6">H6.</a></b> Sort-group views</summary>
 	<p>When the numer of views in an explore's field picker exceeds 20, use label prefixes to sort and organize groups.</p>
 	<code class="block good">
 	explore: orders {
@@ -1026,22 +1028,23 @@
 		}
 		...
 	</code>
-	<p><b>Note: </b>LAMS configuration can specify a different delimiter</p>
+	<p><b>Note: </b>LAMS configuration can specify a different delimiter and/or threshold.</p>
 	<code class="block">
 	# Providing custom options in manifest.lkml
 
 	#LAMS rule: H6 {options: {threshold: 10 delimiter: ": "}}
 	</code>
 	</details>
-<details id="h7"> <!-- Group explores -->
-	<summary><b><a href="#h7">H7.</a></b> Group explores</summary>
+<!-- Group explores
+<details id="h...">
+	<summary><b><a href="#h...">H...</a></b> Group explores</summary>
 	<p>When the number of visible explores in a model exceeds 10, use group_label to organize explores</p>
 	<p><b>Rationale:</b> Consolidate and group the number of options presented to users to create a more approachable explore picker.</p>
 	<p><b>Note:</b> The explore picker is populated from across multiple projects, so linting any one project can only work as a warning flag. You should evaluate your model naming/grouping while considering all projects in your instance and use the threshold option for more granular control on a per-project basis.</p>
-	</details>
+	</details>-->
 <!-- Sort-group explores
-<details id="h">
-	<summary><b><a href="#h">H.</a></b> Sort-group explores</summary>
+<details id="h...">
+	<summary><b><a href="#h...">H...</a></b> Sort-group explores</summary>
 	<p>When the number of visible models and explore groups exceeds 10, use label prefixes to organize explore groups</p>
 	<p>Note: Although the intent of this rule is to create a more approachable explore picker for users, the explore picker is populated from multiple projects, so linting any one project can only work as a warning flag. You should evaluate the impliction of model naming/grouping while considering all projects in your instance and use the threshold option for more granular control on a per-project basis.</p>
 	</details>
@@ -1078,6 +1081,14 @@
 	</details>
 -->
 
+<h1 id="linter-errors">Linter Errors</h1>
+<p>In some circumstances, the linter may run into errors while running that are recoverable, and may report them along with its rule findings.</p>
+<ul>
+	<li><a href="#P0" id="p0" name="p0">P0.</a> Generic Parser Error - Any parser error other than a LookML syntax error. If visible in the chosen output format, the message's `location` property contains the path to the file.</li> 
+	<li><a href="#P1" id="p1" name="p1">P1.</a> LookML Syntax Error - The LookML file contains a unexpected syntax (after expenading any `#LAMS` conditional comments). If visible in the chosen output format, the message's `location` property contains the path to the file and a `hint` for expected syntax from the parser.</li> 
+	<li><a href="#lams1" id="lams1" name="lams1">LAMS1.</a> Unhandled Rule Error - An execution error occurred while running a rule. Please <a href="https://github.com/looker-open-source/look-at-me-sideways/issues/new?template=Blank+issue">submit a ticket</a> about this.</li>
+	<li><a href="#lams2" id="lams2" name="lams2"></a></li>LAMS2.</a> Legacy Custom Rule Error - An execution error occured while running a Javascript-based (Deprecated) custom rule</li> 
+	</ul>
 <h1 id="deprecated-rules">Deprecated Rules</h1>
 <ul>
 	<li><a href="#f7" id="f7" name="f7">F7</a> previously recommended proactively exposing "summary" measures for your dimensions. While summary measures can still be useful for select dimensions, the release of custom measures which explore users can automatically generate from a dimension in the Explore UI renders this practice no longer as important.</li>

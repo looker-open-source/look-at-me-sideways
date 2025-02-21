@@ -25,7 +25,7 @@ function ruleFn(match, path, project, options={}) {
 		const fields = []
 			.concat(Object.values(view[section] || {}))
 			.concat(Object.values(section==="dimension" && view["dimension_group"] || {}))
-			.filter(f => !f.hidden && !f.required_access_grants)
+			.filter(f => !(f.hidden ?? view.fields_hidden_by_default) && !f.required_access_grants)
 
 		const topLabels = fields
 			.map((field,f) =>

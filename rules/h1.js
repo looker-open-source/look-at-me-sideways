@@ -25,7 +25,7 @@ function ruleFn(match, path, project, options={}) {
 		return {level:"verbose",description:"Field hoisting not relevant for 0-PK views"}
 	}
 	const labels = dimensions
-		.filter(dim => !dim.hidden && !dim.required_access_grants)
+		.filter(f => !(f.hidden ?? view.fields_hidden_by_default) && !f.required_access_grants)
 		.map(dim => dim.group_label || dim.label || defaultLabelForField(dim))
 		// Dimension_groups being for dates, they don't really work as identifiers.
 		// Omitting them for now, but may revisit the decision in the future

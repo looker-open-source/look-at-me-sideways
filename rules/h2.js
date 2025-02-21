@@ -23,7 +23,7 @@ function ruleFn(match, path, project, options={}) {
 		const fields = []
 			.concat(Object.values(view[section] || {}))
 			.concat(Object.values(section==="dimension" && view["dimension_group"] || {}))
-			.filter(f => !f.hidden)
+			.filter(f => !(f.hidden ?? view.fields_hidden_by_default) && !f.required_access_grants)
 			// Should we also filter out fields that are re-labeled into other view_labels, even though it's against rule F2?
 
 		const hasGroupLabels = fields.some(f=>f.group_label)
