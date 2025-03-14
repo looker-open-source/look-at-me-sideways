@@ -1,12 +1,12 @@
 {
   "name": "@looker/look-at-me-sideways",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "@looker/look-at-me-sideways",
-      "version": "4.1.0",
+      "version": "4.1.1",
       "license": "MIT",
       "dependencies": {
         "dot": "^1.1.3",

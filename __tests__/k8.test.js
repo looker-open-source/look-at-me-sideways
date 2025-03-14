@@ -91,6 +91,7 @@ describe('Rules', () => {
 				}
 			}`));
 			expect(result).toContainMessage(summary(1, 0, 1));
+			expect(result).not.toContainMessage({...K8, description: 'Error evaluating rule: Cannot read properties of null (reading \'map\')'});
 			expect(result).toContainMessage({...K8, ...error});
 		});
 

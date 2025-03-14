@@ -27,12 +27,13 @@ function ruleFn(match) {
 		return true;
 	}
 	const sql = dim.sql || '${TABLE}.'+dim.$name;
-	const pksReferenced = sql.match(pkReferencesRegex)
+	const pksMatched = sql.match(pkReferencesRegex);
+	if (!pksMatched) {
+		return `primary_key dimension does not reference any PK-named fields`;
+	}
+	const pksReferenced = pksMatched
 		.map((match)=>match.match(/[a-z0-9A-Z_]+/)[0])
 		.filter(unique);
-	if (pksReferenced.length===0) {
-		return `primary_key dimension is not PK-named and does not reference any PK-named fields`;
-	}
 	const pkSizeDeclarations = pksReferenced.map((pk)=>parseInt(pk.match(/\d+/)||'1'));
 	const maxDeclaration = pkSizeDeclarations.reduce(max);
 	const minDeclaration = pkSizeDeclarations.reduce(min);
