@@ -18,7 +18,7 @@
 	a {color:#44B;}
 	a.subtle {color:#559; text-decoration: none;}
 	code{background-color: #EEF; color:#333;}
-	code.block {display:block; white-space: pre-wrap; max-width:90%;margin:1em 0 1.5em 0; tab-size:2em;}
+	code.block {display:block; white-space: pre-wrap; max-width:90%;margin:1em 0 1.5em 0; tab-size:2em;box-shadow: 2px 2px 10px 0px #99C;}
 	code.good.block {background-color: #EFE; box-shadow: 2px 2px 10px 0px #9C9;}
 	code.good.block::before {content:"# GOOD:"}
 	code.good.block.sql::before {content:"-- GOOD:"}
@@ -40,7 +40,11 @@
 <li> <a href="#other-fields">Other Fields</a></li>
 <li> <a href="#derived-tables">Derived Tables</a></li>
 <li> <a href="#explores">Explores</a></li>
-<li> <a href="#out-of-scope">Out of Scope</a></li>
+<li> <a href="#hierarchy">Hierarchy</a></li>
+<li> <a href="#whitespace">Whitespace</a></li>
+<li> <a href="#linter-errors">Linter Errors</a></li>
+<li> <a href="#deprecated-rules">Deprecated Rules</a></li>
+<li> <a href="#glossary">Glossary</a></li>
 </ul></nav>
 
 <h1 id="key-dimensions">Key Dimensions</h1>
@@ -920,8 +924,133 @@
 
 	</details>
 
+<h1 id="hierarchy">Hierarchy</h1>
+<p>A key principle to avoid overwhelming users and to help them quickly find what they need is to limit the number of available options at any given time. Besides entirely hiding things, the best way to do this is by adding hierarchy.</p>
+<p>This section provides a set of rules across different objects to suggest introducing hierarchy whenever the number of object/sub objects grows large.</p>
 
 
+<details id="h1"> <!-- Hoist identifiers -->
+	<summary><b><a href="#h1">H1.</a></b> Hoist identifier dimensions via labeling</summary>
+	<p>Wrap a view's identifying dimensions (ID, name, etc) in square brackets to visually distinguish them and hoist them to the top of the field picker. This may be done either directly on the dimension's label, or on a group label.</p>
+	<p><b>Rationale:</b> This provides a visual hint to explore users about the subject and structure of each view.</p>
+	<p>For views without primary keys or identifiers, there are no fields to hoist. If a view declares 0 primary keys via a <a href="#k1">pk-naming convention</a>, LAMS will not require any hoisting.</p>
+	<p><b>Note: </b>LAMS will not identify <i>which</i> fields should be hoisted, just suggest that some should be hoisted when none are found.</p>
+	<p><b>Note: </b>LAMS configuration can specify different prefixes/sufixes to use instead of the suggested square brackets by specifying the desired characters in </code>prefix</code> and <code>suffix</code> options. Simply make sure to use a prefix that sorts higher than other typically used characters</p>
+	<code class="block">
+	# Providing a custom format in manifest.lkml
+
+	#LAMS
+	#rule: H1 {options: {prefix: " 🔑" suffix: ""}}
+	</code>
+	</details>
+<details id="h2"> <!-- Group fields -->
+	<summary><b><a href="#h2">H2.</a></b> Group fields, when too many</summary>
+	<p>When the number of dimensions/measures in a view's field picker exceeds 20, use `group_label` to reduce clutter.</p>
+	<p><b>Note: </b>LAMS configuration can specify a different threshold to use instead of 20:</p>
+	<code class="block">
+	# Providing options in manifest.lkml
+
+	#LAMS
+	#rule: H2 {options: {threshold: 30}}
+	</code>
+	</details>
+<details id="h3"> <!-- Sort-group groups -->
+	<summary><b><a href="#h3">H3.</a></b> Sort-group groups, when too many</summary>
+	<p>When already using group_label (or when having a number of dimension groups), if the number of groups under a view's field picker exceeds 10, use label prefixes to sort and organize groups. Separate the prefix with " > " to visually indicate hierarchy.</p>
+	<code class="block bad">
+		# Labels below aligned to help illustrate field picker
+		dimension: annual_contract_value {        group_label: "ACV" ...}
+		dimension: widgets_annual_contract_value {group_label: "ACV" ...}
+		dimension_group: close_date {             group_label: "Close" ...}
+		dimension: incremental_acv {              group_label: "IACV" ...}
+		dimension: widgets_incremental_acv {      group_label: "IACV" ...}
+		dimension_group: start_date {             group_label: "Start" ...}
+		dimension: total_contract_value {         group_label: "TCV" ...}
+		dimension: widgets_tv {                   group_label: "TCV" ...}
+		...
+	</code>
+	<code class="block good">
+		# Labels below aligned to help illustrate field picker
+		dimension_group: close_date {             group_label: "Dates > Close" ...}
+		dimension_group: start_date {             group_label: "Dates > Start" ...}
+		dimension: annual_contract_value {        group_label: "Value > ACV" ...}
+		dimension: widgets_annual_contract_value {group_label: "Value > ACV" ...}
+		dimension: incremental_acv {              group_label: "Value > IACV" ...}
+		dimension: widgets_incremental_acv {      group_label: "Value > IACV" ...}
+		dimension: total_contract_value {         group_label: "Value > TCV" ...}
+		dimension: widgets_tv {                   group_label: "Value > TCV" ...}
+	</code>
+
+	<p><b>Note: </b>LAMS configuration can specify a different threshold to use instead of 10, and a different delimiter to use:</p>
+	<code class="block">
+	# Providing options in manifest.lkml
+
+	#LAMS
+	#rule: H3 {options: {threshold: 12 delimiter: ": "}}
+	</code>
+	</details>
+<details id="h4"> <!-- Group more -->
+	<summary><b><a href="#h4">H4.</a></b> Group more, when still too many</summary>
+	<p>When already using group_label and/or sorting groups, if the number of options under a view's field picker still exceeds 30, group fields into your available groups more proactively.</p>
+	<p><b>Rationale:</b> The prior two rules provide a first line of defense by alerting developers to available features they may not know to use. However, if after making those options available, the number of options presented to a user at a time is still too large, this rule encourages developers to explicitly target reducing that overall number. Accordingly the threshold is set slightly higher.</p>
+	</details>
+<details id="h5"> <!-- Hoist main view -->
+	<summary><b><a href="#h5">H5.</a></b> Hoist main view</summary>
+	<p>Wrap an explore's base view in square brackets to visually distinguish it and hoist it to the top of the field picker.</p>
+	<p>The rule may be ignored for explores that have no joins, and for hidden explores.</p>
+	<p><b>Rationale:</b> Many or most explores in Looker follow a snowflake schema - a central fact table, and a number of many-to-one dimensional joins. Hoisting the main view that the explore represents to the top of the field picker helps visually reinforce the central/primary nature of that view within the explore.</p>
+	<code class="block good">
+	explore: orders {
+		view_label: "[Orders]"
+		...
+	</code>
+	<p><b>Note: </b>LAMS configuration can specify different prefixes/sufixes to use instead of the suggested square brackets. Make sure to use a prefix that sorts higher than other typically used characters</p>
+	<code class="block">
+	# Providing custom options in manifest.lkml
+
+	#LAMS
+	#rule: H5 {options: {
+	#   prefix: " 📊"
+	#   suffix: ""
+	#   enforceHidden: yes
+	#}}
+	</code>
+	</details>
+<details id="h6"> <!-- Sort-group views -->
+	<summary><b><a href="#h6">H6.</a></b> Sort-group views</summary>
+	<p>When the numer of views in an explore's field picker exceeds 20, use label prefixes to sort and organize groups.</p>
+	<code class="block good">
+	explore: orders {
+		join: user {}
+		join: first_orders {
+			view_label: "User > First Order"
+		}
+		join: first_orders {
+			view_label: "User > First Order"
+		}
+		...
+	</code>
+	<p><b>Note: </b>LAMS configuration can specify a different delimiter and/or threshold.</p>
+	<code class="block">
+	# Providing custom options in manifest.lkml
+
+	#LAMS rule: H6 {options: {threshold: 10 delimiter: ": "}}
+	</code>
+	</details>
+<!-- Group explores
+<details id="h...">
+	<summary><b><a href="#h...">H...</a></b> Group explores</summary>
+	<p>When the number of visible explores in a model exceeds 10, use group_label to organize explores</p>
+	<p><b>Rationale:</b> Consolidate and group the number of options presented to users to create a more approachable explore picker.</p>
+	<p><b>Note:</b> The explore picker is populated from across multiple projects, so linting any one project can only work as a warning flag. You should evaluate your model naming/grouping while considering all projects in your instance and use the threshold option for more granular control on a per-project basis.</p>
+	</details>-->
+<!-- Sort-group explores
+<details id="h...">
+	<summary><b><a href="#h...">H...</a></b> Sort-group explores</summary>
+	<p>When the number of visible models and explore groups exceeds 10, use label prefixes to organize explore groups</p>
+	<p>Note: Although the intent of this rule is to create a more approachable explore picker for users, the explore picker is populated from multiple projects, so linting any one project can only work as a warning flag. You should evaluate the impliction of model naming/grouping while considering all projects in your instance and use the threshold option for more granular control on a per-project basis.</p>
+	</details>
+	-->
 <h1 id="whitespace">Whitespace</h1>
 <p><b>Note:</b> To enable the linter to effectively enforce whitespace-related rules, you may have to consider how conditional comments (e.g. `#LAMS`) will be pre-processed. The parser will preserve whitespace before the comment on each line, and will consume the comment character (#), the conditional comment token, and up to one space or tab character. For multi-line commented blocks, it will visually appear that there is one additional level of indentation. See <a href="https://github.com/looker-open-source/look-at-me-sideways/blob/master/__tests__/dummy-projects/33-w1-tests/">test project #33</a> for an example.</p>
 <details id="w1">
@@ -954,6 +1083,14 @@
 	</details>
 -->
 
+<h1 id="linter-errors">Linter Errors</h1>
+<p>In some circumstances, the linter may run into errors while running that are recoverable, and may report them along with its rule findings.</p>
+<ul>
+	<li><a href="#P0" id="p0" name="p0">P0.</a> Generic Parser Error - Any parser error other than a LookML syntax error. If visible in the chosen output format, the message's `location` property contains the path to the file.</li> 
+	<li><a href="#P1" id="p1" name="p1">P1.</a> LookML Syntax Error - The LookML file contains a unexpected syntax (after expenading any `#LAMS` conditional comments). If visible in the chosen output format, the message's `location` property contains the path to the file and a `hint` for expected syntax from the parser.</li> 
+	<li><a href="#lams1" id="lams1" name="lams1">LAMS1.</a> Unhandled Rule Error - An execution error occurred while running a rule. Please <a href="https://github.com/looker-open-source/look-at-me-sideways/issues/new?template=Blank+issue">submit a ticket</a> about this.</li>
+	<li><a href="#lams2" id="lams2" name="lams2">LAMS2.</a> Legacy Custom Rule Error - An execution error occured while running a Javascript-based (Deprecated) custom rule</li> 
+	</ul>
 <h1 id="deprecated-rules">Deprecated Rules</h1>
 <ul>
 	<li><a href="#f7" id="f7" name="f7">F7</a> previously recommended proactively exposing "summary" measures for your dimensions. While summary measures can still be useful for select dimensions, the release of custom measures which explore users can automatically generate from a dimension in the Explore UI renders this practice no longer as important.</li>
