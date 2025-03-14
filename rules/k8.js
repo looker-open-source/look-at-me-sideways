@@ -27,8 +27,8 @@ function ruleFn(match) {
 		return true;
 	}
 	const sql = dim.sql || '${TABLE}.'+dim.$name;
-	const pksMatched = sql.match(pkReferencesRegex)
-	if(!pksMatched){
+	const pksMatched = sql.match(pkReferencesRegex);
+	if (!pksMatched) {
 		return `primary_key dimension does not reference any PK-named fields`;
 	}
 	const pksReferenced = pksMatched
