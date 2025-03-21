@@ -1,0 +1,23 @@
+name: LAMS
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+  workflow_dispatch:
+
+jobs:
+  lams_job:
+    runs-on: ubuntu-latest
+    name: LAMS LookML Linter Job
+    steps:
+    - name: Checkout your LookML
+      uses: actions/checkout@v1
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '16.x'
+    - name: Install LAMS
+      run: npm install -g @looker/look-at-me-sideways@3
+    - name: Run LAMS
+      run: lams --reporting=no
