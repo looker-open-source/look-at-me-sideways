@@ -173,3 +173,8 @@ If you nevertheless want LAMS to execute Javascript-based custom rules:
 1. Write your rule following this example: [/docs/sample-custom-rule.js](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docs/sample-custom-rule.js)
 2. Host your JS code and provide its URL in your manifest.lkml, as `custom_rules: ["<url>"]` (inside a `#LAMS` comment block) 
 3. Run LAMS with the `--allow-custom-rules` startup flag
+
+## Example rules
+### Enforce Access Filters (Community-contributed, credit: Reddit)
+
+Please see the [Access Filters Collection](community-contributions/access-filters/).
