@@ -1,6 +1,4 @@
 let {testName, lams, options, mocks} = require('../../../lib/test-commons.js')(__dirname,{dirnameOffset:-1})
- 
-//options = {...options, manifest:`./manifest.lkml`}
 
 describe('Projects', () => {
 	describe(testName, () => {
