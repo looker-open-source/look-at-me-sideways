@@ -19,11 +19,11 @@ describe('Projects', () => {
 			expect({messages}).not.toContainMessage({rule: "P1"});
 		});
 
-		it("it should match 3x and error once", () => {
+		it("it should match 2x and error once", () => {
 			expect({messages}).toContainMessage({
 				rule: 'K1',
 				level: 'info',
-				description: `Rule K1 summary: 3 matches, 0 matches exempt, and 1 errors`,
+				description: `Rule K1 summary: 2 matches, 0 matches exempt, and 1 errors`,
 			});
 		});
 

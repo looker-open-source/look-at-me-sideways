@@ -69,6 +69,7 @@ module.exports = async function(
 			fileOutput: 'by-name',
 			transformations: {
 				applyExtensionsRefinements: true,
+				removeAbstract: true,
 				...(options.transformations||{}),
 			},
 			cwd,
