@@ -1,1 +1,0 @@
-`lib/custom-rule/rule-match-evaluator.js` now contains logic to automatically skip any matches that are "abstract" (explores and views with extension:required), unless the rule definition opts in to not skipping them with `matchAbstract: yes`. This should be tested.
