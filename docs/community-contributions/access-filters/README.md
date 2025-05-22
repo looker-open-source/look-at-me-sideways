@@ -1,1 +1,1 @@
-Find [a full description of this rule](https://www.googlecloudcommunity.com/gc/Administering-Looker/Keep-data-secure-Linting-LookML-for-access-filters-and-access/m-p/909370#M2316) in the Looker Communitys "Administering Looker" Forum.
+Find a [full description of this rule](https://www.googlecloudcommunity.com/gc/Administering-Looker/Keep-data-secure-Linting-LookML-for-access-filters-and-access/m-p/909370#M2316) in the Looker Community's "Administering Looker" Forum.
