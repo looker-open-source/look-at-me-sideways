@@ -1,0 +1,58 @@
+kind: pipeline
+type: docker
+name: CI
+
+trigger:
+  event:
+    - pull_request
+
+steps:
+  - name: Checkout Code
+    image: alpine/git
+    commands:
+      - git fetch --depth=10
+      - git checkout ${DRONE_COMMIT_BRANCH}
+
+  - name: Get LKML files
+    image: alpine/git
+    commands:
+      - |
+        git diff --name-status origin/${DRONE_TARGET_BRANCH} HEAD | grep -E "^[AM]" | awk '{print $2}' | grep -E "\.(model|explore)\.lkml$" > files.txt || true
+        if [ -s files.txt ]; then
+          count=$(wc -l < files.txt | tr -d ' ')
+          if [ "$count" -eq 1 ]; then
+            # Single file, no curly braces
+            file=$(cat files.txt)
+            echo "glob=**/$file" >> env.txt
+            cat env.txt
+          else
+            # Multiple files, use curly braces
+            files=$(cat files.txt | tr '\n' ',' | sed 's/,$//')
+            echo "glob=**/{$files}" >> env.txt
+            cat env.txt
+          fi
+          exit 0
+        else
+          echo "glob=" >> env.txt
+          exit 0
+        fi
+
+  - name: Run LAMS on PR files
+    image: node:16
+    commands:
+      - npm install -g @looker/look-at-me-sideways@3
+      - |
+        # Check if the env file exists
+        if [ ! -f env.txt ]; then
+          echo "env.txt not found. No files to process. Skipping this step."
+          exit 0
+        fi
+        chmod +r env.txt
+        . /drone/src/env.txt
+        export glob
+        if [ -n "$${glob}" ]; then
+          echo "Processing files: $${glob}"
+          lams --source "$${glob}"  --manifest /drone/src/manifest.lkml --reporting save-no
+        else
+          echo "No LKML files found to lint."
+        fi
