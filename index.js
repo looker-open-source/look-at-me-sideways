@@ -234,6 +234,9 @@ module.exports = async function(
 		for (let output of outputModes.split(',')) {
 			switch (output) {
 			case '': break;
+			case 'github-job-summary':
+				await outputters.githubJobSummary(messages, {project})
+				break;
 			case 'add-exemptions': {
 				const lamsRuleExemptionsPath = options.lamsRuleExemptionsPath;
 				await outputters.addExemptions(messages, {cwd, console, lamsRuleExemptionsPath});
