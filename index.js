@@ -15,7 +15,6 @@ const defaultProcess = process;
  * @param {object}	options.cwd - Override the current working directory
  * @param {string=}	options.projectName - An optional name for the project, if not specified in the manifest, used to generate links back to the project in mardown output
  * @param {string=}	options.manifest - An override/alternative for the contents of the manifest file
- * @param {string=}	options.onParserError -  Set to "info" to indicate that LookML parsing errors should not fail the linter
  * @param {boolean} options.verbose Set to also output verbose level messages, for output modes that support it (lines)
  * @param {string=}	options.transformations - An optional object specifying transformation overrides to provide to node-lookml-parser
  * @param {string=}	options.dateOutput - Set to "none" to skip printing the date in the issues.md
@@ -58,6 +57,8 @@ module.exports = async function(
 		const path = require('path');
 		const parser = require('lookml-parser');
 		const checkCustomRule = require('./lib/custom-rule/custom-rule.js');
+		const {msg, Message} = require('./lib/message/message.js')
+		const loc = require('./lib/message/location-template-literal.js')
 
 		const cwd = options.cwd || process.cwd();
 		const ignore = options.ignore || 'node_modules/**';
@@ -81,25 +82,26 @@ module.exports = async function(
 		if (project.error) { // Fatal error
 			throw (project.error);
 		}
+
 		if (project.errors) {
 			console.log('> Issues occurred during parsing (containing files will not be considered. See messages for details.)');
 			messages = messages.concat(project.errors.map((e) => {
 				const exception = e && e.error && e.error.exception || {};
 				const messageDefault = {
 					rule: 'P0',
-					location: `file:${e.$file_path}`,
-					level: options.onParserError === 'info' ? 'info' : 'error',
+					location: loc`file:${e.$file_path}`,
+					level: 'error',
 					description: `Parsing error: ${exception.message || e}`,
 					path: e.$file_path,
 				};
 				if (exception.name === 'SyntaxError') {
-					return {
+					return msg({
 						...messageDefault,
 						rule: 'P1',
 						hint: exception.context,
-					};
+					});
 				}
-				return messageDefault;
+				return msg(messageDefault);
 			}));
 		}
 		console.log('> Parsing done!');
@@ -137,7 +139,7 @@ module.exports = async function(
 
 		let builtInRuleNames =
 		fs.readdirSync(path.join(__dirname, 'rules'))
-			.map((fileName) => fileName.match(/^(.*)\.js$/)) // TODO: (v3) rename t2-10.js to just t2.js
+			.map((fileName) => fileName.match(/^(.*)\.js$/))
 			.filter(Boolean)
 			.map((match) => match[1].toUpperCase());
 
@@ -163,6 +165,7 @@ module.exports = async function(
 				try {
 					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '.js');
 					let result = ruleModule(project);
+					//TODO ^ result should also return rule metadata (mainly description) to 'fill in' the manifest rule
 					messages = messages.concat(result.messages);
 				} catch (e) {
 					messages.push({
@@ -235,7 +238,8 @@ module.exports = async function(
 			switch (output) {
 			case '': break;
 			case 'github-job-summary':
-				await outputters.githubJobSummary(messages, {project})
+				parser.transformations.addPositions(project);
+				await outputters.githubJobSummary(messages, {project});
 				break;
 			case 'add-exemptions': {
 				const lamsRuleExemptionsPath = options.lamsRuleExemptionsPath;

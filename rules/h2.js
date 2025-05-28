@@ -3,14 +3,15 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'H2',
 		match: `$.model.*.view.*`,
+		description: "When there are too many fields, use grouping.",
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project, options={}) {

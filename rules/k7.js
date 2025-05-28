@@ -5,14 +5,15 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'K7',
 		match: `$.model.*.view.*`,
+		description: "Views should declare exactly one `primary_key` dimension.",
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 const zeroPkRegex = /^(0pk|pk0)_[a-z0-9A-Z_]+$/;

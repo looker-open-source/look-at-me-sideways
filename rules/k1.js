@@ -6,14 +6,15 @@ const pkNamingConvention = require('./rules-lib/pk-naming-convention.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'K1',
 		match: `$.model.*.view.*`,
+		description: 'Views should define 1 or more "Primary Key Dimensions" following a naming convention of `pk{n}_{key_name}`.',
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project) {

@@ -5,15 +5,15 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'E6',
 		match: `$.model.*.explore.*.join[?(@.foreign_key)]`,
-		description: 'Foreign-key based joins may not be *-to-many',
+		description: 'Foreign-key based joins may not be *-to-many.',
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project) {

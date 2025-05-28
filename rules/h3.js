@@ -4,14 +4,15 @@ const defaultLabelForField = require('./rules-lib/default-label-for-field.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'H3',
 		match: `$.model.*.view.*`,
+		description: "When there are too many fields/groups, use sortable prefixes for groups.",
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project, options={}) {

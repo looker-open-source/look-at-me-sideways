@@ -5,16 +5,17 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'F4',
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter][?(@.hidden!==true)]`,
+		description: "Non-hidden fields should have descriptions.",
 		expr_rule: `
 			($if ($boolean ::match:description)
 				true
 				($concat "Non-hidden field \`" ::match:$name "\` does not have a description")
 			)`,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };

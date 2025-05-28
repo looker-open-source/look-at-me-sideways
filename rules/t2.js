@@ -4,15 +4,15 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'T2',
 		match: `$.model.*.view.*`,
-		description: 'SQL transformations should apply primary key column conventions',
+		description: 'Every derived table, CTE, or subquery should SELECT a set of primary key columns.',
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 const pkNamingConvention = (s) => s.match(/^(\d+pk|pk\d+)_.+$/);

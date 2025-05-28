@@ -5,14 +5,15 @@ const deepGet = require('../lib/deep-get.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'W1',
 		match: `$.file..`,
+		description: "Each LookML block within a file should add one level of indentation for any inner line breaks.",
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project) {

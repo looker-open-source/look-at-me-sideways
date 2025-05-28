@@ -5,16 +5,17 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'F3',
 		match: `$.model.*.view.*.measure[?(@.type==="count")]`,
+		description: "All `type:count` measures should specify a filter",
 		expr_rule: `
 			($if (=== ::match:filters undefined)
 				($concat "Type:count measure \`" ::match:$name "\` does not have a filter applied")
 				true
 			)`,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };

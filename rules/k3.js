@@ -6,15 +6,16 @@ const pkNamingConvention = require('./rules-lib/pk-naming-convention.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'K3',
 		// Unlike most other rules, this is by file, not by model, because it's interested in the lexical declaration, not the assembled model object
 		match: `$.file.*.view.*`,
+		description: "Primary Key Dimensions should be defined immediately following the table definition.",
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project) {
