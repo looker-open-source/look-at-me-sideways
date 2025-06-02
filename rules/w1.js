@@ -37,10 +37,7 @@ function ruleFn(match, path, project) {
 			// pathCheck:""
 		},
 	);
-	if (path[2]==='model') {
-		// Because the .model.lkml filetype has nuilt-in meaning, the parser inserts a transparent model object at its root that shouldn't cause indenting
-		targetIndentation-=1;
-	}
+
 	const lines = object.$strings
 		.map((str) =>
 			!str ? ''

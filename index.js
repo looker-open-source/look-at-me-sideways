@@ -165,7 +165,8 @@ module.exports = async function(
 				try {
 					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '.js');
 					let result = ruleModule(project);
-					//TODO ^ result should also return rule metadata (mainly description) to 'fill in' the manifest rule
+					rule.match ??= result.rule?.match
+					rule.description ??= result.rule?.description
 					messages = messages.concat(result.messages);
 				} catch (e) {
 					messages.push({
@@ -238,8 +239,9 @@ module.exports = async function(
 			switch (output) {
 			case '': break;
 			case 'github-job-summary':
+				const verbose = options.verbose || false;
 				parser.transformations.addPositions(project);
-				await outputters.githubJobSummary(messages, {project});
+				await outputters.githubJobSummary(messages, {verbose, project});
 				break;
 			case 'add-exemptions': {
 				const lamsRuleExemptionsPath = options.lamsRuleExemptionsPath;
