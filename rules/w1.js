@@ -82,8 +82,7 @@ function ruleFn(match, path, project) {
 				o.l === 0 && o.actual === 0 ? 'F' // First line of a deep object is always 0 because external whitespace including indentation is in the parent object
 					: o.line === '' ? 'E' // Empty lines are fine
 						: o.line[0] === '#' ? 'C' // Lines immediately starting in a comment are fine
-							: path[2]==='model' && path.length === 4 && o.line === '}' ? 'M' // Trailing close of simulated model object
-								: false,
+							: false,
 		}))
 		.filter((o)=> o.actual !== targetIndentation && !o.specialCase)
 		.map((o) =>

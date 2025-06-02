@@ -10,7 +10,7 @@ favicon: img/logo.png
 
 # Standard configuration
 
-This configuration is useful alongside
+This configuration is useful alongside [pull request enforcement](https://cloud.google.com/looker/docs/git-options#integrating_pull_requests_for_your_project)
 
 <!-- {% raw %} -->
 ```yaml
