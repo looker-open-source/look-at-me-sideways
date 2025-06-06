@@ -6,7 +6,7 @@ module.exports = function(
 	let rule = {
 		$name: 'H5',
 		match: `$.model.*.explore.*`,
-		description: "The base/main view in an explore should be hoisted via labeling",
+		description: 'The base/main view in an explore should be hoisted via labeling',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

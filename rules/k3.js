@@ -10,7 +10,7 @@ module.exports = function(
 		$name: 'K3',
 		// Unlike most other rules, this is by file, not by model, because it's interested in the lexical declaration, not the assembled model object
 		match: `$.file.*.view.*`,
-		description: "Primary Key Dimensions should be defined immediately following the table definition.",
+		description: 'Primary Key Dimensions should be defined immediately following the table definition.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

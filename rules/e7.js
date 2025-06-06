@@ -8,7 +8,7 @@ module.exports = function(
 	let rule = {
 		$name: 'E7',
 		match: `$.model.*.explore.*`,
-		description: "Explore labels should not be too long.",
+		description: 'Explore labels should not be too long.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

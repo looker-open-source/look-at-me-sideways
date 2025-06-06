@@ -8,7 +8,7 @@ module.exports = function(
 	let rule = {
 		$name: 'F2',
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter].*`,
-		description: "Fields should not declare a view-label.",
+		description: 'Fields should not declare a view-label.',
 		expr_rule: `
 			($if (!== ::match:view_label undefined)
 				($concat ::match:$name " contains a field-level view_label \`" ::match:view_label "\`")

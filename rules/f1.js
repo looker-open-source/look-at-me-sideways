@@ -9,7 +9,7 @@ module.exports = function(
 	let rule = {
 		$name: 'F1',
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter].*`,
-		description: "Views with a table should not have cross-view references.",
+		description: 'Views with a table should not have cross-view references.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

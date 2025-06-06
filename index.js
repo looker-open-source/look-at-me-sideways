@@ -57,8 +57,8 @@ module.exports = async function(
 		const path = require('path');
 		const parser = require('lookml-parser');
 		const checkCustomRule = require('./lib/custom-rule/custom-rule.js');
-		const {msg, Message} = require('./lib/message/message.js')
-		const loc = require('./lib/message/location-template-literal.js')
+		const {msg} = require('./lib/message/message.js');
+		const loc = require('./lib/message/location-template-literal.js');
 
 		const cwd = options.cwd || process.cwd();
 		const ignore = options.ignore || 'node_modules/**';
@@ -165,8 +165,8 @@ module.exports = async function(
 				try {
 					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '.js');
 					let result = ruleModule(project);
-					rule.match ??= result.rule?.match
-					rule.description ??= result.rule?.description
+					rule.match = rule.match ?? result.rule?.match;
+					rule.description = rule.description ?? result.rule?.description;
 					messages = messages.concat(result.messages);
 				} catch (e) {
 					messages.push({
@@ -239,26 +239,34 @@ module.exports = async function(
 			switch (output) {
 			case '': break;
 			case 'github-job-summary':
-				const verbose = options.verbose || false;
 				parser.transformations.addPositions(project);
-				await outputters.githubJobSummary(messages, {verbose, project});
+				await outputters.githubJobSummary(messages, {
+					verbose: options.verbose || false,
+					project,
+				});
 				break;
 			case 'add-exemptions': {
-				const lamsRuleExemptionsPath = options.lamsRuleExemptionsPath;
-				await outputters.addExemptions(messages, {cwd, console, lamsRuleExemptionsPath});
+				await outputters.addExemptions(messages, {
+					cwd, console,
+					lamsRuleExemptionsPath: options.lamsRuleExemptionsPath,
+				});
 				break;
 			}
 			case 'markdown': {
-				const {dateOutput} = options;
-				await outputters.markdown(messages, {dateOutput, console});
+				await outputters.markdown(messages, {
+					dateOutput: options.dateOutput,
+					console,
+				});
 				break;
 			}
 			case 'markdown-developer':
 				await outputters.markdownDeveloper(messages, {console});
 				break;
 			case 'lines': {
-				const verbose = options.verbose || false;
-				await outputters.lines(messages, {verbose, console});
+				await outputters.lines(messages, {
+					verbose: options.verbose || false,
+					console,
+				});
 				break;
 			}
 			case 'legacy-cli':

@@ -8,7 +8,7 @@ module.exports = function(
 	let rule = {
 		$name: 'W1',
 		match: `$.file..`,
-		description: "Each LookML block within a file should add one level of indentation for any inner line breaks.",
+		description: 'Each LookML block within a file should add one level of indentation for any inner line breaks.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

@@ -7,7 +7,7 @@ module.exports = function(
 	let rule = {
 		$name: 'H6',
 		match: `$.model.*.explore.*`,
-		description: "When there are too many views in an explore, use sortable prefixes for joins.",
+		description: 'When there are too many views in an explore, use sortable prefixes for joins.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

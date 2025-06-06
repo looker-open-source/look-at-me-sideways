@@ -7,7 +7,7 @@ module.exports = function(
 	let rule = {
 		$name: 'H3',
 		match: `$.model.*.view.*`,
-		description: "When there are too many fields/groups, use sortable prefixes for groups.",
+		description: 'When there are too many fields/groups, use sortable prefixes for groups.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

@@ -8,7 +8,7 @@ module.exports = function(
 	let rule = {
 		$name: 'K8',
 		match: `$.model.*.view.*.dimension[?(@.primary_key===true)]`,
-		description: "The `primary_key` dimension must use or be the Primary Key Dimension(s).",
+		description: 'The `primary_key` dimension must use or be the Primary Key Dimension(s).',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

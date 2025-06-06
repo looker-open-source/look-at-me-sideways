@@ -9,7 +9,7 @@ module.exports = function(
 	let rule = {
 		$name: 'E1',
 		match: `$.model.*.explore.*.join.*`,
-		description: "All join fields should be referenced using the substitution operator ( ${view_name.field_name} ).",
+		description: 'All join fields should be referenced using the substitution operator ( ${view_name.field_name} ).',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

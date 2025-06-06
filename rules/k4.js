@@ -8,7 +8,7 @@ module.exports = function(
 	let rule = {
 		$name: 'K4',
 		match: `$.model.*.view.*`,
-		description: "Primary Key Dimensions should be hidden",
+		description: 'Primary Key Dimensions should be hidden',
 		expr_rule: `
 			($let view ::match)
 			($let dimensions ($object-values ::view:dimension))

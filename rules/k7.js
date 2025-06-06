@@ -8,7 +8,7 @@ module.exports = function(
 	let rule = {
 		$name: 'K7',
 		match: `$.model.*.view.*`,
-		description: "Views should declare exactly one `primary_key` dimension.",
+		description: 'Views should declare exactly one `primary_key` dimension.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

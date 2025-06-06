@@ -6,7 +6,7 @@ module.exports = function(
 	let rule = {
 		$name: 'H2',
 		match: `$.model.*.view.*`,
-		description: "When there are too many fields, use grouping.",
+		description: 'When there are too many fields, use grouping.',
 		ruleFn,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
