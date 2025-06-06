@@ -26,7 +26,7 @@ module.exports = function(
 				exempt: false,
 				// ^ Pass either false, or a non-empty string with the exemption reason.
 				//   Truthy exemptions will prevent warnings & errors from failing the build
-				level: 'error', // info | warning | error
+				level: 'error', // error | info | verbose
 				description: `${model._model} utilises staging connection, ${model.connection}.`,
 			});
 		}

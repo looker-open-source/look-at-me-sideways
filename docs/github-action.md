@@ -10,7 +10,7 @@ favicon: img/logo.png
 
 # Standard configuration
 
-This configuration is useful alongside
+This configuration is useful alongside [pull request enforcement](https://cloud.google.com/looker/docs/git-options#integrating_pull_requests_for_your_project)
 
 <!-- {% raw %} -->
 ```yaml
@@ -24,16 +24,18 @@ jobs:
     name: LAMS LookML Linter Job
     steps:
     - name: Checkout your LookML
-      uses: actions/checkout@v1
+      uses: actions/checkout@v4
     - name: Setup Node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v4
       with:
-        node-version: '16.x'
+        node-version: '22.x'
     - name: Install LAMS
-      run: npm install -g @looker/look-at-me-sideways@3
+      run: npm install -g @looker/look-at-me-sideways@5
     - name: Run LAMS
       # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
-      run: lams --reporting=XXXXX --report-license-key=XXXXX --report-user=XXXXX
+      # output=github-job-summary is available as of LAMS v5. Older versions can use output=lines
+      run: lams --reporting=XXXXX --report-license-key=XXXXX --report-user=XXXXX --output=github-job-summary
+
 ```
 <!-- {% endraw %}) -->
 

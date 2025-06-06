@@ -893,9 +893,9 @@
 	</code>
 
 	</details>
-<details id="e7"> <!-- Explore label 30-char max -->
+<details id="e7"> <!-- Explore label 25-char max -->
 	<summary><b><a href="#e7">E7</a></b> Explore labels should be no longer than 25 characters</summary>
-	<p>Among other reasons to favor brevity, long explore names/labels will be truncated in Looker's Explore picker UI. Help maintain a good experience for end users by keeping Explore names below 30 characters.</p>
+	<p>Among other reasons to favor brevity, long explore names/labels will be truncated in Looker's Explore picker UI. Help maintain a good experience for end users by keeping Explore names at or below 25 characters.</p>
 	<p><b>Note:</b> In LAMS, you can customize the max length for this rule by setting a </code>maxLength</code> option associated with this rule in your manifest file. </p>	
 
 	<code class="good block">
@@ -1018,7 +1018,7 @@
 	</details>
 <details id="h6"> <!-- Sort-group views -->
 	<summary><b><a href="#h6">H6.</a></b> Sort-group views</summary>
-	<p>When the numer of views in an explore's field picker exceeds 20, use label prefixes to sort and organize groups.</p>
+	<p>When the numer of views in an explore's field picker exceeds 20, use label prefixes to sort and organize views.</p>
 	<code class="block good">
 	explore: orders {
 		join: user {}
@@ -1090,6 +1090,9 @@
 	<li><a href="#P1" id="p1" name="p1">P1.</a> LookML Syntax Error - The LookML file contains a unexpected syntax (after expenading any `#LAMS` conditional comments). If visible in the chosen output format, the message's `location` property contains the path to the file and a `hint` for expected syntax from the parser.</li> 
 	<li><a href="#lams1" id="lams1" name="lams1">LAMS1.</a> Unhandled Rule Error - An execution error occurred while running a rule. Please <a href="https://github.com/looker-open-source/look-at-me-sideways/issues/new?template=Blank+issue">submit a ticket</a> about this.</li>
 	<li><a href="#lams2" id="lams2" name="lams2">LAMS2.</a> Legacy Custom Rule Error - An execution error occured while running a Javascript-based (Deprecated) custom rule</li> 
+	<li><a href="#lams3" id="lams3" name="lams3">LAMS3.</a> Error loading JSON data from an individual line of lams-exemptions.ndjson</li>
+	<li><a href="#lams4" id="lams4" name="lams4">LAMS4.</a> Error or info/warning in overall loading of exemptions from lams-exemptions.ndjson</li>
+	<li><a href="#lams5" id="lams5" name="lams5">LAMS5.</a> Error or info/warning in the loading of manifest values</li>
 	</ul>
 <h1 id="deprecated-rules">Deprecated Rules</h1>
 <ul>

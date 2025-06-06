@@ -106,7 +106,7 @@ Regardless of which example you follow, we recommend pinning your LAMS version t
 - **Local Interactive Usage** - To use LAMS with the least overhead for simple interactive local use and testing:
 
 ```bash
-npm install -g @looker/look-at-me-sideways@3
+npm install -g @looker/look-at-me-sideways@5
 cd <your-lookml-project>
 lams
 ```
@@ -126,13 +126,12 @@ The remaining examples were prepared for v1 of LAMS, though updating them for v2
 - **reporting** - Required. One of `yes`, `no`, `save-yes`, or `save-no`. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **report-user** - An email address to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **report-license-key** - A Looker license key to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
-- **output** - A comma-separated string of output modes from among: `lines` (default), `markdown`, `markdown-developer`, `jenkins`, `legacy-cli`, or (BETA) `add-exemptions`
+- **output** - A comma-separated string of output modes from among: `lines` (default), `github-job-summary`, `markdown`, `markdown-developer`, `jenkins`, `legacy-cli`, or (BETA) `add-exemptions`
 - **source** - A glob specifying which files to read. Defaults to `**/{*.model,*.explore,*.view,manifest}.lkml`.
 - **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory.
 - **project-name** - An optional name for the project, used to generate links back to the project in mardown output. Specifying this in manifest.lkml is preferred.
 - **manifest-defaults** - A file path or JSON-encoded object of default manifest values which may be overriden by the project manifest. The target file may be a lkml file, JSON file, or a YAML file if the `js-yaml` optional peer dependency is installed.
 - **manifest** - A file path or JSON-encoded object of manifest values that override values set by the project manifest. The target file may be a lkml file, JSON file, or a YAML file if the `js-yaml` optional peer dependency is installed.
-- **on-parser-error** - Set to "info" to indicate that LookML parsing errors should not fail the linter, but yield an `info` level message instead (not all output modes display `info` level messages)
 - **verbose** - Set to also output `verbose` level messages, for output modes that support it (`lines`)
 - **date-output** - Set to "none" to skip printing the date at the top of the `issues.md` file.
 - **allow-custom-rules** - Experimental and not recommended. Used to approve the running of **Javascript-based** custom rules. DO NOT USE TO RUN UNTRUSTED CODE. See [custom rules](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams) for details.

@@ -6,14 +6,15 @@ const deepGet = require('../lib/deep-get.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'F1',
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter].*`,
+		description: 'Views with a table should not have cross-view references.',
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project) {

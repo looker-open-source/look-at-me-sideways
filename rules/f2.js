@@ -5,16 +5,17 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'F2',
 		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter].*`,
+		description: 'Fields should not declare a view-label.',
 		expr_rule: `
 			($if (!== ::match:view_label undefined)
 				($concat ::match:$name " contains a field-level view_label \`" ::match:view_label "\`")
 				true
 			)`,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };

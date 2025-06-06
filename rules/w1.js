@@ -5,14 +5,15 @@ const deepGet = require('../lib/deep-get.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'W1',
 		match: `$.file..`,
+		description: 'Each LookML block within a file should add one level of indentation for any inner line breaks.',
 		ruleFn,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
 
 function ruleFn(match, path, project) {
@@ -36,10 +37,7 @@ function ruleFn(match, path, project) {
 			// pathCheck:""
 		},
 	);
-	if (path[2]==='model') {
-		// Because the .model.lkml filetype has nuilt-in meaning, the parser inserts a transparent model object at its root that shouldn't cause indenting
-		targetIndentation-=1;
-	}
+
 	const lines = object.$strings
 		.map((str) =>
 			!str ? ''
@@ -84,8 +82,7 @@ function ruleFn(match, path, project) {
 				o.l === 0 && o.actual === 0 ? 'F' // First line of a deep object is always 0 because external whitespace including indentation is in the parent object
 					: o.line === '' ? 'E' // Empty lines are fine
 						: o.line[0] === '#' ? 'C' // Lines immediately starting in a comment are fine
-							: path[2]==='model' && path.length === 4 && o.line === '}' ? 'M' // Trailing close of simulated model object
-								: false,
+							: false,
 		}))
 		.filter((o)=> o.actual !== targetIndentation && !o.specialCase)
 		.map((o) =>

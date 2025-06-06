@@ -5,9 +5,10 @@ const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
 module.exports = function(
 	project,
 ) {
-	let ruleDef = {
+	let rule = {
 		$name: 'K4',
 		match: `$.model.*.view.*`,
+		description: 'Primary Key Dimensions should be hidden',
 		expr_rule: `
 			($let view ::match)
 			($let dimensions ($object-values ::view:dimension))
@@ -16,7 +17,7 @@ module.exports = function(
 			($map badDimensions (-> (dim) ($concat "PK dimension " ::dim:$name " is not hidden")))
 		`,
 	};
-	let messages = checkCustomRule(ruleDef, project, {ruleSource: 'internal'});
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
 
-	return {messages};
+	return {messages, rule};
 };
