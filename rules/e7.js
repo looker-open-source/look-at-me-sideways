@@ -18,6 +18,12 @@ module.exports = function(
 
 function ruleFn(match, path, project, options={}) {
 	const explore = match;
+
+	// refinements appear as an array, but we'll ignore and only look at the final explore
+	if (Array.isArray(explore)) {
+		return true;
+	}
+
 	const label = explore.label
 		? {source: 'label', text: explore.label}
 		: {source: 'name', text: explore.$name};
