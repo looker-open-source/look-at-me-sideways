@@ -25,14 +25,15 @@
  */
 
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 import App from './components/app.jsx'
 
 document.addEventListener('DOMContentLoaded',()=>{
-	const root = document.createElement('div')
-	root.setAttribute("id","react-app-root")
-	document.body.appendChild(root)
+	const container = document.createElement('div')
+	container.setAttribute("id","react-app-root")
+	document.body.appendChild(container)
 
-	ReactDOM.render(<App />, root)
+	const root = createRoot(container)
+	root.render(<App />)
 	})

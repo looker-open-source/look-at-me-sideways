@@ -13,7 +13,7 @@
         "fromentries": "^1.3.2",
         "jsonpath-plus": "^10.2.0",
         "liyad": "^0.2.4",
-        "lookml-parser": "^7.0.1",
+        "lookml-parser": "^7.1.0",
         "minimist": "^1.2.6",
         "require-from-string": "^2.0.2"
       },
@@ -3882,10 +3882,9 @@
       "dev": true
     },
     "node_modules/lookml-parser": {
-      "version": "7.0.1",
-      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-7.0.1.tgz",
-      "integrity": "sha512-WXRKyB/468/EWOA7yu30TftFwiK7NoRW3xkEEvGuGrMQJc1+wmxvapb8UlnR5HTkQGMUcJvvghkr0Ld1KO5X5A==",
-      "license": "MIT",
+      "version": "7.1.0",
+      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-7.1.0.tgz",
+      "integrity": "sha512-gaHQ8h3ixOar8OPrv1rY4rZ5S3Tm8+SGn4oQjP7Km1/16u0BOaK4vXeguqsYLQHlmbaxv7yr3jUXINxFNZ1r/Q==",
       "dependencies": {
         "bluebird": "^3.5.1",
         "glob": "^7.1.2",
@@ -8063,9 +8062,9 @@
       "dev": true
     },
     "lookml-parser": {
-      "version": "7.0.1",
-      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-7.0.1.tgz",
-      "integrity": "sha512-WXRKyB/468/EWOA7yu30TftFwiK7NoRW3xkEEvGuGrMQJc1+wmxvapb8UlnR5HTkQGMUcJvvghkr0Ld1KO5X5A==",
+      "version": "7.1.0",
+      "resolved": "https://registry.npmjs.org/lookml-parser/-/lookml-parser-7.1.0.tgz",
+      "integrity": "sha512-gaHQ8h3ixOar8OPrv1rY4rZ5S3Tm8+SGn4oQjP7Km1/16u0BOaK4vXeguqsYLQHlmbaxv7yr3jUXINxFNZ1r/Q==",
       "requires": {
         "bluebird": "^3.5.1",
         "glob": "^7.1.2",

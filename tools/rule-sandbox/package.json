@@ -24,11 +24,12 @@
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
     "@fontsource/roboto": "^4.5.3",
-    "@mui/lab": "^5.0.0-alpha.71",
-    "@mui/material": "^5.4.4",
-    "@mui/x-data-grid": "^5.5.1",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "use-debounce": "^7.0.1"
+    "@mui/icons-material": "^7.3.5",
+    "@mui/lab": "^7.0.1-beta.19",
+    "@mui/material": "^7.3.5",
+    "@mui/x-data-grid": "^8.18.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "use-debounce": "^10.0.6"
   }
 }

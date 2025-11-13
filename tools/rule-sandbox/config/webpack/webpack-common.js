@@ -80,4 +80,9 @@ module.exports = {
 //     }),
 //   ],
 //   stats: statsConfig,
+  resolve: {
+    alias: {
+      "glob": false,
+    }
+  },
 }
