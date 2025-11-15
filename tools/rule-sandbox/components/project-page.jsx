@@ -26,7 +26,7 @@
 
 import React, {use, useEffect, useState} from 'react'
 import {useDebounce} from 'use-debounce'
-import lookmlParser from 'lookml-parser'
+import lookmlParser_parseFilesArrray from 'lookml-parser/lib/parse-files-array'
 
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
@@ -44,28 +44,29 @@ import Typography from '@mui/material/Typography'
 
 const ProjectPage = (props) => {
 	const {
-		initProjectFiles,
+		projectFiles,
+		setProjectFiles,
 		setTab,
 		setProject
 		} = props
 
 	// Core state
-	const [projectFiles, setProjectFiles] = useState(initProjectFiles ?? [])
 	const [selectedFileContent, setSelectedFileContent] = useState("")
 	const [selectedFileIndex, setSelectedFileIndex] = useState(projectFiles.length ? 0 : undefined)
 	const [renaming, setRenaming] = useState({index: null, isNew: false, path: ''})
 	
 	// Derived state
-	const [debouncedSelectedFileContent] = useDebounce(selectedFileContent,1000)
+	const [debouncedSelectedFileContent] = useDebounce(selectedFileContent,2000)
 	const [projectStatus, setProjectStatus] = useState("")
+	const [parseErrors, setParseErrors] = useState({})
 	const [ctaDisabled, setCtaDisabled] = useState(true)
 	
 	// Effects
-	useEffect(updateSelectedFileContent, [selectedFileIndex, projectFiles])
+	useEffect(updateSelectedFileContent, [selectedFileIndex])
 	useEffect(updateProjectFile, [debouncedSelectedFileContent])
 	useEffect(() => {
 		parseProject()
-	}, [projectFiles])
+	}, [projectFiles]);
 
 	return (
 		<Stack direction="column" spacing={2} className="project-page">
@@ -74,8 +75,8 @@ const ProjectPage = (props) => {
 				<Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
 					<Typography>{projectStatus}</Typography>
 					<Button 
-						variant="contained"
-						onClick={()=>setTab("rule")}
+						variant="contained" 
+						onClick={handleInspectRulesClick}
 						value="rule"
 						disabled={ctaDisabled}>
 						Inspect Rule(s)
@@ -92,6 +93,7 @@ const ProjectPage = (props) => {
 							<ListItem
 								key={f}
 								disablePadding
+								sx={{backgroundColor: parseErrors[file.path] ? 'rgba(255, 0, 0, 0.1)' : 'transparent'}}
 								secondaryAction={renaming.index !== f && (
 									<Stack direction="row">
 										<IconButton edge="end" aria-label="rename" onClick={() => handleRenameFile(f)}>
@@ -149,11 +151,23 @@ const ProjectPage = (props) => {
 					onChange={handleFileContentsChange}
 					disabled={selectedFileIndex === undefined}
 					></TextField>
+				{parseErrors[projectFiles[selectedFileIndex]?.path] && (
+					<Typography color="error" variant="caption" sx={{mt: 1}}>
+						{trunc(parseErrors[projectFiles[selectedFileIndex]?.path], 120)}
+					</Typography>
+				)}
 				</Stack>
 			</Stack>
 		)
 
+	async function handleInspectRulesClick() {
+		updateProjectFile(selectedFileContent)
+		const success = await parseProject(projectFiles)
+		if (success) setTab("rule")
+	}
+
 	function handleFileSelect(index) {
+		updateProjectFile(selectedFileContent)
 		setSelectedFileIndex(index)
 	}
 
@@ -182,7 +196,7 @@ const ProjectPage = (props) => {
 		setProjectFiles(newFiles);
 		if (isNew) {
 			setSelectedFileIndex(index);
-		}
+		} 
 		setRenaming({index: null, isNew: false, path: ''});
 	}
 
@@ -197,6 +211,7 @@ const ProjectPage = (props) => {
 		// Add a temporary placeholder file and enter renaming mode for it
 		const newIndex = projectFiles.length;
 		setProjectFiles([...projectFiles, {path: '', contents: ''}]);
+		updateProjectFile(selectedFileContent)
 		setRenaming({index: newIndex, isNew: true, path: 'new_file.view.lkml'});
 	}
 
@@ -231,34 +246,56 @@ const ProjectPage = (props) => {
 
 	function updateProjectFile() {
 		if (selectedFileIndex === undefined) return;
-		const currentFile = projectFiles[selectedFileIndex];
-		if (!currentFile || currentFile.contents === debouncedSelectedFileContent) return;
-
-		const newFiles = [...projectFiles];
-		newFiles[selectedFileIndex] = { ...currentFile, contents: debouncedSelectedFileContent };
-		setProjectFiles(newFiles);
+		updateProjectFile(debouncedSelectedFileContent);
 	}
 
-	async function parseProject() {
-		if (!projectFiles || projectFiles.length === 0) {
+	function updateProjectFile(content) {
+		if (selectedFileIndex === undefined) return;
+		const currentFile = projectFiles[selectedFileIndex];
+		if (!currentFile || currentFile.contents === content) return;
+
+		const newFiles = [...projectFiles];
+		newFiles[selectedFileIndex] = { ...currentFile, contents: content };
+		setProjectFiles(newFiles)
+	}
+
+	async function parseProject(files = projectFiles) {
+		if (!files || files.length === 0) {
 			setProjectStatus("No files in project")
 			setProject(undefined)
 			setCtaDisabled(true)
-			return
+			return false;
 		}
+
 		try {
 			setProjectStatus("Parsing LookML...")
-			const parsedProject = await lookmlParser.parseFiles({source: projectFiles})
-			// CONTINUE HERE ^ Need to go update LookML parser to work better in browser environments
-			//                 - Make sure that references to glob are conditional/isolated.
-			//                 - Don't rely on fs/path to load PEG code, use import/require insteat 
-			setProject(parsedProject)
-			setProjectStatus("✅ Project ready")
-			setCtaDisabled(false)
+			const parsedProject = await lookmlParser_parseFilesArrray(
+				files.map(f=>({path:f.path, read: ()=>f.contents}))
+			)
+			if (parsedProject.errors && parsedProject.errors.length > 0) {
+				const firstError = parsedProject.errors[0];
+				setProjectStatus(`❌ Invalid LookML: ${trunc(firstError.error, 120)}`);
+				setProject(parsedProject);
+				setCtaDisabled(true);
+				const errorMap = {};
+				parsedProject.errors.forEach(err => {
+					errorMap[err['$file_path']] = err.error;
+				});
+				setParseErrors(errorMap);
+				return false;
+			} else {
+				setParseErrors({});
+				setProject(parsedProject)
+				setProjectStatus("✅ Project ready")
+				setCtaDisabled(false)
+				return true;
+			}
 		} catch (e) {
+			setParseErrors({});
 			setProjectStatus(`❌ Invalid LookML. ${trunc(e,120)}`)
 			setProject(undefined)
 			setCtaDisabled(true)
+			return false;
 		}
 	}
 }

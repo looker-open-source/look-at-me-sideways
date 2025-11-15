@@ -40,14 +40,16 @@ import TabPanel from '@mui/lab/TabPanel'
 
 import AboutPage from './about-page.jsx'
 import ProjectPage from './project-page.jsx'
+import ProjectParsedPage from './project-parsed-page.jsx'
 import RulePage from './rule-page.jsx'
 import FnDocsPage from './fn-docs-page.jsx'
 
 const App = () => {
-	const [tab, 	setTab] = 		useState('project')
-	const [project,	setProject] =	useState(undefined)
-	const [match,	setMatch] =		useState(undefined)
-	const [rule,	setRule] =		useState(undefined)
+	const [tab, 		setTab] = 			useState('project')
+	const [projectFiles,setProjectFiles] =	useState([])
+	const [project,		setProject] =		useState(undefined)
+	const [match,		setMatch] =			useState(undefined)
+	const [rule,		setRule] =			useState(undefined)
 
 	return (
 		<div className="app">
@@ -59,6 +61,7 @@ const App = () => {
 					<TabList onChange={changeTab} aria-label="Rule Sandbox tabs">
 						<Tab label="About" value="about" />
 						<Tab label="Project" value="project" />
+						<Tab label="Parsed" value="project-parsed" />
 						<Tab label="Rule" value="rule" />
 						<Tab label="Fn Docs" value="fn-docs" />
 						</TabList>
@@ -73,9 +76,15 @@ const App = () => {
 					</TabPanel>
 				<TabPanel value="project">
 					<ProjectPage {...{
-						project,
+						projectFiles,
+						setProjectFiles,
 						setTab,
 						setProject
+						}}/>
+					</TabPanel>
+				<TabPanel value="project-parsed">
+					<ProjectParsedPage {...{
+						project
 						}}/>
 					</TabPanel>
 				<TabPanel value="rule">
