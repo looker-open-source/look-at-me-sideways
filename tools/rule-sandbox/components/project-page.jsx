@@ -24,8 +24,7 @@
 
  */
 
-import React, {use, useEffect, useState} from 'react'
-import {useDebounce} from 'use-debounce'
+import React, {useEffect, useState} from 'react'
 import lookmlParser_parseFilesArrray from 'lookml-parser/lib/parse-files-array'
 
 import Button from '@mui/material/Button'
@@ -56,32 +55,30 @@ const ProjectPage = (props) => {
 	const [renaming, setRenaming] = useState({index: null, isNew: false, path: ''})
 	
 	// Derived state
-	const [debouncedSelectedFileContent] = useDebounce(selectedFileContent,2000)
 	const [projectStatus, setProjectStatus] = useState("")
 	const [parseErrors, setParseErrors] = useState({})
 	const [ctaDisabled, setCtaDisabled] = useState(true)
+	const [isDirty, setIsDirty] = useState(false)
 	
 	// Effects
 	useEffect(updateSelectedFileContent, [selectedFileIndex])
-	useEffect(updateProjectFile, [debouncedSelectedFileContent])
-	useEffect(() => {
-		parseProject()
-	}, [projectFiles]);
-
+	useEffect(updateProjectStatus, [isDirty, parseErrors, projectFiles.length])
 	return (
 		<Stack direction="column" spacing={2} className="project-page">
 			<Stack direction="row" justifyContent="space-between" alignItems="center" spacing={4}>
 				<Typography variant="h6">LookML Project Files</Typography>
 				<Stack direction="row" justifyContent="flex-end" alignItems="center" spacing={2}>
 					<Typography>{projectStatus}</Typography>
-					<Button 
-						variant="contained" 
-						onClick={handleInspectRulesClick}
-						value="rule"
-						disabled={ctaDisabled}>
-						Inspect Rule(s)
+					{isDirty ? (
+						<Button variant="contained" onClick={handleParseProjectClick}>
+							Parse Project
 						</Button>
-					</Stack>
+						) : (
+						<Button variant="contained" onClick={handleInspectRulesClick} disabled={ctaDisabled}>
+							Inspect Rule(s)
+						</Button>
+						)}
+				</Stack>
 				</Stack>
 			<Stack direction="row" spacing={2} >
 				<Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', border: '1px solid #ddd' }}>
@@ -111,8 +108,8 @@ const ProjectPage = (props) => {
 										onChange={handleRenameInputChange}
 										onBlur={handleRenameConfirm}
 										onKeyDown={(e) => {
-											if (e.key === 'Enter') handleRenameConfirm();
-											if (e.key === 'Escape') handleRenameCancel();
+											if (e.key === 'Enter') handleRenameConfirm()
+											if (e.key === 'Escape') handleRenameCancel()
 										}}
 										size="small"
 										sx={{ margin: '4px 16px', width: 'calc(100% - 32px)' }}
@@ -149,6 +146,7 @@ const ProjectPage = (props) => {
 					style={{width:"100%"}}
 					value={selectedFileContent}
 					onChange={handleFileContentsChange}
+					onKeyDown={handleEditorKeyDown}
 					disabled={selectedFileIndex === undefined}
 					></TextField>
 				{parseErrors[projectFiles[selectedFileIndex]?.path] && (
@@ -160,19 +158,36 @@ const ProjectPage = (props) => {
 			</Stack>
 		)
 
-	async function handleInspectRulesClick() {
-		updateProjectFile(selectedFileContent)
-		const success = await parseProject(projectFiles)
-		if (success) setTab("rule")
+	async function handleParseProjectClick() {
+		await parseProject(projectFiles)
+	}
+
+	function handleInspectRulesClick() {
+		setTab("rule")
 	}
 
 	function handleFileSelect(index) {
-		updateProjectFile(selectedFileContent)
 		setSelectedFileIndex(index)
 	}
 
 	function handleFileContentsChange(event) {
+		const newContent = event.target.value
+		updateProjectFile(newContent)
+		const currentFilePath = projectFiles[selectedFileIndex]?.path
+		// If the file being edited has an error, clear it immediately for better UX
+		if (currentFilePath && parseErrors[currentFilePath]) {
+			const newErrors = { ...parseErrors }
+			delete newErrors[currentFilePath]
+			setParseErrors(newErrors)
+		}
 		setSelectedFileContent(event.target.value)
+	}
+
+	function handleEditorKeyDown(event) {
+		if (event.ctrlKey && event.key === 'Enter') {
+			event.preventDefault()
+			handleParseProjectClick()
+		}
 	}
 
 	function handleRenameInputChange(event) {
@@ -180,122 +195,131 @@ const ProjectPage = (props) => {
 	}
 
 	function handleRenameConfirm() {
-		const { index, path, isNew } = renaming;
+		const { index, path, isNew } = renaming
 		if (!path) {
-			handleRenameCancel();
-			return;
+			handleRenameCancel()
+			return
 		}
 		// Check if path (other than the original) already exists
 		if (projectFiles.some((file, i) => file.path === path && i !== index)) {
-			alert("File path already exists or is invalid.");
-			return;
+			alert("File path already exists or is invalid.")
+			return
 		}
 	
-		const newFiles = [...projectFiles];
-		newFiles[index] = { ...newFiles[index], path: path };
-		setProjectFiles(newFiles);
+		const newFiles = [...projectFiles]
+		newFiles[index] = { ...newFiles[index], path: path }
+		setProjectFiles(newFiles)
+		setIsDirty(true)
 		if (isNew) {
-			setSelectedFileIndex(index);
+			setSelectedFileIndex(index)
 		} 
-		setRenaming({index: null, isNew: false, path: ''});
+		setRenaming({index: null, isNew: false, path: ''})
 	}
 
 	function handleRenameCancel() {
 		if (renaming.isNew) {
-			setProjectFiles(files => files.slice(0, -1));
+			setProjectFiles(files => files.slice(0, -1))
+			// No need to set dirty, as no persistent change was made
 		} 
-		setRenaming({index: null, isNew: false, path: ''});
+		setRenaming({index: null, isNew: false, path: ''})
 	}
 
 	function handleNewFile() {
 		// Add a temporary placeholder file and enter renaming mode for it
-		const newIndex = projectFiles.length;
-		setProjectFiles([...projectFiles, {path: '', contents: ''}]);
-		updateProjectFile(selectedFileContent)
-		setRenaming({index: newIndex, isNew: true, path: 'new_file.view.lkml'});
+		const newIndex = projectFiles.length
+		setProjectFiles([...projectFiles, {path: '', contents: ''}])
+		setRenaming({index: newIndex, isNew: true, path: 'new_file.view.lkml'})
 	}
 
 	function handleRenameFile(index) {
-		setRenaming({index: index, isNew: false, path: projectFiles[index].path});
+		setRenaming({index: index, isNew: false, path: projectFiles[index].path})
 	}
 
 	function handleDeleteFile(index) {
 		// If we are deleting the file currently being edited, cancel the edit first.
 		if (renaming.index === index) {
-			handleRenameCancel();
+			handleRenameCancel()
 		}
 
 		if (window.confirm(`Are you sure you want to delete ${projectFiles[index].path}?`)) {
-			const newFiles = projectFiles.filter((_, i) => i !== index);
-			setProjectFiles(newFiles);
+			const newFiles = projectFiles.filter((_, i) => i !== index)
+			setProjectFiles(newFiles)
+			setIsDirty(true)
 			if (selectedFileIndex === index) {
-				setSelectedFileIndex(newFiles.length > 0 ? 0 : undefined);
+				setSelectedFileIndex(newFiles.length > 0 ? 0 : undefined)
 			} else if (selectedFileIndex > index) {
-				setSelectedFileIndex(i => i - 1);
+				setSelectedFileIndex(i => i - 1)
 			}
 		}
 	}
 
 	function updateSelectedFileContent() {
 		if (selectedFileIndex !== undefined && projectFiles[selectedFileIndex]) {
-			setSelectedFileContent(projectFiles[selectedFileIndex].contents);
+			setSelectedFileContent(projectFiles[selectedFileIndex].contents)
 		} else {
-			setSelectedFileContent("");
+			setSelectedFileContent("")
 		}
 	}
 
-	function updateProjectFile() {
-		if (selectedFileIndex === undefined) return;
-		updateProjectFile(debouncedSelectedFileContent);
+	function updateProjectFile(content) {
+		if (selectedFileIndex === undefined) return
+		const currentFile = projectFiles[selectedFileIndex]
+		if (!currentFile || currentFile.contents === content) return
+
+		const newFiles = [...projectFiles]
+		newFiles[selectedFileIndex] = { ...currentFile, contents: content}
+		setIsDirty(true)
+		setProjectFiles(newFiles)
 	}
 
-	function updateProjectFile(content) {
-		if (selectedFileIndex === undefined) return;
-		const currentFile = projectFiles[selectedFileIndex];
-		if (!currentFile || currentFile.contents === content) return;
-
-		const newFiles = [...projectFiles];
-		newFiles[selectedFileIndex] = { ...currentFile, contents: content };
-		setProjectFiles(newFiles)
+	function updateProjectStatus() {
+		if (isDirty) {
+			setProjectStatus("Unparsed changes (Ctrl+Enter to parse)")
+		} else if (projectFiles.length === 0) {
+			setProjectStatus("No files in project")
+		} else if (Object.keys(parseErrors).length > 0) {
+			const firstErrorKey = Object.keys(parseErrors)[0]
+			const errorMessage = parseErrors[firstErrorKey]
+			setProjectStatus(`❌ Invalid LookML: ${trunc(errorMessage, 120)}`)
+		} else {
+			setProjectStatus("✅ Project ready")
+		}
 	}
 
 	async function parseProject(files = projectFiles) {
 		if (!files || files.length === 0) {
-			setProjectStatus("No files in project")
 			setProject(undefined)
 			setCtaDisabled(true)
-			return false;
+			setIsDirty(false)
+			return false
 		}
 
 		try {
-			setProjectStatus("Parsing LookML...")
 			const parsedProject = await lookmlParser_parseFilesArrray(
 				files.map(f=>({path:f.path, read: ()=>f.contents}))
 			)
 			if (parsedProject.errors && parsedProject.errors.length > 0) {
-				const firstError = parsedProject.errors[0];
-				setProjectStatus(`❌ Invalid LookML: ${trunc(firstError.error, 120)}`);
-				setProject(parsedProject);
-				setCtaDisabled(true);
-				const errorMap = {};
-				parsedProject.errors.forEach(err => {
-					errorMap[err['$file_path']] = err.error;
-				});
-				setParseErrors(errorMap);
-				return false;
-			} else {
-				setParseErrors({});
 				setProject(parsedProject)
-				setProjectStatus("✅ Project ready")
+				setCtaDisabled(true)
+				const errorMap = {}
+				parsedProject.errors.forEach(err => {
+					errorMap[err['$file_path']] = err.error
+				})
+				setParseErrors(errorMap)
+				setIsDirty(true)
+				return false
+			} else {
+				setParseErrors({})
+				setIsDirty(false)
+				setProject(parsedProject)
 				setCtaDisabled(false)
-				return true;
+				return true
 			}
 		} catch (e) {
-			setParseErrors({});
-			setProjectStatus(`❌ Invalid LookML. ${trunc(e,120)}`)
+			setParseErrors({})
 			setProject(undefined)
 			setCtaDisabled(true)
-			return false;
+			return false
 		}
 	}
 }

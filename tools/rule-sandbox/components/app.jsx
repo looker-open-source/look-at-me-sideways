@@ -43,10 +43,11 @@ import ProjectPage from './project-page.jsx'
 import ProjectParsedPage from './project-parsed-page.jsx'
 import RulePage from './rule-page.jsx'
 import FnDocsPage from './fn-docs-page.jsx'
+import QuickstartPage from './quickstart-page.jsx'
 
 const App = () => {
 	const [tab, 		setTab] = 			useState('project')
-	const [projectFiles,setProjectFiles] =	useState([])
+	const [projectFiles,setProjectFiles] =	useState([{"path":"my_model.model.lkml","contents":""}])
 	const [project,		setProject] =		useState(undefined)
 	const [match,		setMatch] =			useState(undefined)
 	const [rule,		setRule] =			useState(undefined)
@@ -60,6 +61,7 @@ const App = () => {
 				<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 					<TabList onChange={changeTab} aria-label="Rule Sandbox tabs">
 						<Tab label="About" value="about" />
+						<Tab label="Quick Start" value="quickstart" />
 						<Tab label="Project" value="project" />
 						<Tab label="Parsed" value="project-parsed" />
 						<Tab label="Rule" value="rule" />
@@ -73,6 +75,11 @@ const App = () => {
 						setMatch,
 						setTab
 						}}/>
+					</TabPanel>
+				<TabPanel value="quickstart">
+					<QuickstartPage {...{
+						setProjectFiles
+					}}/>
 					</TabPanel>
 				<TabPanel value="project">
 					<ProjectPage {...{

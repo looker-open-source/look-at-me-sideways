@@ -37,6 +37,7 @@ module.exports = {
 		filename: "rule-sandbox-web-dev.js"
 	},
 	devServer: {
+		port: 5173,
 		hot: true,
 		static:['static'],
 		historyApiFallback: {
