@@ -28,7 +28,10 @@
     "lint",
     "linter"
   ],
-  "author": "Fabio Beltramini",
+  "contributors": [
+    "Fabio Beltramini",
+    "Joseph Axisa"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/looker-open-source/look-at-me-sideways/issues"
