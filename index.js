@@ -86,19 +86,21 @@ module.exports = async function(
 		if (project.errors) {
 			console.log('> Issues occurred during parsing (containing files will not be considered. See messages for details.)');
 			messages = messages.concat(project.errors.map((e) => {
-				const exception = e && e.error && e.error.exception || {};
+				const exception = e && (e.exception || e.error && e.error.exception) || {};
+				const filePath = e && (e.filePath || e.$file_path);
+				const context = e && e.context || exception.context;
 				const messageDefault = {
 					rule: 'P0',
-					location: loc`file:${e.$file_path}`,
+					location: loc`file:${filePath}`,
 					level: 'error',
-					description: `Parsing error: ${exception.message || e}`,
-					path: e.$file_path,
+					description: `Parsing error: ${e && e.message || exception.message || e}`,
+					path: filePath,
 				};
-				if (exception.name === 'SyntaxError') {
+				if (exception.name === 'SyntaxError' || (e && e.code === 'SYNTAX_ERROR')) {
 					return msg({
 						...messageDefault,
 						rule: 'P1',
-						hint: exception.context,
+						hint: context,
 					});
 				}
 				return msg(messageDefault);

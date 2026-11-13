@@ -18,27 +18,31 @@ module.exports = function(
 
 function ruleFn(match, path, project) {
 	let object = match;
-	if (!object || typeof object !== 'object') {
+	if (!object || typeof object !== 'object' || path[0] !== 'file' || path.length < 2) {
 		return true;
 	}
-	if (!object.$strings) {
-		// This is a parser-generated collection (e.g. $.model)
+	const stringsRoot = deepGet(project, [path[0], path[1], '$strings']);
+	const stringsNode = path.length === 2 ? stringsRoot : deepGet(stringsRoot, path.slice(2));
+	const strings = stringsNode && stringsNode.$s;
+	if (!strings) {
+		// This is a parser-generated collection (e.g. $.model) or property without block strings
 		return true;
 	}
 
-	let {targetIndentation} = path.reduce(
-		({fragment, targetIndentation, pathCheck}, pathPart) => ({
-			fragment: fragment[pathPart],
-			targetIndentation: targetIndentation + (fragment[pathPart].$strings ? 1 : 0),
-			// pathCheck: pathCheck +"/"+pathPart + (fragment[pathPart].$strings ? "+1" : "")
-		}), {
-			fragment: project,
-			targetIndentation: -1,
-			// pathCheck:""
+	let {targetIndentation} = path.slice(2).reduce(
+		({fragment, targetIndentation}, pathPart) => {
+			const next = fragment && fragment[pathPart];
+			return {
+				fragment: next,
+				targetIndentation: targetIndentation + (next && next.$s ? 1 : 0),
+			};
+		}, {
+			fragment: stringsRoot,
+			targetIndentation: stringsRoot && stringsRoot.$s ? 0 : -1,
 		},
 	);
 
-	const lines = object.$strings
+	const lines = strings
 		.map((str) =>
 			!str ? ''
 				: Array.isArray(str) ? '@'+str[0]
