@@ -1,4 +1,4 @@
-/* Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
+/* Copyright (c) 2026 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
 const fs = require('fs');
 const path = require('path');
 
@@ -81,7 +81,8 @@ ${cat.intro ? cat.intro + '\n' : ''}${rulesHtml}`;
 }).join('\n\n');
 
 const html = `<!doctype html>
-<!-- Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt -->
+<!-- This file is generated, and any manual changes will be overwritten. See scripts/build-docs.js -->
+<!-- Copyright (c) 2026 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt -->
 <html>
 <head>
 \t<title>LAMS Style Guide</title>
@@ -125,8 +126,6 @@ ${categorySections}
 <h1 id="linter-errors">Linter Errors</h1>
 <p>In some circumstances, the linter may run into errors while running that are recoverable, and may report them along with its rule findings.</p>
 <ul>
-\t<li><a href="#P0" id="p0" name="p0">P0.</a> Generic Parser Error - Any parser error other than a LookML syntax error. If visible in the chosen output format, the message's \`location\` property contains the path to the file.</li>
-\t<li><a href="#P1" id="p1" name="p1">P1.</a> LookML Syntax Error - The LookML file contains a unexpected syntax (after expenading any \`#LAMS\` conditional comments). If visible in the chosen output format, the message's \`location\` property contains the path to the file and a \`hint\` for expected syntax from the parser.</li>
 \t<li><a href="#lams1" id="lams1" name="lams1">LAMS1.</a> Unhandled Rule Error - An execution error occurred while running a rule. Please <a href="https://github.com/looker-open-source/look-at-me-sideways/issues/new?template=Blank+issue">submit a ticket</a> about this.</li>
 \t<li><a href="#lams2" id="lams2" name="lams2">LAMS2.</a> Legacy Custom Rule Error - An execution error occured while running a Javascript-based (Deprecated) custom rule</li>
 \t<li><a href="#lams3" id="lams3" name="lams3">LAMS3.</a> Error loading JSON data from an individual line of lams-exemptions.ndjson</li>

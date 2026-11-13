@@ -44,8 +44,6 @@ module.exports = async function(
 		const path = require('path');
 		const parser = require('lookml-parser');
 		const checkCustomRule = require('./lib/custom-rule/custom-rule.js');
-		const {msg} = require('./lib/message/message.js');
-		const loc = require('./lib/message/location-template-literal.js');
 
 		const cwd = options.cwd || process.cwd();
 		const ignore = options.ignore || 'node_modules/**';
@@ -68,30 +66,6 @@ module.exports = async function(
 		});
 		if (project.error) { // Fatal error
 			throw (project.error);
-		}
-
-		if (project.errors) {
-			console.log('> Issues occurred during parsing (containing files will not be considered. See messages for details.)');
-			messages = messages.concat(project.errors.map((e) => {
-				const exception = e && (e.exception || e.error && e.error.exception) || {};
-				const filePath = e && (e.filePath || e.$file_path);
-				const context = e && e.context || exception.context;
-				const messageDefault = {
-					rule: 'P0',
-					location: loc`file:${filePath}`,
-					level: 'error',
-					description: `Parsing error: ${e && e.message || exception.message || e}`,
-					path: filePath,
-				};
-				if (exception.name === 'SyntaxError' || (e && e.code === 'SYNTAX_ERROR')) {
-					return msg({
-						...messageDefault,
-						rule: 'P1',
-						hint: context,
-					});
-				}
-				return msg(messageDefault);
-			}));
 		}
 		console.log('> Parsing done!');
 
@@ -126,10 +100,20 @@ module.exports = async function(
 
 		console.log('Checking rules... ');
 
-		let builtInRuleNames =
+		let builtInRules =
 		fs.readdirSync(path.join(__dirname, 'rules'), {withFileTypes: true})
 			.filter((dirent) => dirent.isDirectory() && fs.existsSync(path.join(__dirname, 'rules', dirent.name, 'index.js')))
-			.map((dirent) => dirent.name.toUpperCase());
+			.map((dirent) => {
+				const metaPath = path.join(__dirname, 'rules', dirent.name, 'meta.json');
+				const meta = fs.existsSync(metaPath) ? JSON.parse(fs.readFileSync(metaPath, 'utf8')) : {};
+				return {
+					name: dirent.name.toUpperCase(),
+					defaultEnabled: Boolean(meta.defaultEnabled),
+					subRules: Array.isArray(meta.subRules) ? meta.subRules : [],
+				};
+			});
+		let builtInRuleNames = builtInRules.map((r) => r.name);
+		let builtInSubRuleNames = builtInRules.flatMap((r) => r.subRules);
 
 		if (!project.manifest) {
 			console.log(' > No project manifest available in which to find rule declarations/settings.');
@@ -137,9 +121,17 @@ module.exports = async function(
 			console.log(' > No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to.');
 		}
 
-		for (let rule of Object.values(project.manifest && project.manifest.rule || {})) {
+		const manifestRules = project.manifest && project.manifest.rule || {};
+		const defaultRules = builtInRules
+			.filter((r) => r.defaultEnabled && !Object.prototype.hasOwnProperty.call(manifestRules, r.name))
+			.map((r) => ({$name: r.name, _defaultOnly: true}));
+
+		for (let rule of [...defaultRules, ...Object.values(manifestRules)]) {
 			console.log('> ' + rule.$name);
 			if (rule.enabled === false) {
+				continue;
+			}
+			if (builtInSubRuleNames.includes(rule.$name) && !rule.custom && !rule.match && !rule.expr_rule) {
 				continue;
 			}
 			if (builtInRuleNames.includes(rule.$name) && !rule.custom) { // Built-in rule
@@ -152,7 +144,7 @@ module.exports = async function(
 				}
 				try {
 					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '/index.js');
-					let result = ruleModule(project);
+					let result = ruleModule(project, rule);
 					rule.match = rule.match ?? result.rule?.match;
 					rule.description = rule.description ?? result.rule?.description;
 					messages = messages.concat(result.messages);
@@ -212,6 +204,9 @@ module.exports = async function(
 				console.log('> Legacy custom rules done!');
 			}
 		}
+
+		// Filter out any messages for rules/sub-rules explicitly disabled in manifest
+		messages = messages.filter((m) => manifestRules[m.rule]?.enabled !== false);
 
 		// Output
 		const outputters = require('./lib/outputters/index.js');

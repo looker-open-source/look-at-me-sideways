@@ -34,5 +34,11 @@
 		"title": "Whitespace",
 		"order": 6,
 		"intro": "<p><b>Note:</b> To enable the linter to effectively enforce whitespace-related rules, you may have to consider how conditional comments (e.g. `#LAMS`) will be pre-processed. The parser will preserve whitespace before the comment on each line, and will consume the comment character (#), the conditional comment token, and up to one space or tab character. For multi-line commented blocks, it will visually appear that there is one additional level of indentation. See <a href=\"https://github.com/looker-open-source/look-at-me-sideways/blob/master/__tests__/dummy-projects/33-w1-tests/\">test project #33</a> for an example.</p>"
+	},
+	{
+		"id": "parser-errors",
+		"title": "Parser Errors & Validation",
+		"order": 7,
+		"intro": ""
 	}
 ]

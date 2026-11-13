@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- Copyright (c) 2018 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt -->
+<!-- Copyright (c) 2026 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt -->
 <html>
 <head>
 	<title>LAMS Style Guide</title>
@@ -41,6 +41,7 @@
 <li> <a href="#explores">Explores</a></li>
 <li> <a href="#hierarchy">Hierarchy</a></li>
 <li> <a href="#whitespace">Whitespace</a></li>
+<li> <a href="#parser-errors">Parser Errors</a></li>
 <li> <a href="#linter-errors">Linter Errors</a></li>
 <li> <a href="#deprecated-rules">Deprecated Rules</a></li>
 <li> <a href="#glossary">Glossary</a></li>
@@ -844,11 +845,22 @@
 	<p>Each LookML block within a file should add one level of indentation for any inner line breaks, except for the line containin the block's closing brace, which should be at the prior indentation.</p>
 	</details>
 
+<h1 id="parser-errors">Parser Errors</h1>
+<details id="p">
+	<summary><b><a href="#p">P.</a></b> LookML files should parse without parser or schema validation errors.</summary>
+	<p>The parser rule surfaces errors reported by <code>lookml-parser</code>. <code>P0</code> and <code>P1</code> are enabled by default (unless disabled via <code>rule: P { enabled: no }</code>); schema validation errors (<code>P2</code>–<code>P4</code>) require opting in via <code>rule: P {}</code> in <code>manifest.lkml</code>:</p>
+	<ul>
+		<li id="p0"><b><a href="#p0">P0.</a></b> <code>PARSE_ERROR</code> — Generic parser error other than the specific codes below (enabled by default).</li>
+		<li id="p1"><b><a href="#p1">P1.</a></b> <code>SYNTAX_ERROR</code> — LookML syntax error (after expanding any <code>#LAMS</code> conditional comments). Includes a <code>hint</code> with expected syntax context when available (enabled by default).</li>
+		<li id="p2"><b><a href="#p2">P2.</a></b> <code>DUPLICATE_SINGULAR_PROPERTY</code> — A singular LookML property was declared more than once in the same block (opt-in via <code>rule: P {}</code>).</li>
+		<li id="p3"><b><a href="#p3">P3.</a></b> <code>INVALID_PROPERTY_TYPE</code> — A LookML property value does not match the expected schema type (opt-in via <code>rule: P {}</code>).</li>
+		<li id="p4"><b><a href="#p4">P4.</a></b> <code>MISSING_REQUIRED_PROPERTY</code> — A required LookML property is missing from a block (opt-in via <code>rule: P {}</code>).</li>
+	</ul>
+	</details>
+
 <h1 id="linter-errors">Linter Errors</h1>
 <p>In some circumstances, the linter may run into errors while running that are recoverable, and may report them along with its rule findings.</p>
 <ul>
-	<li><a href="#P0" id="p0" name="p0">P0.</a> Generic Parser Error - Any parser error other than a LookML syntax error. If visible in the chosen output format, the message's `location` property contains the path to the file.</li>
-	<li><a href="#P1" id="p1" name="p1">P1.</a> LookML Syntax Error - The LookML file contains a unexpected syntax (after expenading any `#LAMS` conditional comments). If visible in the chosen output format, the message's `location` property contains the path to the file and a `hint` for expected syntax from the parser.</li>
 	<li><a href="#lams1" id="lams1" name="lams1">LAMS1.</a> Unhandled Rule Error - An execution error occurred while running a rule. Please <a href="https://github.com/looker-open-source/look-at-me-sideways/issues/new?template=Blank+issue">submit a ticket</a> about this.</li>
 	<li><a href="#lams2" id="lams2" name="lams2">LAMS2.</a> Legacy Custom Rule Error - An execution error occured while running a Javascript-based (Deprecated) custom rule</li>
 	<li><a href="#lams3" id="lams3" name="lams3">LAMS3.</a> Error loading JSON data from an individual line of lams-exemptions.ndjson</li>

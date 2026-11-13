@@ -34,27 +34,39 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 
 ```lkml
 #LAMS
+## Parser rules
+#rule: P0{} # Generic parser errors (default enabled)
+#rule: P1{} # LookML syntax errors (default enabled)
+#rule: P2{} # Duplicate singular property errors
+#rule: P3{} # Invalid property type errors
+#rule: P4{} # Missing required property errors
+## Primary Key rules
 #rule: K1{} # Primary key naming
 #rule: K3{} # Primary keys first
 #rule: K4{} # Primary keys hidden
 #rule: K7{} # Provide one `primary_key`
 #rule: K8{} # `primary_key` uses PK dims
+## Field rules
 #rule: F1{} # No cross-view fields
 #rule: F2{} # No view-labeled fields
 #rule: F3{} # Count fields filtered
 #rule: F4{} # Description or hidden
+## Explore rules
 #rule: E1{} # Join with subst'n operator
 #rule: E2{} # Join on PK for "one" joins
 #rule: E6{} # FK joins are m:1
 #rule: E7{} # Explore label 25-char max
+## Transformation rules
 #rule: T1{} # Triggers use datagroups 
 #rule: T2{} # Primary keys in DT
+## Hierarchy rules
 #rule: H1{} # Hoist identifiers
 #rule: H2{} # Group fields
 #rule: H3{} # Sort-group groups
 #rule: H4{} # Group more
 #rule: H5{} # Hoist main view
 #rule: H6{} # Sort-group views
+## Whitespace rules
 #rule: W1{} # Block indentation
 ```
 

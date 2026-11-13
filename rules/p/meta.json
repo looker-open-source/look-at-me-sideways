@@ -1,0 +1,8 @@
+{
+	"id": "p",
+	"category": "parser-errors",
+	"order": 1,
+	"defaultEnabled": true,
+	"subRules": ["P0", "P1", "P2", "P3", "P4"],
+	"summary": "LookML files should parse without parser or schema validation errors."
+}
