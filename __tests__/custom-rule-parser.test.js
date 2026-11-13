@@ -77,4 +77,14 @@ describe('Custom Rule Parser', () => {
 		expect(JSON.stringify(rule({a: 1, b: 2, c: 3}))).toEqual('{"a":1,"b":2,"c":3}');
 		// ^ This is implementation dependent, but good enough for now
 	});
+
+	it('Nullish coalescing (??)', () => {
+		let rule = parse(`( -> (match) (?? ::match:a "fallback"))`);
+		expect(rule({a: undefined})).toEqual('fallback');
+		expect(rule({a: null})).toEqual('fallback');
+		expect(rule({a: 'ok'})).toEqual('ok');
+		expect(rule({a: false})).toEqual(false);
+		expect(rule({a: 0})).toEqual(0);
+		expect(rule({a: ''})).toEqual('');
+	});
 });

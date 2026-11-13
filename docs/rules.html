@@ -1,4 +1,5 @@
 <!doctype html>
+<!-- This file is generated, and any manual changes will be overwritten. See scripts/build-docs.js -->
 <!-- Copyright (c) 2026 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt -->
 <html>
 <head>
@@ -41,7 +42,7 @@
 <li> <a href="#explores">Explores</a></li>
 <li> <a href="#hierarchy">Hierarchy</a></li>
 <li> <a href="#whitespace">Whitespace</a></li>
-<li> <a href="#parser-errors">Parser Errors</a></li>
+<li> <a href="#parser-errors">Parser Errors & Validation</a></li>
 <li> <a href="#linter-errors">Linter Errors</a></li>
 <li> <a href="#deprecated-rules">Deprecated Rules</a></li>
 <li> <a href="#glossary">Glossary</a></li>
@@ -314,6 +315,41 @@
 	<summary><b><a href="#f4">F4.</a></b> Non-hidden fields should have descriptions</summary>
 	<p><b>Rationale:</b> User experience. Just do it.</p>
 	<p><b>Note:</b> Think about the audience when you write a description. Information for end users can go in the description, whereas information for other developers can go in a LookML comment</p>
+	</details>
+<details id="f8">
+	<summary><b><a href="#f8">F8.</a></b> Numeric fields of type <code>number</code> that appear to be IDs or USD currency should specify <code>value_format_name</code>.</summary>
+	<p>Non-hidden fields with <code>type: number</code> that represent numeric IDs or USD currency should specify an appropriate <code>value_format_name</code> (unless a custom <code>value_format</code> is already set):</p>
+	<ul>
+		<li>Use <code>value_format_name: id</code> for numeric ID fields (detected from <code>primary_key: yes</code> or ID-related keywords in the field's name, <code>label</code>, or <code>description</code>).</li>
+		<li>Use <code>value_format_name: usd</code> or <code>usd_0</code> for USD currency fields (detected from USD-related keywords in the field's name, <code>label</code>, or <code>description</code>).</li>
+	</ul>
+	<p><b>Rationale:</b> By default, Looker formats <code>type: number</code> fields with thousand separators (e.g., <code>12,345</code>) and no currency symbol, which is undesirable for numeric IDs and ambiguous for currency amounts.</p>
+	<code class="bad block">
+	view: orders {
+		dimension: user_id {
+			type: number
+			sql: ${TABLE}.user_id ;;
+		}
+		measure: total_usd {
+			type: number
+			sql: ${TABLE}.amount_usd ;;
+		}
+	}
+	</code>
+	<code class="good block">
+	view: orders {
+		dimension: user_id {
+			type: number
+			value_format_name: id
+			sql: ${TABLE}.user_id ;;
+		}
+		measure: total_usd {
+			type: number
+			value_format_name: usd_0
+			sql: ${TABLE}.amount_usd ;;
+		}
+	}
+	</code>
 	</details>
 
 <h1 id="derived-tables">Derived Tables</h1>
@@ -845,7 +881,7 @@
 	<p>Each LookML block within a file should add one level of indentation for any inner line breaks, except for the line containin the block's closing brace, which should be at the prior indentation.</p>
 	</details>
 
-<h1 id="parser-errors">Parser Errors</h1>
+<h1 id="parser-errors">Parser Errors & Validation</h1>
 <details id="p">
 	<summary><b><a href="#p">P.</a></b> LookML files should parse without parser or schema validation errors.</summary>
 	<p>The parser rule surfaces errors reported by <code>lookml-parser</code>. <code>P0</code> and <code>P1</code> are enabled by default (unless disabled via <code>rule: P { enabled: no }</code>); schema validation errors (<code>P2</code>–<code>P4</code>) require opting in via <code>rule: P {}</code> in <code>manifest.lkml</code>:</p>
