@@ -127,10 +127,9 @@ module.exports = async function(
 		console.log('Checking rules... ');
 
 		let builtInRuleNames =
-		fs.readdirSync(path.join(__dirname, 'rules'))
-			.map((fileName) => fileName.match(/^(.*)\.js$/))
-			.filter(Boolean)
-			.map((match) => match[1].toUpperCase());
+		fs.readdirSync(path.join(__dirname, 'rules'), {withFileTypes: true})
+			.filter((dirent) => dirent.isDirectory() && fs.existsSync(path.join(__dirname, 'rules', dirent.name, 'index.js')))
+			.map((dirent) => dirent.name.toUpperCase());
 
 		if (!project.manifest) {
 			console.log(' > No project manifest available in which to find rule declarations/settings.');
@@ -152,7 +151,7 @@ module.exports = async function(
 					});
 				}
 				try {
-					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '.js');
+					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '/index.js');
 					let result = ruleModule(project);
 					rule.match = rule.match ?? result.rule?.match;
 					rule.description = rule.description ?? result.rule?.description;

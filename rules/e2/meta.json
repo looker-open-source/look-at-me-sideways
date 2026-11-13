@@ -1,0 +1,6 @@
+{
+	"id": "e2",
+	"category": "explores",
+	"order": 2,
+	"summary": "The \"one\" table in any join should be joined on equality constraints on all of the Primary Key Dimensions"
+}

@@ -1,0 +1,6 @@
+{
+	"id": "t2",
+	"category": "derived-tables",
+	"order": 2,
+	"summary": "Every derived table, CTE, or subquery should SELECT a set of primary key columns"
+}

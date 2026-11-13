@@ -1,0 +1,6 @@
+{
+	"id": "k8",
+	"category": "key-dimensions",
+	"order": 5,
+	"summary": "The <code>primary_key</code> dimension must use or be the Primary Key Dimension(s)"
+}

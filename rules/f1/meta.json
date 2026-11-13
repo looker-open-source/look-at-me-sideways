@@ -1,0 +1,6 @@
+{
+	"id": "f1",
+	"category": "other-fields",
+	"order": 1,
+	"summary": "Fields in a view should not reference other views..."
+}

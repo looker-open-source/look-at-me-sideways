@@ -1,0 +1,6 @@
+{
+	"id": "f2",
+	"category": "other-fields",
+	"order": 2,
+	"summary": "Fields should not contain a <code>view_label</code>."
+}

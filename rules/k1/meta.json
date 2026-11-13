@@ -1,0 +1,6 @@
+{
+	"id": "k1",
+	"category": "key-dimensions",
+	"order": 1,
+	"summary": "Views should define 1 or more \"Primary Key Dimensions\" following a naming convention of <code>pk{n}_{key_name}</code>..."
+}

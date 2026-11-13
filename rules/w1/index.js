@@ -1,0 +1,103 @@
+/* Copyright (c)  Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt */
+const checkCustomRule = require('../../lib/custom-rule/custom-rule.js');
+const deepGet = require('../../lib/deep-get.js');
+
+module.exports = function(
+	project,
+) {
+	let rule = {
+		$name: 'W1',
+		match: `$.file..`,
+		description: 'Each LookML block within a file should add one level of indentation for any inner line breaks.',
+		ruleFn,
+	};
+	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});
+
+	return {messages, rule};
+};
+
+function ruleFn(match, path, project) {
+	let object = match;
+	if (!object || typeof object !== 'object' || path[0] !== 'file' || path.length < 2) {
+		return true;
+	}
+	const stringsRoot = deepGet(project, [path[0], path[1], '$strings']);
+	const stringsNode = path.length === 2 ? stringsRoot : deepGet(stringsRoot, path.slice(2));
+	const strings = stringsNode && stringsNode.$s;
+	if (!strings) {
+		// This is a parser-generated collection (e.g. $.model) or property without block strings
+		return true;
+	}
+
+	let {targetIndentation} = path.slice(2).reduce(
+		({fragment, targetIndentation}, pathPart) => {
+			const next = fragment && fragment[pathPart];
+			return {
+				fragment: next,
+				targetIndentation: targetIndentation + (next && next.$s ? 1 : 0),
+			};
+		}, {
+			fragment: stringsRoot,
+			targetIndentation: stringsRoot && stringsRoot.$s ? 0 : -1,
+		},
+	);
+
+	const lines = strings
+		.map((str) =>
+			!str ? ''
+				: Array.isArray(str) ? '@'+str[0]
+					: str)
+		.map((str) =>
+			['@$type', '@$name'].includes(str)
+			&& deepGet(project, [...path, str.slice(1)])
+			|| str)
+		.join('')
+		.split('\n');
+
+	// let lines = [], currentLine = ""
+	// for(let str of object.$strings){
+	// 	if(Array.isArray(str)){
+	// 		currentLine += "@"+str[0];
+	// 		continue
+	// 	}
+	// 	let innerLines = str.split(/\n[^\n]*/g)
+	// 	currentLine+=innerLines[0]
+
+	// 	if(!newLines){
+
+	// 		}
+	// 		currentLine &
+	// 		lines.push(...newLines.slice(0,-1))
+	// 		currentLine = newLines.slice(-1)[0]
+	// 		}
+	// 	else {
+	// 		currentLine+
+	// 		}
+	// }
+
+	const problemLines = lines
+		.filter((line, l) => l>0 || targetIndentation==0)
+		.map((line, l)=> ({
+			line, l,
+			actual: countIndentsOrLeadingCloses(line),
+		}))
+		.map((o) => ({...o,
+			specialCase:
+				o.l === 0 && o.actual === 0 ? 'F' // First line of a deep object is always 0 because external whitespace including indentation is in the parent object
+					: o.line === '' ? 'E' // Empty lines are fine
+						: o.line[0] === '#' ? 'C' // Lines immediately starting in a comment are fine
+							: false,
+		}))
+		.filter((o)=> o.actual !== targetIndentation && !o.specialCase)
+		.map((o) =>
+			`Expected inner indentation level: ${targetIndentation}, found ${o.specialCase || o.actual}: `
+			+(o.specialCase || o.actual === targetIndentation ? 'ok' : '❌')
+			+ o.line.replace(/\n/g, '⏎').replace(/ /g, '•').replace(/\t/g, '→ ').slice(0, 30),
+		);
+
+	return problemLines;
+}
+
+function countIndentsOrLeadingCloses(line) {
+	return line.replace(/ {2}/g, '\t').match(/^\t*}*/)[0].length;
+}

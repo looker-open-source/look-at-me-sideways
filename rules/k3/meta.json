@@ -1,0 +1,6 @@
+{
+	"id": "k3",
+	"category": "key-dimensions",
+	"order": 2,
+	"summary": "Primary Key Dimensions should be defined immediately following the table definition..."
+}

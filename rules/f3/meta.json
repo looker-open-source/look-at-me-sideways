@@ -1,0 +1,6 @@
+{
+	"id": "f3",
+	"category": "other-fields",
+	"order": 3,
+	"summary": "All type:count measures should specify a filter"
+}
