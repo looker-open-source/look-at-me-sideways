@@ -123,9 +123,6 @@ The remaining examples were prepared for v1 of LAMS, though updating them for v2
 
 ### Command-line arguments
 
-- **reporting** - Required. One of `yes`, `no`, `save-yes`, or `save-no`. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
-- **report-user** - An email address to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
-- **report-license-key** - A Looker license key to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **output** - A comma-separated string of output modes from among: `lines` (default), `github-job-summary`, `markdown`, `markdown-developer`, `jenkins`, `legacy-cli`, or (BETA) `add-exemptions`
 - **source** - A glob specifying which files to read. Defaults to `**/{*.model,*.explore,*.view,manifest}.lkml`.
 - **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory.
@@ -164,10 +161,6 @@ The manifest can provide the following declarations:
 
 - [v2](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2)
 - [v3+](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v3)
-
-### Privacy Policy
-
-LAMS respects user privacy. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 
 ### License
 

@@ -6,9 +6,6 @@ const defaultProcess = process;
  * LAMS main function
  *
  * @param {object}	options - options
- * @param {string=}	options.reporting - One of yes, no, save-yes, or save-no. Program terminates with a warning if omitted. See PRIVACY.md for details
- * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
- * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
  * @param {string=}	options.output - Comma-separated string of output modes from among: lines (default), markdown, markdown-developer, jenkins, legacy-cli
  * @param {string=}	options.source - An optional glob specifying which files to read
  * @param {string=}	options.ignore - An optional glob specifying patterns to ignore. Defaults to `node_modules/**`
@@ -26,7 +23,6 @@ const defaultProcess = process;
  * @param {object=} io.console.warn
  * @param {object=} io.console.error
  * @param {object=} io.fs
- * @param {object=} io.tracker Object compatible with ./lib/tracking.js
  * @param {object=} io.process Object with cwd() and exit()
  * @param {function=} io.get function that takes a URL and returns the contents
  * @return Returns undefined or calls process.exit
@@ -39,21 +35,12 @@ module.exports = async function(
 		process = defaultProcess,
 		fs,
 		get,
-		tracker,
 	} = {},
 ) {
 	let messages = [];
 	try {
 		fs = fs || require('fs');
 		get = get || require('./lib/https-get.js');
-		tracker = tracker || require('./lib/tracking')({
-			cliArgs: {
-				reporting: options.reporting,
-				reportLicenseKey: options.reportLicenseKey,
-				reportUser: options.reportUser,
-			},
-			gaPropertyId: 'UA-96247573-2',
-		});
 		const path = require('path');
 		const parser = require('lookml-parser');
 		const checkCustomRule = require('./lib/custom-rule/custom-rule.js');
@@ -279,34 +266,13 @@ module.exports = async function(
 			}
 		}
 
-		if (tracker.enabled) {
-			await Promise.race([
-				tracker.track({messages, errors: []}),
-				new Promise((res) => setTimeout(res, 2000)),
-			]);
-		}
-
 		if (errors.length) {
 			process.exit(1);
 		}
 
 		return messages;
 	} catch (e) {
-		try {
-			console.error(e);
-			if (!tracker.valid) {
-				throw new Error('Unknown error');
-			}
-			if (tracker.enabled) {
-				e.isFatalError = true;
-				tracker.track({messages, errors: [e]});
-			} else {
-				console.warn(`Error reporting is disabled. Run with --reporting=yes to report, or see PRIVACY.md for more info`);
-			}
-		} catch (e) {
-			console.error(e);
-			console.error(`Error reporting is not available	. Please submit an issue to https://github.com/looker-open-source/look-at-me-sideways/issues`);
-		}
+		console.error(e);
 		process.exit(1);
 	}
 

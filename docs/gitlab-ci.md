@@ -37,8 +37,7 @@ Lint:
     name: registry.example.com/look-at-me-sideways-bot
     entrypoint: [""]
   script:
-  # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
-  - lams --reporting=... --output-to-cli
+  - lams --output-to-cli
   artifacts:
     expire_in: 2 weeks
     when: always
