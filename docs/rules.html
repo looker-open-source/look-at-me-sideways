@@ -823,6 +823,74 @@
 	}
 	</code></p>
 	</details>
+<details id="t11">
+	<summary><b><a href="#t11">T11.</a></b> MIN, MAX, and ANY aggregates should be asserted or explicitly aliased</summary>
+	<p># T11: Asserted Uniques / Explicit <code>MIN</code>, <code>MAX</code>, and <code>ANY</code> Aggregates</p>
+
+	<p>## Why?</p>
+
+	<p>Developers sometimes use <code>MIN(...)</code>, <code>MAX(...)</code>, or <code>ANY_VALUE(...)</code> when grouping to pick a supposedly uniform value across rows, which silently hides data quality issues if the value is not actually unique. Rather than assuming the value is representative, either assert uniqueness (for example, by checking <code>MIN(x) <> MAX(x)</code>) or alias the column to make clear that it is a min, max, or arbitrary sample value.</p>
+
+	<p>## Rule</p>
+
+	<p>In a <code>derived_table</code>'s <code>SELECT</code> list, unguarded <code>MIN(...)</code>, <code>MAX(...)</code>, and <code>ANY(...)</code> / <code>ANY_VALUE(...)</code> expressions must be aliased to a name containing one of the allowed fragments:</p>
+
+	<p>- <b><code>MIN</code></b>: <code>min</code>, <code>minimum</code>, <code>first</code>, <code>earliest</code>
+	- <b><code>MAX</code></b>: <code>max</code>, <code>maximum</code>, <code>last</code>, <code>latest</code>
+	- <b><code>ANY</code> / <code>ANY_VALUE</code></b>: <code>any</code>, <code>sample</code></p>
+
+	<p>Expressions that assert uniqueness by comparing <code>MIN(...)</code> and <code>MAX(...)</code> inside a <code>CASE</code> or <code>ERROR(...)</code> guard are allowed with any alias.</p>
+
+	<p>### Options</p>
+
+	<p>You can configure additional allowed alias fragments (for example, in other languages) in <code>manifest.lkml</code>:</p>
+
+	<p>``<code>lkml
+	#rule: T11 {
+	#  options: {
+	#    min_fragments: ["minimo", "primeiro"]
+	#    max_fragments: ["maximo", "ultimo"]
+	#    any_fragments: ["qualquer"]
+	#  }
+	#}
+	</code>``</p>
+
+	<p>## Examples</p>
+
+	<code class="bad block">
+	view: user_accounts {
+	  derived_table: {
+	    sql:
+	      SELECT
+	        user_guid AS pk1_user_guid,
+	        MIN(account_id) AS account_id
+	      FROM events
+	      GROUP BY user_guid
+	    ;;
+	  }
+	}
+	</code>
+
+	<code class="good block">
+	view: user_accounts {
+	  derived_table: {
+	    sql:
+	      SELECT
+	        user_guid AS pk1_user_guid,
+	        CASE WHEN MIN(account_id) <> MAX(account_id)
+	          THEN ERROR("Non-unique account_id for user_guid")
+	          ELSE MIN(account_id)
+	        END AS account_id,
+	        MIN(created_at) AS first_created_at,
+	        MAX(created_at) AS latest_created_at,
+	        ANY_VALUE(region) AS sample_region
+	      FROM events
+	      GROUP BY user_guid
+	    ;;
+	  }
+	}
+	</code>
+	</details>
 <details id="t14">
 	<summary><b><a href="#t14">T14.</a></b> Persisted derived tables should not use Liquid or dynamic SQL</summary>
 	<p># T14: Persisted Derived Tables Should Not Use Liquid or Dynamic SQL</p>

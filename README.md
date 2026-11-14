@@ -69,6 +69,7 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 #rule: T3.1{} # Table views require filter or row-count test
 #rule: T3.2{} # required_filter references valid view field
 #rule: T3.3{} # PDT required_filter matches first key
+#rule: T11{} # Assert or explicitly alias MIN/MAX/ANY
 #rule: T14{} # No Liquid/dynamic SQL in PDTs
 #rule: T15{} # Prefer UNION ALL over bare UNION
 ## Hierarchy rules
