@@ -385,5 +385,92 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...e2, ...info});
 			expect(result).not.toContainMessage(error);
 		});
+
+		it('should pass in default strict_mode:no when primary_key:yes dimension is constrained', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {
+					join: users {
+						relationship: many_to_one
+						sql_on: \${users.id} = \${orders.user_id} ;;
+					}
+				}
+				view: users {
+					dimension: id { primary_key: yes }
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should pass in default strict_mode:no when composite primary_key:yes constituent columns are constrained', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {
+					join: user_tenants {
+						relationship: many_to_one
+						sql_on: \${user_tenants.user_id} = \${orders.user_id} AND \${user_tenants.tenant_id} = \${orders.tenant_id} ;;
+					}
+				}
+				view: user_tenants {
+					dimension: pk {
+						primary_key: yes
+						sql: CONCAT(\${user_id}, '-', \${tenant_id}) ;;
+					}
+					dimension: user_id { sql: \${TABLE}.user_id ;; }
+					dimension: tenant_id { sql: \${TABLE}.tenant_id ;; }
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should pass in default strict_mode:no when DT GROUP BY (named or positional) or SELECT DISTINCT columns are constrained', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {
+					join: user_summary {
+						relationship: many_to_one
+						sql_on: \${user_summary.user_id} = \${orders.user_id} AND \${user_summary.region} = \${orders.region} ;;
+					}
+					join: distinct_dates {
+						relationship: many_to_one
+						sql_on: \${distinct_dates.dt} = \${orders.created_date} ;;
+					}
+				}
+				view: user_summary {
+					derived_table: {
+						sql: SELECT user_id, region, COUNT(*) AS cnt FROM raw.orders GROUP BY 1, 2 ;;
+					}
+					dimension: user_id { sql: \${TABLE}.user_id ;; }
+					dimension: region { sql: \${TABLE}.region ;; }
+				}
+				view: distinct_dates {
+					derived_table: {
+						sql: SELECT DISTINCT dt FROM raw.dates ;;
+					}
+					dimension: dt { sql: \${TABLE}.dt ;; }
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should enforce PK naming convention when strict_mode:yes is set in manifest', () => {
+			let result = rule(parse(`
+				manifest: {
+					rule: E2 { options: { strict_mode: yes } }
+				}
+				model: m {
+					explore: orders {
+						join: users {
+							relationship: many_to_one
+							sql_on: \${users.id} = \${orders.user_id} ;;
+						}
+					}
+					view: users {
+						dimension: id { primary_key: yes }
+					}
+				}
+			`));
+			expect(result).toContainMessage({...e2, ...error});
+		});
 	});
 });

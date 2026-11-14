@@ -197,5 +197,5 @@ Patches:
 - Rules `F4`, `F8`, `F9`, and `K4` now respect view-level `fields_hidden_by_default`.
 - Rule `K1`: Allow `dimension_group` with `raw` timeframe to satisfy the primary key naming convention.
 - Rule `K3`: Allow a `primary_key: yes` dimension to be declared before `pk{n}_` primary key dimensions.
-- Rule `E2`: Allow `UNNEST(...)` joins (via `join.sql` or `join.sql_table_name`) without requiring primary key equality constraints.
+- Rule `E2`: Allow `UNNEST(...)` joins (via `join.sql` or `join.sql_table_name`) without requiring primary key equality constraints, and default to `strict_mode: no` (accepting `primary_key: yes` dimensions and DT `GROUP BY`/`SELECT DISTINCT` column sets in addition to `pk{n}_` naming; set `options: { strict_mode: yes }` for legacy strict behavior).
 - Rule `K7`: Fixed a runtime error (`Cannot convert undefined or null to object`) when a table-backed view has no dimensions.

@@ -17,7 +17,148 @@ module.exports = function(
 	return {messages, rule};
 };
 
-function ruleFn(match, path, project) {
+function resolveExploreView(oneAlias, path, project) {
+	const model = project && project.model && project.model[path[1]];
+	if (!model || !model.view) {
+		return null;
+	}
+	const explore = model.explore && model.explore[path[3]];
+	let viewName = oneAlias;
+	if (explore) {
+		const baseAlias = explore.view_name || explore.$name;
+		if (oneAlias === baseAlias) {
+			viewName = explore.from || explore.view_name || explore.$name;
+		} else if (explore.join && explore.join[oneAlias]) {
+			const j = explore.join[oneAlias];
+			viewName = j.from || j.view_name || j.$name;
+		}
+	}
+	return model.view[viewName] || null;
+}
+
+function getConstrainedFieldsForAlias(constrainedRefs, oneAlias) {
+	const fields = new Set();
+	for (const ref of constrainedRefs) {
+		const [refAlias, refField] = ref.split('.');
+		if (refAlias === oneAlias && refField) {
+			fields.add(refField);
+		}
+	}
+	return fields;
+}
+
+function findDimensionsForTableColumn(oneView, colName) {
+	const target = String(colName).toLowerCase();
+	const dims = Object.values((oneView && oneView.dimension) || {});
+	const escaped = target.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	const tableColRegex = new RegExp(`\\$\\{TABLE\\}\\s*\\.\\s*["\`\\[]?${escaped}["\`\\]]?\\b`, 'i');
+	return dims.filter((d) =>
+		(d.$name && d.$name.toLowerCase() === target) ||
+		(d.sql && tableColRegex.test(String(d.sql))),
+	);
+}
+
+function checkPrimaryKeyDim(oneView, constrainedFields) {
+	const dims = Object.values((oneView && oneView.dimension) || {});
+	const pkDims = dims.filter((d) => d.primary_key);
+	for (const pkDim of pkDims) {
+		if (constrainedFields.has(pkDim.$name)) {
+			return true;
+		}
+		if (!pkDim.sql) {
+			continue;
+		}
+		const sqlStr = String(pkDim.sql);
+		const refs = sqlStr.match(/(?<=\$\{)[^}]+(?=\})/g) || [];
+		const constituentSets = [];
+		for (const ref of refs) {
+			if (/^TABLE$|^SUPER$|^EXTENDED$|\.SQL_TABLE_NAME$/i.test(ref)) {
+				continue;
+			}
+			const fieldName = ref.includes('.') ? ref.split('.').pop() : ref;
+			constituentSets.push([fieldName]);
+		}
+		const tableColMatches = sqlStr.matchAll(/\$\{TABLE\}\s*\.\s*["`[]?([a-zA-Z0-9_]+)["`\]]?/gi);
+		for (const m of tableColMatches) {
+			const matchingDims = findDimensionsForTableColumn(oneView, m[1]).map((d) => d.$name);
+			if (matchingDims.length) {
+				constituentSets.push(matchingDims);
+			} else {
+				constituentSets.push([]);
+			}
+		}
+		if (constituentSets.length > 0 && constituentSets.every((candidates) => candidates.some((c) => constrainedFields.has(c)))) {
+			return true;
+		}
+	}
+	return false;
+}
+
+function stripOuterParensAndComments(sql) {
+	let s = String(sql)
+		.replace(/--[^\n]*(\n|$)/g, ' ')
+		.replace(/\/\*[\s\S]*?\*\//g, ' ');
+	const parensRegex = /\([\s\S]*?(?<!\\)\)/g;
+	while (parensRegex.test(s)) {
+		s = s.replace(parensRegex, ' ');
+	}
+	return s;
+}
+
+function extractColIdentifier(expr) {
+	const cleaned = expr.replace(/["`[\]]/g, '').trim();
+	const parts = cleaned.split(/\s+/);
+	const last = parts[parts.length - 1] || '';
+	return (last.includes('.') ? last.split('.').pop() : last).toLowerCase();
+}
+
+function extractDtUniqueColumnSets(sql) {
+	const topSql = stripOuterParensAndComments(sql);
+	const selectMatches = [...topSql.matchAll(/\bSELECT\s+(DISTINCT\s+)?([\s\S]*?)\bFROM\b/gi)];
+	const lastSelect = selectMatches[selectMatches.length - 1];
+	const selectItems = lastSelect
+		? lastSelect[2].split(',').map((part) => extractColIdentifier(part)).filter(Boolean)
+		: [];
+
+	const groupByMatches = [...topSql.matchAll(/\bGROUP\s+BY\s+([\s\S]*?)(?=\bHAVING\b|\bORDER\s+BY\b|\bLIMIT\b|\bWINDOW\b|\bQUALIFY\b|\bUNION\b|;|$)/gi)];
+	const lastGroupBy = groupByMatches[groupByMatches.length - 1];
+	if (lastGroupBy) {
+		const cols = lastGroupBy[1].split(',').map((raw) => {
+			const trimmed = raw.trim();
+			if (/^\d+$/.test(trimmed)) {
+				return selectItems[parseInt(trimmed, 10) - 1] || '';
+			}
+			return extractColIdentifier(trimmed);
+		});
+		if (cols.some((c) => !c)) {
+			return null;
+		}
+		return cols;
+	}
+
+	if (lastSelect && lastSelect[1]) {
+		return selectItems.length ? selectItems : null;
+	}
+
+	return null;
+}
+
+function checkDtUniqueSet(oneView, constrainedFields) {
+	const dtSql = oneView && oneView.derived_table && oneView.derived_table.sql;
+	if (!dtSql) {
+		return false;
+	}
+	const cols = extractDtUniqueColumnSets(dtSql);
+	if (!cols || !cols.length) {
+		return false;
+	}
+	return cols.every((col) => {
+		const matchingDims = findDimensionsForTableColumn(oneView, col);
+		return matchingDims.some((d) => constrainedFields.has(d.$name));
+	});
+}
+
+function ruleFn(match, path, project, options={}) {
 	const join = match;
 	const pkRegex = /^([0-9]+pk|pk[0-9]*)_([a-z0-9A-Z_]+)$/;
 	const isFieldRef = (ref) => !ref.match(/^TABLE$|^SUPER$|^EXTENDED$|\.SQL_TABLE_NAME$/);
@@ -77,6 +218,8 @@ function ruleFn(match, path, project) {
 		.filter(Boolean)
 		.filter(unique);
 
+	const strictMode = Boolean(options.strict_mode);
+
 	for (let oneAlias of oneAliases) {
 		let pksForAlias = allRefs
 			.map((ref) => ref.split('.'))
@@ -84,7 +227,18 @@ function ruleFn(match, path, project) {
 			.filter(([refAlias, refField]) => refField.match(pkRegex))
 			.map(([refAlias, refField]) => refField)
 			.filter(unique);
-		if (!pksForAlias.length) {
+
+		if (!strictMode) {
+			const constrainedFields = getConstrainedFieldsForAlias(constrainedRefs, oneAlias);
+			const oneView = resolveExploreView(oneAlias, path, project);
+			if (oneView && (checkPrimaryKeyDim(oneView, constrainedFields) || checkDtUniqueSet(oneView, constrainedFields))) {
+				continue;
+			}
+			if (!pksForAlias.length) {
+				messages.push(`No PK dimensions, primary_key:yes field, or DT GROUP BY/DISTINCT columns are constrained for ${oneAlias} in ${join.$name} join${maybeNote}`);
+				continue;
+			}
+		} else if (!pksForAlias.length) {
 			messages.push(`No PKs dimensions used for ${oneAlias} in ${join.$name} join`);
 			continue;
 		}
