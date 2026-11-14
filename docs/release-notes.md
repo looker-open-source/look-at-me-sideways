@@ -1,3 +1,56 @@
+# v2.0
+
+## v2 Prologue
+
+v1 of LAMS was developed at a time when few LookML developers had continuous integration (CI) infrastructure set up for their LookML projects. As a result, LAMS targeted a markdown output format for maximum interoperability from Looker's IDE.
+
+In addition, it tried to fit several distinct use cases into that markdown output: reporting issues/recommendtions, summarizing exemptions, and listing tables by primary key (ostensibly for organizational & navigational benefits).
+
+As more LookML developers adopted a CI pipeline, it became clear that most consumers were looking primarily for a pass/fail indicator and an a listing of failures that was easily consumable via their CI tooling. 
+
+With the v2 release of LAMS, the possible output modes have been expanded and modularized, so that consumers can explicity state which output mode(s) are best for them. In addition, LAMS will emphasize a new output mode that is designed to be more accessible from a typical CI tooling context: output goes to the command line's standard output, rather than to a file, and with a tabular human-readable output with one message on each line, instead of markdown.
+
+## Highlighted changes
+
+- **Changes to output**
+	- New `output` parameter to toggle between output modes
+	- New `lines` output mode: human-readable tabular output to the CLI with 1 line per message
+	- Default output mode set to the new `lines` mode. To preserve v1 functionality, use `--output=markdown,developerMarkdown`
+- **LookML parsing errors are now consistent with other errors.** They are reported to the selected output mode with other errors, instead of logging to the command-line during execution, and will fail the run by default. To preserve the default v1 functionality (where parsing errors do not result in run errors), you may pass `--on-parser-error=info`
+- **All warnings are now errors.** Despite the initial intentions behind the style guide and LAMS, warnings were not meaningfully different from errors, so the distinction has been dropped in the interest of simplicity and intuitiveness.
+- **Removed reporting of exemptions.**  As alluded to in the prologue, the markdown output was handling many use cases, each in a subpar way. The reporting of exemptions was an example of this. In the future, a more considered exemption report may be added back with a dedicated output mode.
+
+## Other changes
+
+- Ability to pass in additional manifest options via a JSON encoded `manifest` CLI argument
+- Fix for finding manifest file when the filesystem returns absolute paths in certain cases
+- Additional informational messages, in output modes that display informational messages
+- Fixed bug where rule F1 was not being enforced within singtleton link declarations
+
+# v2.1
+
+- Adds an 'ignore' parameter to exclude certain file paths. It works as per the ignore parameter exposed by [glob](https://www.npmjs.com/package/glob). The default value is `node_modules/**`, for cases where LAMS may be installed as a local dependency, so that its own test files will not be picked up.
+- T2 is now an "umbrella" rule covering T3-T10. Exempting T2 is sufficient, and users no longer need to exempt each "sub rule". Errors that were previously reported as T2 are now reported as T3.
+- Bugfix: Rules T2-10, K1-4, and F3 can now be exempted via a global exemption (in the manifest file)
+- Docs: Added a Rule Sandbox micro-app for testing custom rules
+
+# v2.1.4
+
+- Fix [parser error](https://github.com/fabio-looker/node-lookml-parser/issues/17) on leading commas in lists
+
+# v2.1.5
+- Fix [E2 handling of pk's of implicit size 1](https://github.com/looker-open-source/look-at-me-sideways/issues/106)
+- Relax [application of K1-4 rules for extended views](https://github.com/looker-open-source/look-at-me-sideways/issues/105)
+
+# v2.1.6
+
+- Fix bug in rule F1 with `_rendered_value`. See [issue 118](https://github.com/looker-open-source/look-at-me-sideways/issues/119)
+- Fix oversight in rule F4. See [issue 19](https://github.com/looker-open-source/look-at-me-sideways/issues/119). As a new error condition, this would be a breaking change, and so it requires opt-in via `manifest.rule.F4.options.v3_dimension_groups:yes`
+
+# v2.1.7
+
+- Allow `_link` in rule F1.
+- Dependency updates
 
 # v3.0
 
@@ -130,3 +183,11 @@ Patches:
 - ⚡ for custom rules: The underlying LookML representation has removed the additional `model` object inserted into the top-level of model files (i.e., under the `file` object). For example, previously, the output may have contained a path like `$.file['my_model.model'].model.my_model.explore.foo`, and would now simply contain a path like `$.file['my_model.model'].explore.foo`. Any custom rules that attempted to match this previous construct should be updated. That said, I expect most use cases will instead use the top-level (non-file) `model` object, rather than the `file` object.
 - ⚡ for custom rules: The underlying LookML representation has removed the ancestry metadata (e.g. $model, $view, $explore) added to child objects. Any custom rules that used this information should instead source it from the `path` argument.
 - ⚡ (beta) - Central exemptions in lams-exemptions.ndjson relied on a location string that was ambiguous when path elements contained `/` or `:` characters, which notably may be present in file paths. All path elements in `location` properties must now escape any `/`, `:`, or `\` characters with a preceding backslash (`\`)
+
+# 5.1
+
+- Updated `lookml-parser` to `^9.3.1`.
+- Parser-reported errors are now surfaced under built-in rule `P` (`P0`–`P4`): `P0` and `P1` remain enabled by default, while `P2`, `P3`, and `P4` are opt-in via `manifest.lkml`.
+- Added opt-in rule `F8`: Suggests `value_format_name` (`id` or `usd_*`) for non-hidden numeric fields that appear to be IDs or USD currency values.
+- Added opt-in rules `T3` (`T3.1`–`T3.3`) and `E4`: Table-backed views (`sql_table_name` or PDTs) exposed as the base of a non-hidden explore should declare `#LAMS required_filter: <field_name>` (or assert a maximum row count via a data test), and explores based on such views must enforce that filter via `always_filter`.
+- Added `??` coalesce shorthand operator for custom rules written in LIYAD.

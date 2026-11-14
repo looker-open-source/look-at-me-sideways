@@ -130,7 +130,7 @@ lams
 
 - **[Github Action](https://looker-open-source.github.io/look-at-me-sideways/github-action)** - This option is commonly used among LAMS users, and has an up-to-date and convenient deployment example.
 
-The remaining examples were prepared for v1 of LAMS, though updating them for v2+ should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
+The remaining examples were prepared for v1 of LAMS, though updating them for v2+ should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/look-at-me-sideways/release-notes#v20) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
 
 - **[GitLab CI](https://looker-open-source.github.io/look-at-me-sideways/gitlab-ci)** - A community-contributed configuration for GitLab, which offers similarly low overhead as our dockerized Jenkins configuration
 - **[Dockerized Jenkins Server](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md)** - We have provided a Docker image with an end-to-end configuration including a Jenkins server, LAMS, and Github protected branches & status checks configuration. 
@@ -176,8 +176,7 @@ The manifest can provide the following declarations:
 
 ### Release Notes
 
-- [v2](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2)
-- [v3+](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v3)
+- [v2+](https://looker-open-source.github.io/look-at-me-sideways/release-notes)
 
 ### License
 
