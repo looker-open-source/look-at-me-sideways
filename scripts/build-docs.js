@@ -10,6 +10,10 @@ const categories = JSON.parse(
 	fs.readFileSync(path.join(rulesDir, 'categories.json'), 'utf8'),
 ).sort((a, b) => a.order - b.order);
 
+const deprecatedRules = JSON.parse(
+	fs.readFileSync(path.join(rulesDir, 'deprecated.json'), 'utf8'),
+);
+
 const rules = fs.readdirSync(rulesDir, {withFileTypes: true})
 	.filter((dirent) => dirent.isDirectory())
 	.map((dirent) => {
@@ -80,6 +84,10 @@ ${bodyHtml}
 ${cat.intro ? cat.intro + '\n' : ''}${rulesHtml}`;
 }).join('\n\n');
 
+const deprecatedRulesHtml = deprecatedRules
+	.map((rule) => `\t<li><a href="#${rule.id}" id="${rule.id}" name="${rule.id}">${rule.id.toUpperCase()}</a> ${rule.description}</li>`)
+	.join('\n');
+
 const html = `<!doctype html>
 <!-- This file is generated, and any manual changes will be overwritten. See scripts/build-docs.js -->
 <!-- Copyright (c) 2026 Looker Data Sciences, Inc. See https://github.com/looker-open-source/look-at-me-sideways/blob/master/LICENSE.txt -->
@@ -134,8 +142,7 @@ ${categorySections}
 </ul>
 <h1 id="deprecated-rules">Deprecated Rules</h1>
 <ul>
-\t<li><a href="#f7" id="f7" name="f7">F7</a> previously recommended proactively exposing "summary" measures for your dimensions. While summary measures can still be useful for select dimensions, the release of custom measures which explore users can automatically generate from a dimension in the Explore UI renders this practice no longer as important.</li>
-\t<li><a href="#k2" id="k2" name="k2">K2</a> is a deprecated identifier for rule details that are now included under K1.</li>
+${deprecatedRulesHtml}
 </ul>
 <h1 id="glossary">Glossary</h1>
 <ul>

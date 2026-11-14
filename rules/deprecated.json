@@ -1,0 +1,10 @@
+[
+	{
+		"id": "f7",
+		"description": "previously recommended proactively exposing \"summary\" measures for your dimensions. While summary measures can still be useful for select dimensions, the release of custom measures which explore users can automatically generate from a dimension in the Explore UI renders this practice no longer as important."
+	},
+	{
+		"id": "k2",
+		"description": "is a deprecated identifier for rule details that are now included under K1."
+	}
+]
