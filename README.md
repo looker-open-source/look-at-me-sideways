@@ -52,6 +52,7 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 #rule: F3{} # Count fields filtered
 #rule: F4{} # Description or hidden
 #rule: F8{} # Numeric ID/USD value_format_name
+#rule: F9{} # Field label 30-char max
 ## Explore rules
 #rule: E1{} # Join with subst'n operator
 #rule: E2{} # Join on PK for "one" joins

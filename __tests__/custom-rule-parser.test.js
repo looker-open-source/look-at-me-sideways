@@ -87,4 +87,15 @@ describe('Custom Rule Parser', () => {
 		expect(rule({a: 0})).toEqual(0);
 		expect(rule({a: ''})).toEqual('');
 	});
+
+	it('Optional chaining ($get?)', () => {
+		let rule = parse(`( -> (match options) ($get? options nested maxLength))`);
+		expect(rule({}, undefined)).toBeUndefined();
+		expect(rule({}, null)).toBeUndefined();
+		expect(rule({}, {})).toBeUndefined();
+		expect(rule({}, {nested: {maxLength: 42}})).toEqual(42);
+
+		let unsafeRule = parse(`( -> (match) ($get? match constructor))`);
+		expect(() => unsafeRule({})).toThrow();
+	});
 });

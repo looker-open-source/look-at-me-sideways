@@ -14,6 +14,7 @@ Built-in and custom LAMS rules should prefer LIYAD (`expr_rule`) when feasible (
 - `::match` — the matched LookML node from `match` JSONPath
 - `::match:prop` — property on `match` (e.g. `::match:type`, `::match:$name`, `::match:hidden`)
 - `::var:prop` — property on a bound variable `var` (e.g. `::dim:$name`)
+- `($get? obj prop1 prop2 ...)` — optional chaining property/index lookup; safely returns `undefined` if `obj` or any intermediate property is `null`/`undefined` (e.g. `(?? ($get? options maxLength) 30)`)
 - `::project` — root parsed LookML project object
 
 ## Variables & Control Flow
