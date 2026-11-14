@@ -37,5 +37,39 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...K3, ...summary(1, 0, 1)});
 			expect(result).toContainMessage({...K3, ...error});
 		});
+
+		it('should pass if a composite primary_key dimension is declared before PK dimensions', () => {
+			let result = rule(parse(`file: {} file: {
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: pk {
+						primary_key: yes
+						hidden: yes
+					}
+					dimension: pk2_baz {}
+					dimension: pk2_qux {}
+					dimension: other {}
+				}
+			}`));
+			expect(result).toContainMessage({...K3, ...summary(1, 0, 0)});
+			expect(result).not.toContainMessage({...K3, ...error});
+		});
+
+		it('should error if a non-PK dimension is declared before composite primary_key and PK dimensions', () => {
+			let result = rule(parse(`file: {} file: {
+				view: foo {
+					sql_table_name: bar ;;
+					dimension: other {}
+					dimension: pk {
+						primary_key: yes
+						hidden: yes
+					}
+					dimension: pk2_baz {}
+					dimension: pk2_qux {}
+				}
+			}`));
+			expect(result).toContainMessage({...K3, ...summary(1, 0, 1)});
+			expect(result).toContainMessage({...K3, ...error});
+		});
 	});
 });

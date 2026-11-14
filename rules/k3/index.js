@@ -22,11 +22,12 @@ function ruleFn(match, path, project) {
 	let view = match;
 
 	let dimensions = Object.values(view.dimension || {});
-	let pkDimensions = dimensions.filter(pkNamingConvention);
+	const isPkOrPrimaryKey = (dim) => Boolean(pkNamingConvention(dim) || dim.primary_key);
+	let pkDimensions = dimensions.filter(isPkOrPrimaryKey);
 	let n = pkDimensions.length;
 
 	let firstNDimensions = dimensions.slice(0, n);
-	let badDimensions = firstNDimensions.filter((dim) => !pkNamingConvention(dim));
+	let badDimensions = firstNDimensions.filter((dim) => !isPkOrPrimaryKey(dim));
 	if (badDimensions.length) {
 		return `View ${view.$name} contains dimensions declared before PK dimension(s), e.g. ${badDimensions[0].$name}`;
 	}
