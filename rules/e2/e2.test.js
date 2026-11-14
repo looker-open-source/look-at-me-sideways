@@ -472,5 +472,25 @@ describe('Rules', () => {
 			`));
 			expect(result).toContainMessage({...e2, ...error});
 		});
+
+		it('should pass when joining on _raw timeframe of a primary_key:yes dimension_group', () => {
+			let result = rule(parse(`model: m {
+				explore: events {
+					join: snapshots {
+						relationship: many_to_one
+						sql_on: \${snapshots.snapshot_raw} = \${events.snapshot_raw} ;;
+					}
+				}
+				view: snapshots {
+					dimension_group: snapshot {
+						type: time
+						timeframes: [raw, date]
+						primary_key: yes
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(error);
+		});
 	});
 });

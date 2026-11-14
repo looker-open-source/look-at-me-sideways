@@ -58,9 +58,23 @@ function findDimensionsForTableColumn(oneView, colName) {
 	);
 }
 
+function hasRawTimeframe(dimensionGroup) {
+	if (dimensionGroup.type && dimensionGroup.type !== 'time') {
+		return false;
+	}
+	if (!Array.isArray(dimensionGroup.timeframes)) {
+		return true;
+	}
+	return dimensionGroup.timeframes.includes('raw');
+}
+
 function checkPrimaryKeyDim(oneView, constrainedFields) {
 	const dims = Object.values((oneView && oneView.dimension) || {});
-	const pkDims = dims.filter((d) => d.primary_key);
+	const dimGroups = Object.values((oneView && oneView.dimension_group) || {});
+	const pkDimGroups = dimGroups
+		.filter((dg) => dg.primary_key && hasRawTimeframe(dg))
+		.map((dg) => ({...dg, $name: `${dg.$name}_raw`}));
+	const pkDims = [...dims.filter((d) => d.primary_key), ...pkDimGroups];
 	for (const pkDim of pkDims) {
 		if (constrainedFields.has(pkDim.$name)) {
 			return true;

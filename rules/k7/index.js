@@ -18,6 +18,16 @@ module.exports = function(
 
 const zeroPkRegex = /^(0pk|pk0)_[a-z0-9A-Z_]+$/;
 
+function hasRawTimeframe(dimensionGroup) {
+	if (dimensionGroup.type && dimensionGroup.type !== 'time') {
+		return false;
+	}
+	if (!Array.isArray(dimensionGroup.timeframes)) {
+		return true;
+	}
+	return dimensionGroup.timeframes.includes('raw');
+}
+
 function ruleFn(match) {
 	const view = match;
 
@@ -29,7 +39,11 @@ function ruleFn(match) {
 	}
 
 	const dimensions = Object.values(view.dimension || {});
-	const pkDims = dimensions.filter((d)=>d.primary_key);
+	const dimensionGroups = Object.values(view.dimension_group || {});
+	const pkDimGroups = dimensionGroups
+		.filter((dg) => dg.primary_key && hasRawTimeframe(dg))
+		.map((dg) => ({...dg, $name: `${dg.$name}_raw`}));
+	const pkDims = [...dimensions.filter((d) => d.primary_key), ...pkDimGroups];
 	if (pkDims.length === 0) {
 		if (dimensions.some((d)=>d.$name.match(zeroPkRegex))) {
 			return true;

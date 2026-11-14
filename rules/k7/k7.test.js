@@ -109,5 +109,35 @@ describe('Rules', () => {
 				description: 'No primary_key:yes dimensions provided',
 			});
 		});
+
+		it('should pass if primary_key:yes is declared on a dimension_group with a raw timeframe', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension_group: event {
+						type: time
+						timeframes: [raw, date]
+						primary_key: yes
+					}
+				}
+			}`));
+			expect(result).toContainMessage(summary(1, 0, 0));
+			expect(result).not.toContainMessage({...K7, ...error});
+		});
+
+		it('should fail if primary_key:yes is declared on a dimension_group without a raw timeframe', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension_group: event {
+						type: time
+						timeframes: [date, week]
+						primary_key: yes
+					}
+				}
+			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
+			expect(result).toContainMessage({...K7, ...error});
+		});
 	});
 });
