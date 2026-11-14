@@ -59,6 +59,7 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 #rule: E1{} # Join with subst'n operator
 #rule: E2 { options: { strict_mode: yes } } # Join on PK for "one" joins
 #rule: E4{} # Enforce base view required_filter
+#rule: E5{} # Avoid multiplicative fanout
 #rule: E6{} # FK joins are m:1
 #rule: E7{} # Explore label 25-char max
 #rule: E8{} # Correct NOT NULL / -NULL in explore filters

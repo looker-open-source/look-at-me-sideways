@@ -904,6 +904,76 @@
 	}
 	```</p>
 	</details>
+<details id="e5">
+	<summary><b><a href="#e5">E5.</a></b> Explores' joins should not cause multiplicative fanout or spurious relationships</summary>
+	<p># E5: Avoid Multiplicative Fanout in Explores</p>
+
+	<p>## Why?</p>
+
+	<p>Joining multiple independent <code>one_to_many</code> branches from the same explore (or using <code>many_to_many</code> joins) can cause multiplicative fanout, making queries slow and creating spurious many-to-many relationships between unrelated entities. While Looker's symmetric aggregates can still compute accurate measures in some cases, the resulting cross-product of rows often confuses users and degrades query performance.</p>
+
+	<p>## Rule</p>
+
+	<p>Within an <code>explore</code>:</p>
+
+	<p>1. No join may declare <code>relationship: many_to_many</code>.
+	2. When <code>one_to_many</code> joins are connected as a directed graph to the joins or base explore referenced in their join condition (<code>sql_on</code>, <code>sql</code>, or <code>foreign_key</code>), the <code>one_to_many</code> subgraph may have at most one leaf node (i.e., a linear <code>one_to_many</code> chain is allowed, but branching <code>one_to_many</code> paths are not).</p>
+
+	<p>## Examples</p>
+
+	<p>### Fails</p>
+
+	<p><code>orders</code> and <code>favorites</code> are both joined <code>one_to_many</code> from <code>users</code>, forming two leaf nodes in the <code>one_to_many</code> subgraph:</p>
+
+	<p>``<code>lookml
+	explore: users {
+	  join: orders {
+	    relationship: one_to_many
+	    sql_on: ${users.id} = ${orders.user_id} ;;
+	  }
+	  join: favorites {
+	    relationship: one_to_many
+	    sql_on: ${users.id} = ${favorites.user_id} ;;
+	  }
+	}
+	</code>``</p>
+
+	<p>### Passes</p>
+
+	<p>A linear <code>one_to_many</code> chain (<code>users</code> -> <code>orders</code> -> <code>order_items</code>) has only one leaf node (<code>order_items</code>):</p>
+
+	<p>``<code>lookml
+	explore: users {
+	  join: orders {
+	    relationship: one_to_many
+	    sql_on: ${users.id} = ${orders.user_id} ;;
+	  }
+	  join: order_items {
+	    relationship: one_to_many
+	    sql_on: ${orders.id} = ${order_items.order_id} ;;
+	  }
+	}
+	</code>``</p>
+
+	<p>Or refactor branching <code>one_to_many</code> joins using a unioned bridge table (<code>user_join_paths</code>) so only one <code>one_to_many</code> join is needed from <code>users</code> (see <a href="https://discuss.google.dev/t/a-cure-for-the-one-to-many-blues/119188">A Cure for the One-to-Many Blues</a> for a detailed walkthrough of this refactoring pattern):</p>
+
+	<p>``<code>lookml
+	explore: users {
+	  join: user_join_paths {
+	    relationship: one_to_many
+	    sql_on: ${users.id} = ${user_join_paths.user_id} ;;
+	  }
+	  join: orders {
+	    relationship: one_to_one
+	    sql_on: ${user_join_paths.order_id} = ${orders.id} ;;
+	  }
+	  join: favorites {
+	    relationship: one_to_one
+	    sql_on: ${user_join_paths.favorite_id} = ${favorites.id} ;;
+	  }
+	}
+	</code>``</p>
+	</details>
 <details id="e6">
 	<summary><b><a href="#e6">E6.</a></b> If using a <code>foreign_key</code> based join, do not use a *-to-many relationship</summary>
 	<p><b>Note:</b> Specifying join logic using <code>sql_on</code> is usually preferred to using <code>foreign_key</code>, as <code>sql_on</code> is more general-purpose.</p>

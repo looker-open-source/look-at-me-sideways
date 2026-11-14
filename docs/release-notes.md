@@ -193,6 +193,7 @@ Patches:
 - Added rule `F10`: Validates that `suggest_explore` and `suggest_dimension` reference explores and dimensions available in the model.
 - Added rules `F11` and `E8`: Validate that `"NOT NULL"` vs `"-NULL"` filter expressions match the target field's type (string vs numeric) in filtered measures and explore `always_filter`/`conditionally_filter`.
 - Added rules `T3` (`T3.1`–`T3.3`) and `E4`: Table-backed views (`sql_table_name` or PDTs) exposed as the base of a non-hidden explore should declare `#LAMS required_filter: <field_name>` (or assert a maximum row count via a data test), and explores based on such views must enforce that filter via `always_filter`.
+- Added rule `E5`: Flags `many_to_many` joins and branching `one_to_many` join paths within an explore to prevent multiplicative fanout.
 - Added `??` coalesce shorthand, `$get?` optional chaining, and `$is-hidden` (respecting `fields_hidden_by_default`) for custom rules written in LIYAD.
 - Rules `F4`, `F8`, `F9`, and `K4` now respect view-level `fields_hidden_by_default`.
 - Rule `K1`: Allow `dimension_group` with `raw` timeframe to satisfy the primary key naming convention.
