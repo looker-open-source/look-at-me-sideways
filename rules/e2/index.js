@@ -41,6 +41,11 @@ function ruleFn(match, path, project) {
 			'--[^\\n]*(\\n|$)',				// -- Single line comment
 			'/\\*[^*]*(\\*[^/][^*]*)*\\*/', // /* Multi-line comment
 		].join('|'), 'g'), '[nonsql]');
+
+	if (/\bUNNEST\s*\(/i.test(reducedSql) || /\bUNNEST\s*\(/i.test(join.sql_table_name || '')) {
+		return true;
+	}
+
 	let parensRegex = /\([\s\S]*?(?<!\\)\)/g;
 
 	let messages = [];

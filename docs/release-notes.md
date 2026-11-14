@@ -196,3 +196,4 @@ Patches:
 - Rules `F4`, `F8`, `F9`, and `K4` now respect view-level `fields_hidden_by_default`.
 - Rule `K1`: Allow `dimension_group` with `raw` timeframe to satisfy the primary key naming convention.
 - Rule `K3`: Allow a `primary_key: yes` dimension to be declared before `pk{n}_` primary key dimensions.
+- Rule `E2`: Allow `UNNEST(...)` joins (via `join.sql` or `join.sql_table_name`) without requiring primary key equality constraints.

@@ -354,5 +354,36 @@ describe('Rules', () => {
 			expect(result).not.toContainMessage(error);
 			expect(result).not.toContainMessage(error);
 		});
+
+		it('should pass for UNNEST joins via sql', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {
+					join: nested {
+						sql: LEFT JOIN UNNEST(nested) ;;
+						relationship: many_to_one
+					}
+					join: items {
+						sql: LEFT JOIN UNNEST(\${orders.items}) AS items ;;
+						relationship: one_to_many
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(error);
+		});
+
+		it('should pass for UNNEST joins via join.sql_table_name', () => {
+			let result = rule(parse(`model: m {
+				explore: orders {
+					join: nested {
+						sql_table_name: UNNEST(\${orders.nested}) ;;
+						sql_on: TRUE ;;
+						relationship: many_to_one
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...e2, ...info});
+			expect(result).not.toContainMessage(error);
+		});
 	});
 });
