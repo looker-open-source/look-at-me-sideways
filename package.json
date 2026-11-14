@@ -1,6 +1,6 @@
 {
   "name": "@looker/look-at-me-sideways",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "description": "A judgmental little LookML linter >_>",
   "main": "index.js",
   "directories": {
@@ -15,9 +15,7 @@
     "build-docs": "node scripts/build-docs.js",
     "lint": "node node_modules/.bin/eslint -c .eslintrc.js \"{*,__tests__/*,rules/!(rules-lib)/*,lib/*,scripts/*}.js\"",
     "lint-fix": "node node_modules/.bin/eslint --fix  -c .eslintrc.js \"{*,__tests__/*,rules/!(rules-lib)/*,lib/*,scripts/*}.js\"",
-    "preversion": "npm run lint-fix && npm run test",
-    "prepublishOnly": "npm shrinkwrap && mv npm-shrinkwrap.json npm-shrinkwrap.dev.json && npm prune --prod && npm shrinkwrap",
-    "postpublish": "cp npm-shrinkwrap.dev.json npm-shrinkwrap.json && npm install"
+    "preversion": "npm run lint-fix && npm run test"
   },
   "repository": {
     "type": "git",

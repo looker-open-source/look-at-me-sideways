@@ -18,9 +18,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Install LAMS (Dev)
-        run: |
-          mv npm-shrinkwrap.dev.json npm-shrinkwrap.json
-          npm ci
+        run: npm ci
       - name: Lint
         run: npm run lint
       - name: Install js-yaml (optional dependency)

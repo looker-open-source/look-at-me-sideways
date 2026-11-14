@@ -207,22 +207,18 @@ Trying to install LAMS for development?
 ```bash
 git clone git@github.com:looker-open-source/look-at-me-sideways.git
 cd look-at-me-sideways
-mv npm-shrinkwrap.dev.json npm-shrinkwrap.json 
 npm install
 ```
 
-Publishing an update? Run the shrinkwrap hooks before committing/merging to `main` so both lockfiles stay in sync and `npm publish` leaves `main` clean:
+Publishing an update?
 
 ```bash
 npm version {minor|major|patch} --no-git-tag-version
 # > Pre-version: npm run lint-fix && npm run test
-npm run prepublishOnly && npm run postpublish
-# > Updates npm-shrinkwrap.dev.json and restores npm-shrinkwrap.json
+npm install --package-lock-only && mv package-lock.json npm-shrinkwrap.json
 git add -A && git commit -m "Release vX.Y.Z"
 # Merge to main, tag vX.Y.Z, then on main:
 npm publish
-# > Pre-publish: npm shrinkwrap && mv npm-shrinkwrap.json npm-shrinkwrap.dev.json && npm prune --prod && npm shrinkwrap
-# > Post-publish: cp npm-shrinkwrap.dev.json npm-shrinkwrap.json && npm install
 ```
 
 ### Code of Conduct
