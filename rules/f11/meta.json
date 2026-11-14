@@ -1,0 +1,6 @@
+{
+	"id": "f11",
+	"category": "other-fields",
+	"order": 8,
+	"summary": "Filtered measures should use <code>\"-NULL\"</code> for string fields and <code>\"NOT NULL\"</code> for numeric fields"
+}

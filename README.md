@@ -54,12 +54,14 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 #rule: F8{} # Numeric ID/USD value_format_name
 #rule: F9{} # Field label 30-char max
 #rule: F10{} # Valid suggest_explore / suggest_dimension
+#rule: F11{} # Correct NOT NULL / -NULL in measure filters
 ## Explore rules
 #rule: E1{} # Join with subst'n operator
 #rule: E2{} # Join on PK for "one" joins
 #rule: E4{} # Enforce base view required_filter
 #rule: E6{} # FK joins are m:1
 #rule: E7{} # Explore label 25-char max
+#rule: E8{} # Correct NOT NULL / -NULL in explore filters
 ## Transformation & Table rules
 #rule: T1{} # Triggers use datagroups 
 #rule: T2{} # Primary keys in DT
