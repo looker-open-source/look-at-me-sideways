@@ -103,14 +103,14 @@ These rules were previously listed in `docs/rules.html` (marked with 💬 or com
 	<summary><b><a href="#t14">T14.</a></b> Persisted derived tables should not use liquid or "dynamic SQL" <a href="#not-implemented">💬</a></summary>
 	<p>To clarify, liquid/dynamic SQL in non-persisted, aka ephemeral, derived tables is fine.</p>
 	<p><b>Rationale:</b> Triggered persistent tables usually don't have the necessary explore context to correctly evaluate the dynamic logic. And even persists_for derived tables do not work as expected with dynamic SQL (confirmed as of v5.14)</p>
-	<p><b>Note:</b> One possible exception may be {{_model._name}}, but still be careful.</p>
+	<p><b>Note:</b> One exception is {{_model._name}} which is static within the context of a model.</p>
 	</details>
 
 ## T15
 
 <details id="t15"><!-- UNION ALL -->
 	<summary><b><a href="#t15">T15.</a></b>UNION should not be used where UNION ALL is needed or sufficient <a href="#not-implemented">💬</a></summary>
-	<p><b>Rationale:</b> More often than not, developers use UNION instead of UNION ALL unintentionally, with terrible performance implications. Therefore, if you actually need a plain UNION, make that explicit in an accompanying comment.</p>
+	<p><b>Rationale:</b> More often than not, developers use UNION instead of UNION ALL unintentionally, with terrible performance implications. Therefore, if you actually need a plain UNION, make that explicit in an accompanying comment, like `UNION /*DISTINCT*/`.</p>
 	</details>
 
 ## E3

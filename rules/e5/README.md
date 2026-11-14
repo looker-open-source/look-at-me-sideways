@@ -13,11 +13,9 @@ Within an `explore`:
 
 ## Examples
 
-### Fails
-
 `orders` and `favorites` are both joined `one_to_many` from `users`, forming two leaf nodes in the `one_to_many` subgraph:
 
-```lookml
+<code class="bad block">
 explore: users {
   join: orders {
     relationship: one_to_many
@@ -28,13 +26,11 @@ explore: users {
     sql_on: ${users.id} = ${favorites.user_id} ;;
   }
 }
-```
-
-### Passes
+</code>
 
 A linear `one_to_many` chain (`users` -> `orders` -> `order_items`) has only one leaf node (`order_items`):
 
-```lookml
+<code class="good block">
 explore: users {
   join: orders {
     relationship: one_to_many
@@ -45,11 +41,11 @@ explore: users {
     sql_on: ${orders.id} = ${order_items.order_id} ;;
   }
 }
-```
+</code>
 
 Or refactor branching `one_to_many` joins using a unioned bridge table (`user_join_paths`) so only one `one_to_many` join is needed from `users` (see [A Cure for the One-to-Many Blues](https://discuss.google.dev/t/a-cure-for-the-one-to-many-blues/119188) for a detailed walkthrough of this refactoring pattern):
 
-```lookml
+<code class="good block">
 explore: users {
   join: user_join_paths {
     relationship: one_to_many
@@ -64,4 +60,4 @@ explore: users {
     sql_on: ${user_join_paths.favorite_id} = ${favorites.id} ;;
   }
 }
-```
+</code>

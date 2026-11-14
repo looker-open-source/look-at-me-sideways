@@ -18,7 +18,7 @@ For small lookup or dimension tables, partition pruning is not beneficial when t
 
 ### Native table (`sql_table_name`) with `required_filter`
 
-```lookml
+<code class="good block">
 view: orders {
   #LAMS required_filter: created_date
   sql_table_name: analytics.orders ;;
@@ -29,11 +29,11 @@ view: orders {
     sql: ${TABLE}.created_at ;;
   }
 }
-```
+</code>
 
 ### PDT with `partition_keys` matching `required_filter`
 
-```lookml
+<code class="good block">
 view: events_pdt {
   #LAMS required_filter: event_date
   derived_table: {
@@ -47,11 +47,11 @@ view: events_pdt {
     sql: ${TABLE}.event_date ;;
   }
 }
-```
+</code>
 
 ### Small lookup table with a row-count data test
 
-```lookml
+<code class="good block">
 view: country_codes {
   sql_table_name: ref.country_codes ;;
   dimension: code {
@@ -70,4 +70,4 @@ test: country_codes_is_small {
     expression: ${country_codes.count} <= 1000 ;;
   }
 }
-```
+</code>

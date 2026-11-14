@@ -10,7 +10,7 @@ For any non-hidden `explore` whose base view (`explore.from`, `explore.view_name
 
 ## Example
 
-```lookml
+<code class="good block">
 view: orders {
   #LAMS required_filter: created_date
   sql_table_name: analytics.orders ;;
@@ -27,4 +27,4 @@ explore: recent_orders {
     filters: [recent_orders.created_date: "7 days"]
   }
 }
-```
+</code>

@@ -769,10 +769,10 @@
 
 	<p>### Native table (<code>sql_table_name</code>) with <code>required_filter</code></p>
 
-	<p>```lookml
+	<code class="good block">
 	view: orders {
 	  #LAMS required_filter: created_date
-	  sql_table_name: analytics.orders ;;</p>
+	  sql_table_name: analytics.orders ;;
 
 	<p>dimension_group: created {
 	    type: time
@@ -780,29 +780,29 @@
 	    sql: ${TABLE}.created_at ;;
 	  }
 	}
-	```</p>
+	</code></p>
 
 	<p>### PDT with <code>partition_keys</code> matching <code>required_filter</code></p>
 
-	<p>```lookml
+	<code class="good block">
 	view: events_pdt {
 	  #LAMS required_filter: event_date
 	  derived_table: {
 	    sql: SELECT event_date, user_id FROM raw.events ;;
 	    datagroup_trigger: daily_etl
 	    partition_keys: ["event_date"]
-	  }</p>
+	  }
 
 	<p>dimension: event_date {
 	    type: date
 	    sql: ${TABLE}.event_date ;;
 	  }
 	}
-	```</p>
+	</code></p>
 
 	<p>### Small lookup table with a row-count data test</p>
 
-	<p>```lookml
+	<code class="good block">
 	view: country_codes {
 	  sql_table_name: ref.country_codes ;;
 	  dimension: code {
@@ -811,7 +811,7 @@
 	  measure: count {
 	    type: count
 	  }
-	}</p>
+	}
 
 	<p>explore: country_codes {}</p>
 
@@ -821,7 +821,7 @@
 	    expression: ${country_codes.count} <= 1000 ;;
 	  }
 	}
-	```</p>
+	</code></p>
 	</details>
 
 <h1 id="explores">Explores</h1>
@@ -885,7 +885,7 @@
 
 	<p>## Example</p>
 
-	<p>```lookml
+	<code class="good block">
 	view: orders {
 	  #LAMS required_filter: created_date
 	  sql_table_name: analytics.orders ;;
@@ -894,7 +894,7 @@
 	    timeframes: [date, week, month]
 	    sql: ${TABLE}.created_at ;;
 	  }
-	}</p>
+	}
 
 	<p>explore: recent_orders {
 	  from: orders
@@ -902,7 +902,7 @@
 	    filters: [recent_orders.created_date: "7 days"]
 	  }
 	}
-	```</p>
+	</code></p>
 	</details>
 <details id="e5">
 	<summary><b><a href="#e5">E5.</a></b> Explores' joins should not cause multiplicative fanout or spurious relationships</summary>
@@ -921,11 +921,9 @@
 
 	<p>## Examples</p>
 
-	<p>### Fails</p>
-
 	<p><code>orders</code> and <code>favorites</code> are both joined <code>one_to_many</code> from <code>users</code>, forming two leaf nodes in the <code>one_to_many</code> subgraph:</p>
 
-	<p>``<code>lookml
+	<code class="bad block">
 	explore: users {
 	  join: orders {
 	    relationship: one_to_many
@@ -936,13 +934,11 @@
 	    sql_on: ${users.id} = ${favorites.user_id} ;;
 	  }
 	}
-	</code>``</p>
-
-	<p>### Passes</p>
+	</code>
 
 	<p>A linear <code>one_to_many</code> chain (<code>users</code> -> <code>orders</code> -> <code>order_items</code>) has only one leaf node (<code>order_items</code>):</p>
 
-	<p>``<code>lookml
+	<code class="good block">
 	explore: users {
 	  join: orders {
 	    relationship: one_to_many
@@ -953,11 +949,11 @@
 	    sql_on: ${orders.id} = ${order_items.order_id} ;;
 	  }
 	}
-	</code>``</p>
+	</code>
 
 	<p>Or refactor branching <code>one_to_many</code> joins using a unioned bridge table (<code>user_join_paths</code>) so only one <code>one_to_many</code> join is needed from <code>users</code> (see <a href="https://discuss.google.dev/t/a-cure-for-the-one-to-many-blues/119188">A Cure for the One-to-Many Blues</a> for a detailed walkthrough of this refactoring pattern):</p>
 
-	<p>``<code>lookml
+	<code class="good block">
 	explore: users {
 	  join: user_join_paths {
 	    relationship: one_to_many
@@ -972,7 +968,7 @@
 	    sql_on: ${user_join_paths.favorite_id} = ${favorites.id} ;;
 	  }
 	}
-	</code>``</p>
+	</code>
 	</details>
 <details id="e6">
 	<summary><b><a href="#e6">E6.</a></b> If using a <code>foreign_key</code> based join, do not use a *-to-many relationship</summary>
