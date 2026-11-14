@@ -99,5 +99,13 @@ describe('Rules', () => {
 				description: expect.stringContaining('usd'),
 			});
 		});
+
+		it('should respect fields_hidden_by_default on view', () => {
+			let result = rule(parse(`model: m { view: v {
+				fields_hidden_by_default: yes
+				dimension: user_id { type: number }
+			} }`));
+			expect(result).not.toContainMessage({...F8, ...error});
+		});
 	});
 });

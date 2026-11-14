@@ -191,6 +191,7 @@ Patches:
 - Added rule `F8`: Suggests `value_format_name` (`id` or `usd_*`) for non-hidden numeric fields that appear to be IDs or USD currency values.
 - Added rule `F9`: Enforces a configurable maximum length (default 30 characters) on non-hidden field names/labels.
 - Added rules `T3` (`T3.1`–`T3.3`) and `E4`: Table-backed views (`sql_table_name` or PDTs) exposed as the base of a non-hidden explore should declare `#LAMS required_filter: <field_name>` (or assert a maximum row count via a data test), and explores based on such views must enforce that filter via `always_filter`.
-- Added `??` coalesce shorthand and `$get?` optional chaining operators for custom rules written in LIYAD.
+- Added `??` coalesce shorthand, `$get?` optional chaining, and `$is-hidden` (respecting `fields_hidden_by_default`) for custom rules written in LIYAD.
+- Rules `F4`, `F8`, `F9`, and `K4` now respect view-level `fields_hidden_by_default`.
 - Rule `K1`: Allow `dimension_group` with `raw` timeframe to satisfy the primary key naming convention.
 - Rule `K3`: Allow a `primary_key: yes` dimension to be declared before `pk{n}_` primary key dimensions.

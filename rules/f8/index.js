@@ -7,11 +7,12 @@ module.exports = function(
 ) {
 	let rule = {
 		$name: 'F8',
-		match: `$.model.*.view.*[dimension,measure,filter,parameter][?(@.hidden!==true)]`,
+		match: `$.model.*.view.*[dimension,measure,filter,parameter].*`,
 		description: 'Numeric fields of type `number` that appear to be IDs or USD currency should specify `value_format_name`.',
 		expr_rule: `
 			($let text ($concat (?? ::match:$name "") " " (?? ::match:label "") " " (?? ::match:description "")))
 			($if ($any
+				($is-hidden path)
 				(!== ::match:type "number")
 				($boolean ::match:value_format_name)
 				($boolean ::match:value_format)

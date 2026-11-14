@@ -7,17 +7,22 @@ module.exports = function(
 ) {
 	let rule = {
 		$name: 'F9',
-		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter][?(@.hidden!==true)]`,
+		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter].*`,
 		description: 'Field labels should not be too long.',
 		expr_rule: `
-			($let hasLabel ($boolean ::match:label))
-			($let source ($if hasLabel "label" "name"))
-			($let text ($if hasLabel ::match:label ::match:$name))
-			($let length ::text:length)
-			($let maxLength (?? ($get? options maxLength) 30))
-			($if (> length maxLength)
-				($concat "Field " source "'s length (" length ") exceeds allowed length (" maxLength ")")
+			($if ($is-hidden path)
 				true
+				($last
+					($let hasLabel ($boolean ::match:label))
+					($let source ($if hasLabel "label" "name"))
+					($let text ($if hasLabel ::match:label ::match:$name))
+					($let length ::text:length)
+					($let maxLength (?? ($get? options maxLength) 30))
+					($if (> length maxLength)
+						($concat "Field " source "'s length (" length ") exceeds allowed length (" maxLength ")")
+						true
+					)
+				)
 			)`,
 	};
 	let messages = checkCustomRule(rule, project, {ruleSource: 'internal'});

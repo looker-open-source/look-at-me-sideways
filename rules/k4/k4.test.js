@@ -72,5 +72,29 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...K4, ...summary(1, 0, 2)});
 			expect(result).toContainMessage({...K4, ...error});
 		});
+
+		it('should pass when pk is hidden via fields_hidden_by_default', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: bar ;;
+					fields_hidden_by_default: yes
+					dimension: pk_baz {}
+				}
+			}`));
+			expect(result).toContainMessage({...K4, ...summary(1, 0, 0)});
+			expect(result).not.toContainMessage({...K4, ...error});
+		});
+
+		it('should error when pk overrides fields_hidden_by_default with hidden: no', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: bar ;;
+					fields_hidden_by_default: yes
+					dimension: pk_baz { hidden: no }
+				}
+			}`));
+			expect(result).toContainMessage({...K4, ...summary(1, 0, 1)});
+			expect(result).toContainMessage({...K4, ...error});
+		});
 	});
 });

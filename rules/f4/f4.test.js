@@ -153,5 +153,23 @@ describe('Rules', () => {
 			}`));
 			expect(result).toContainMessage(errorMessageF4);
 		});
+
+		it('should respect fields_hidden_by_default on view and hidden:no override on field', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					fields_hidden_by_default: yes
+					dimension: hidden_by_default {}
+				}
+			}`));
+			expect(result).not.toContainMessage(errorMessageF4);
+
+			let overrideResult = rule(parse(`model: my_model {
+				view: foo {
+					fields_hidden_by_default: yes
+					dimension: shown_explicitly { hidden: no }
+				}
+			}`));
+			expect(overrideResult).toContainMessage(errorMessageF4);
+		});
 	});
 });

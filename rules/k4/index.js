@@ -13,7 +13,7 @@ module.exports = function(
 			($let view ::match)
 			($let dimensions ($object-values ::view:dimension))
 			($let pkDimensions ($filter dimensions (-> (dim) ($match "^([0-9]+pk|pk[0-9]*)_([a-z0-9A-Z_]+)$" ::dim:$name ))))
-			($let badDimensions ($filter pkDimensions (-> (dim) ($not ::dim:hidden))))
+			($let badDimensions ($filter pkDimensions (|-> (dim) use (path) ($not ($is-hidden path "dimension" ::dim:$name)))))
 			($map badDimensions (-> (dim) ($concat "PK dimension " ::dim:$name " is not hidden")))
 		`,
 	};

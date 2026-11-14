@@ -86,5 +86,13 @@ describe('Rules', () => {
 			`));
 			expect(passResult).not.toContainMessage({...F9, ...error});
 		});
+
+		it('should respect fields_hidden_by_default on view', () => {
+			let result = rule(parse(`model: m { view: v {
+				fields_hidden_by_default: yes
+				dimension: customer_lifetime_gross_revenue_before_discounts { type: number }
+			} }`));
+			expect(result).not.toContainMessage({...F9, ...error});
+		});
 	});
 });

@@ -7,10 +7,10 @@ module.exports = function(
 ) {
 	let rule = {
 		$name: 'F4',
-		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter][?(@.hidden!==true)]`,
+		match: `$.model.*.view.*[dimension,dimension_group,measure,filter,parameter].*`,
 		description: 'Non-hidden fields should have descriptions.',
 		expr_rule: `
-			($if ($boolean ::match:description)
+			($if ($any ($is-hidden path) ($boolean ::match:description))
 				true
 				($concat "Non-hidden field \`" ::match:$name "\` does not have a description")
 			)`,
