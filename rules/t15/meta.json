@@ -1,0 +1,6 @@
+{
+	"id": "t15",
+	"category": "derived-tables",
+	"order": 15,
+	"summary": "UNION should not be used where UNION ALL is needed or sufficient"
+}

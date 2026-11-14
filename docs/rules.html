@@ -823,6 +823,108 @@
 	}
 	</code></p>
 	</details>
+<details id="t14">
+	<summary><b><a href="#t14">T14.</a></b> Persisted derived tables should not use Liquid or dynamic SQL</summary>
+	<p># T14: Persisted Derived Tables Should Not Use Liquid or Dynamic SQL</p>
+
+	<p>## Why?</p>
+
+	<p>Triggered persistent derived tables (PDTs) do not have the explore query context needed to evaluate dynamic Liquid logic, and even <code>persist_for</code> derived tables do not behave as expected with dynamic SQL. Ephemeral (non-persisted) derived tables may use Liquid/dynamic SQL freely.</p>
+
+	<p>Note: <code>{{_model._name}}</code> is allowed because it is static within the context of a model.</p>
+
+	<p>## Rule</p>
+
+	<p>Any <code>derived_table</code> with persistence (<code>persist_for</code>, <code>datagroup_trigger</code>, <code>sql_trigger_value</code>, <code>interval_trigger</code>, <code>create_process</code>, <code>sql_create</code>, or <code>materialized_view</code>) must not contain Liquid tags (<code>{% ... %}</code>) or expressions (<code>{{ ... }}</code>) in its SQL, except <code>{{_model._name}}</code>.</p>
+
+	<p>## Examples</p>
+
+	<code class="bad block">
+	view: user_orders_pdt {
+	  derived_table: {
+	    datagroup_trigger: daily_etl
+	    sql:
+	      SELECT user_id, COUNT(*) AS order_count
+	      FROM orders
+	      WHERE {% condition date_filter %} created_at {% endcondition %}
+	      GROUP BY 1
+	    ;;
+	  }
+	}
+	</code>
+
+	<code class="good block">
+	view: user_orders_ephemeral {
+	  derived_table: {
+	    sql:
+	      SELECT user_id, COUNT(*) AS order_count
+	      FROM orders
+	      WHERE {% condition date_filter %} created_at {% endcondition %}
+	      GROUP BY 1
+	    ;;
+	  }
+	}
+
+	<p>view: user_orders_pdt {
+	  derived_table: {
+	    datagroup_trigger: daily_etl
+	    sql:
+	      SELECT user_id, COUNT(*) AS order_count
+	      FROM {{_model._name}}.orders
+	      GROUP BY 1
+	    ;;
+	  }
+	}
+	</code></p>
+	</details>
+<details id="t15">
+	<summary><b><a href="#t15">T15.</a></b> UNION should not be used where UNION ALL is needed or sufficient</summary>
+	<p># T15: Avoid Unqualified <code>UNION</code> (Prefer <code>UNION ALL</code>)</p>
+
+	<p>## Why?</p>
+
+	<p>Developers often write <code>UNION</code> instead of <code>UNION ALL</code> unintentionally, triggering an expensive sort/deduplication across all columns. If deduplication is actually required, make that intent explicit with <code>UNION DISTINCT</code> or an accompanying comment such as <code>UNION /*DISTINCT*/</code>.</p>
+
+	<p>## Rule</p>
+
+	<p>SQL in <code>derived_table</code> or <code>sql_table_name</code> must not use bare <code>UNION</code>. Use <code>UNION ALL</code>, <code>UNION DISTINCT</code>, or include an accompanying comment immediately after <code>UNION</code> (e.g., <code>UNION /*DISTINCT*/</code>).</p>
+
+	<p>## Examples</p>
+
+	<code class="bad block">
+	view: combined_events {
+	  derived_table: {
+	    sql:
+	      SELECT id, event_type FROM web_events
+	      UNION
+	      SELECT id, event_type FROM mobile_events
+	    ;;
+	  }
+	}
+	</code>
+
+	<code class="good block">
+	view: combined_events {
+	  derived_table: {
+	    sql:
+	      SELECT id, event_type FROM web_events
+	      UNION ALL
+	      SELECT id, event_type FROM mobile_events
+	    ;;
+	  }
+	}
+
+	<p>view: deduplicated_events {
+	  derived_table: {
+	    sql:
+	      SELECT id, event_type FROM web_events
+	      UNION /*DISTINCT*/
+	      SELECT id, event_type FROM mobile_events
+	    ;;
+	  }
+	}
+	</code></p>
+	</details>
 
 <h1 id="explores">Explores</h1>
 <details id="e1">

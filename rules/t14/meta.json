@@ -1,0 +1,6 @@
+{
+	"id": "t14",
+	"category": "derived-tables",
+	"order": 14,
+	"summary": "Persisted derived tables should not use Liquid or dynamic SQL"
+}
