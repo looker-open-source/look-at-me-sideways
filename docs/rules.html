@@ -384,6 +384,45 @@
 	#rule: F9 {options: {maxLength: 40}}
 	</code></p>
 	</details>
+<details id="f10">
+	<summary><b><a href="#f10">F10.</a></b> <code>suggest_explore</code> and <code>suggest_dimension</code> must reference available explores and dimensions in the model</summary>
+	<p>When a field uses <code>suggest_explore</code> or <code>suggest_dimension</code> to source filter suggestions, Looker's validator may not catch cases where the referenced explore, joined view, or dimension is unavailable in the model.</p>
+	<p>Ensure that:</p>
+	<ul>
+		<li>If <code>suggest_explore</code> is specified, that explore exists in the model, and any <code>suggest_dimension</code> (qualified as <code>view_name.dimension_name</code> or unqualified within the current view) is available in that explore and exists in the target view.</li>
+		<li>If only <code>suggest_dimension</code> is specified without <code>suggest_explore</code>, an unqualified <code>dimension_name</code> exists in the current view, and a qualified <code>view_name.dimension_name</code> is available in every non-hidden explore where the current view is used.</li>
+	</ul>
+
+	<code class="good block">
+	view: orders {
+		dimension: customer_id {
+			type: number
+			suggest_explore: customer_analytics
+			suggest_dimension: customers.customer_name
+		}
+	}
+
+	<p>view: customers {
+		dimension: customer_name {
+			type: string
+		}
+	}</p>
+
+	<p>explore: customer_analytics {
+		from: customers
+	}
+	</code></p>
+
+	<code class="bad block">
+	view: orders {
+		dimension: customer_id {
+			type: number
+			suggest_explore: nonexistent_explore
+			suggest_dimension: customers.customer_name
+		}
+	}
+	</code>
+	</details>
 
 <h1 id="derived-tables">Transformations & Tables</h1>
 <p><b>Summary:</b> Restrict the ways in which you write the SQL for derived tables in order to make them more modular and their results more realiable and understandable.</p>

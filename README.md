@@ -53,6 +53,7 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 #rule: F4{} # Description or hidden
 #rule: F8{} # Numeric ID/USD value_format_name
 #rule: F9{} # Field label 30-char max
+#rule: F10{} # Valid suggest_explore / suggest_dimension
 ## Explore rules
 #rule: E1{} # Join with subst'n operator
 #rule: E2{} # Join on PK for "one" joins
