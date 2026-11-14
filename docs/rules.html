@@ -38,7 +38,7 @@
 <nav><ul>
 <li> <a href="#key-dimensions">Key Dimensions</a></li>
 <li> <a href="#other-fields">Other Fields</a></li>
-<li> <a href="#derived-tables">Derived Tables</a></li>
+<li> <a href="#derived-tables">Transformations & Tables</a></li>
 <li> <a href="#explores">Explores</a></li>
 <li> <a href="#hierarchy">Hierarchy</a></li>
 <li> <a href="#whitespace">Whitespace</a></li>
@@ -352,7 +352,7 @@
 	</code>
 	</details>
 
-<h1 id="derived-tables">Derived Tables</h1>
+<h1 id="derived-tables">Transformations & Tables</h1>
 <p><b>Summary:</b> Restrict the ways in which you write the SQL for derived tables in order to make them more modular and their results more realiable and understandable.</p>
 <p><b>Note:</b> These rules may seem hard to comply with at first. Although they may represent a large change from your usual way of writing SQL, the change also brings a large positive impact.</p>
 <details id="t1">
@@ -643,6 +643,82 @@
 		<p>
 		</details></p>
 	</details>
+<details id="t3">
+	<summary><b><a href="#t3">T3.</a></b> Table-backed views exposed by a non-hidden explore should declare a valid <code>required_filter</code> (or assert a small row count via a data test)</summary>
+	<p># T3: Table-Backed Views Must Declare Required Filter or Small Row Count</p>
+
+	<p>## Why?</p>
+
+	<p>Querying large tables without filtering on a partition, sort, or index key can trigger full table scans, inflating query latency and warehouse compute costs.</p>
+
+	<p>Declaring <code>#LAMS required_filter: <field_name></code> on table-backed views (both native tables via <code>sql_table_name</code> and Persistent Derived Tables) ensures that explorers (see also rule <code>E4</code>) always filter on a selective column.</p>
+
+	<p>For small lookup or dimension tables, partition pruning is not beneficial when the table size is below the database's minimum block size (for example, BigQuery's minimum partition/block scan unit or Snowflake micro-partition size). Scanning a single block costs the same regardless of pruning, so for small tables a LookML data test asserting a maximum row count is an accepted alternative to <code>required_filter</code>.</p>
+
+	<p>## Sub-rules</p>
+
+	<p>- <b>T3.1</b>: Any view backed by a table (<code>sql_table_name</code> or a PDT, excluding ephemeral derived tables and views without a table) that is the base of a non-hidden explore must either declare <code>#LAMS required_filter: <field_name></code> or be covered by a LookML <code>test:</code> on that explore asserting a maximum row count.
+	- <b>T3.2</b>: If <code>#LAMS required_filter: <field_name></code> is present on the view, <code><field_name></code> must resolve to a valid field (dimension, dimension group / timeframe, filter, parameter, or measure) in that view.
+	- <b>T3.3</b>: If <code>#LAMS required_filter: <field_name></code> is present and the view is a PDT with a <code>sql</code> definition (excluding <code>sql_create</code> and <code>create_process</code> PDTs), the referenced field's <code>sql</code> must contain <code>${TABLE}.<column></code> matching the first entry of <code>sortkeys</code>, <code>indexes</code>, or <code>partition_keys</code> (if any is declared).</p>
+
+	<p>## Examples</p>
+
+	<p>### Native table (<code>sql_table_name</code>) with <code>required_filter</code></p>
+
+	<p>```lookml
+	view: orders {
+	  #LAMS required_filter: created_date
+	  sql_table_name: analytics.orders ;;</p>
+
+	<p>dimension_group: created {
+	    type: time
+	    timeframes: [date, week, month]
+	    sql: ${TABLE}.created_at ;;
+	  }
+	}
+	```</p>
+
+	<p>### PDT with <code>partition_keys</code> matching <code>required_filter</code></p>
+
+	<p>```lookml
+	view: events_pdt {
+	  #LAMS required_filter: event_date
+	  derived_table: {
+	    sql: SELECT event_date, user_id FROM raw.events ;;
+	    datagroup_trigger: daily_etl
+	    partition_keys: ["event_date"]
+	  }</p>
+
+	<p>dimension: event_date {
+	    type: date
+	    sql: ${TABLE}.event_date ;;
+	  }
+	}
+	```</p>
+
+	<p>### Small lookup table with a row-count data test</p>
+
+	<p>```lookml
+	view: country_codes {
+	  sql_table_name: ref.country_codes ;;
+	  dimension: code {
+	    sql: ${TABLE}.code ;;
+	  }
+	  measure: count {
+	    type: count
+	  }
+	}</p>
+
+	<p>explore: country_codes {}</p>
+
+	<p>test: country_codes_is_small {
+	  explore_name: country_codes
+	  assert: max_rows {
+	    expression: ${country_codes.count} <= 1000 ;;
+	  }
+	}
+	```</p>
+	</details>
 
 <h1 id="explores">Explores</h1>
 <details id="e1">
@@ -689,6 +765,39 @@
 	  sql_on: ${dates.pk1_date} >= $[users.created_date} AND ${dates.pk1_date} <= $[users.deleted_date} ;;
 	}
 	</code>
+	</details>
+<details id="e4">
+	<summary><b><a href="#e4">E4.</a></b> Explores based on a view with a <code>required_filter</code> must declare an <code>always_filter</code> referencing that field</summary>
+	<p># E4: Explores Must Enforce Base View Required Filter</p>
+
+	<p>## Why?</p>
+
+	<p>When a table-backed view declares <code>#LAMS required_filter: <field_name></code> (see rule <code>T3</code>), that declaration documents which field should be filtered to avoid expensive full-table scans. Rule <code>E4</code> ensures that every non-hidden explore based on that view enforces the filter via <code>always_filter</code>.</p>
+
+	<p>## Rule</p>
+
+	<p>For any non-hidden <code>explore</code> whose base view (<code>explore.from</code>, <code>explore.view_name</code>, or the explore's own name) declares <code>#LAMS required_filter: <field_name></code>, the explore must declare an <code>always_filter</code> referencing <code><field_name></code> (qualified as <code><explore_name>.<field_name></code>, <code><view_name>.<field_name></code>, or unqualified).</p>
+
+	<p>## Example</p>
+
+	<p>```lookml
+	view: orders {
+	  #LAMS required_filter: created_date
+	  sql_table_name: analytics.orders ;;
+	  dimension_group: created {
+	    type: time
+	    timeframes: [date, week, month]
+	    sql: ${TABLE}.created_at ;;
+	  }
+	}</p>
+
+	<p>explore: recent_orders {
+	  from: orders
+	  always_filter: {
+	    filters: [recent_orders.created_date: "7 days"]
+	  }
+	}
+	```</p>
 	</details>
 <details id="e6">
 	<summary><b><a href="#e6">E6.</a></b> If using a <code>foreign_key</code> based join, do not use a *-to-many relationship</summary>

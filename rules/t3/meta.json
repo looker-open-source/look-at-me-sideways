@@ -1,0 +1,7 @@
+{
+	"id": "t3",
+	"category": "derived-tables",
+	"order": 3,
+	"summary": "Table-backed views exposed by a non-hidden explore should declare a valid <code>required_filter</code> (or assert a small row count via a data test)",
+	"subRules": ["T3.1", "T3.2", "T3.3"]
+}

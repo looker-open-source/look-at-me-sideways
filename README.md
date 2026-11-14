@@ -55,11 +55,15 @@ As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to 
 ## Explore rules
 #rule: E1{} # Join with subst'n operator
 #rule: E2{} # Join on PK for "one" joins
+#rule: E4{} # Enforce base view required_filter
 #rule: E6{} # FK joins are m:1
 #rule: E7{} # Explore label 25-char max
-## Transformation rules
+## Transformation & Table rules
 #rule: T1{} # Triggers use datagroups 
 #rule: T2{} # Primary keys in DT
+#rule: T3.1{} # Table views require filter or row-count test
+#rule: T3.2{} # required_filter references valid view field
+#rule: T3.3{} # PDT required_filter matches first key
 ## Hierarchy rules
 #rule: H1{} # Hoist identifiers
 #rule: H2{} # Group fields

@@ -1,0 +1,6 @@
+{
+	"id": "e4",
+	"category": "explores",
+	"order": 3,
+	"summary": "Explores based on a view with a <code>required_filter</code> must declare an <code>always_filter</code> referencing that field"
+}

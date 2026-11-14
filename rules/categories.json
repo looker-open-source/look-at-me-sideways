@@ -13,7 +13,7 @@
 	},
 	{
 		"id": "derived-tables",
-		"title": "Derived Tables",
+		"title": "Transformations & Tables",
 		"order": 3,
 		"intro": "<p><b>Summary:</b> Restrict the ways in which you write the SQL for derived tables in order to make them more modular and their results more realiable and understandable.</p>\n<p><b>Note:</b> These rules may seem hard to comply with at first. Although they may represent a large change from your usual way of writing SQL, the change also brings a large positive impact.</p>"
 	},
