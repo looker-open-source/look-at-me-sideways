@@ -223,5 +223,47 @@ describe('Rules', () => {
 			expect(result).toContainMessage({...K1, ...summary(1, 0, 1)});
 			expect(result).toContainMessage({...K1, ...error});
 		});
+
+		it('should pass if a pk is a dimension_group with raw timeframe', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension_group: pk1_created {
+						type: time
+						timeframes: [raw, date, week]
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...K1, ...summary(1, 0, 0)});
+			expect(result).not.toContainMessage({...K1, ...error});
+		});
+
+		it('should pass if a composite pk includes a dimension_group with default timeframes (includes raw)', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension: pk2_user_id {}
+					dimension_group: pk2_created {
+						type: time
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...K1, ...summary(1, 0, 0)});
+			expect(result).not.toContainMessage({...K1, ...error});
+		});
+
+		it('should error if a pk dimension_group omits raw from explicit timeframes', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					dimension_group: pk1_created {
+						type: time
+						timeframes: [date, week]
+					}
+				}
+			}`));
+			expect(result).toContainMessage({...K1, ...summary(1, 0, 1)});
+			expect(result).toContainMessage({...K1, ...error});
+		});
 	});
 });

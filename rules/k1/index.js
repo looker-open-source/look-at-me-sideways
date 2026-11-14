@@ -17,6 +17,16 @@ module.exports = function(
 	return {messages, rule};
 };
 
+function hasRawTimeframe(dimensionGroup) {
+	if (!dimensionGroup || dimensionGroup.type !== 'time') {
+		return false;
+	}
+	if (!Array.isArray(dimensionGroup.timeframes)) {
+		return true;
+	}
+	return dimensionGroup.timeframes.includes('raw');
+}
+
 function ruleFn(match, path, project) {
 	let view = match;
 
@@ -30,7 +40,10 @@ function ruleFn(match, path, project) {
 		};
 	}
 
-	let pkDimensions = (Object.values(view.dimension || {})).filter(pkNamingConvention);
+	let pkDimensions = [
+		...(Object.values(view.dimension || {})).filter(pkNamingConvention),
+		...(Object.values(view.dimension_group || {})).filter((dg) => hasRawTimeframe(dg) && pkNamingConvention(dg)),
+	];
 
 	if (!pkDimensions.length) {
 		return `View ${view.$name} has no dimensions that follow the PK naming convention`;
