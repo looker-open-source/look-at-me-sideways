@@ -9,3 +9,11 @@ Customers run LAMS in their CI pipelines, where any `error`-level finding causes
 ## Test Assets
 
 - Avoid writing temporary files via `fs` inside tests. Use actual fixture files in dedicated subdirectories (e.g., `test-project/`) checked into the repo.
+
+
+## Rule implementation
+
+- When feasible, prefer implementing rules using LIYAD (a Lisp-based DSL)
+    - This is so that customers wanting to implement their own custom rules have a good foundation of examples and built-in functions available
+    - Broadly re-usable JS functions and methods can be added to LIYAD. See `lib/custom-rule/custom-rule-parser.js`. Functions should only be added to LIYAD only be added when safe for the untrusted code to call.
+    - For an example, see `/usr/local/google/home/fabble/projects/look-at-me-sideways/rules/k4/index.js`
