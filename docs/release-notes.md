@@ -198,3 +198,4 @@ Patches:
 - Rule `K1`: Allow `dimension_group` with `raw` timeframe to satisfy the primary key naming convention.
 - Rule `K3`: Allow a `primary_key: yes` dimension to be declared before `pk{n}_` primary key dimensions.
 - Rule `E2`: Allow `UNNEST(...)` joins (via `join.sql` or `join.sql_table_name`) without requiring primary key equality constraints.
+- Rule `K7`: Fixed a runtime error (`Cannot convert undefined or null to object`) when a table-backed view has no dimensions.

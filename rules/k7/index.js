@@ -28,7 +28,7 @@ function ruleFn(match) {
 		};
 	}
 
-	const dimensions = Object.values(view.dimension);
+	const dimensions = Object.values(view.dimension || {});
 	const pkDims = dimensions.filter((d)=>d.primary_key);
 	if (pkDims.length === 0) {
 		if (dimensions.some((d)=>d.$name.match(zeroPkRegex))) {

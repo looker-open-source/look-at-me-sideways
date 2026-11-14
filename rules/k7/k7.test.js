@@ -94,5 +94,20 @@ describe('Rules', () => {
 			expect(result).toContainMessage(summary(1, 0, 1));
 			expect(result).toContainMessage({...K7, ...error});
 		});
+
+		it('should fail with a proper message (not a runtime error) if a table-backed view has no dimensions', () => {
+			let result = rule(parse(`model: my_model {
+				view: foo {
+					sql_table_name: foo ;;
+					measure: count { type: count }
+				}
+			}`));
+			expect(result).toContainMessage(summary(1, 0, 1));
+			expect(result).toContainMessage({
+				...K7,
+				...error,
+				description: 'No primary_key:yes dimensions provided',
+			});
+		});
 	});
 });
