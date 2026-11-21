@@ -1,4 +1,6 @@
 const {parse} = require('../lib/custom-rule/custom-rule-parser.js');
+const checkCustomRule = require('../lib/custom-rule/custom-rule.js');
+const {parse: parseLookml} = require('lookml-parser');
 
 describe('Custom Rule Parser', () => {
 	it('Equality rule', () => {
@@ -97,5 +99,99 @@ describe('Custom Rule Parser', () => {
 
 		let unsafeRule = parse(`( -> (match) ($get? match constructor))`);
 		expect(() => unsafeRule({})).toThrow();
+	});
+
+	it('Dynamic property lookup ($get-in), $is-array, $includes, $flatten, $set-prop', () => {
+		let rule = parse(`( -> (obj key arr) ($last
+			($set-prop obj "added" ($flatten arr))
+			($list ($is-array arr) ($includes ($get-in obj key) 2) ($get-in obj "added" 2))
+		))`);
+		expect(rule({items: [1, 2]}, 'items', [[1], [2, 3]])).toEqual([true, true, 3]);
+		expect(() => parse(`( -> (obj) ($set-prop obj "constructor" 1))`)({})).toThrow();
+	});
+});
+
+describe('before_all in checkCustomRule', () => {
+	const project = parseLookml(`model: m { view: v {
+		dimension: a { label: "Dup" }
+		dimension: b { label: "Dup" }
+		dimension: c { label: "Unique" }
+	} }`);
+
+	it('supports expr_init + match + expr_reduce', () => {
+		const messages = checkCustomRule({
+			$name: 'DUP_LABEL',
+			before_all: {
+				counts: {
+					expr_init: `(# )`,
+					match: `$.model.*.view.*.dimension.*`,
+					expr_reduce: `
+						($let lbl ($get? match "label"))
+						($set-prop acc lbl (+ (?? ($get-in acc lbl) 0) 1))
+					`,
+				},
+			},
+			match: `$.model.*.view.*.dimension.*`,
+			expr_rule: `
+				($let lbl ($get? match "label"))
+				($if (> (?? ($get-in before_all "counts" lbl) 0) 1)
+					($concat "Duplicate label: " lbl)
+					true
+				)
+			`,
+		}, project);
+		const errors = messages.filter((m) => m.level === 'error');
+		expect(errors).toHaveLength(2);
+		expect(errors.map((m) => m.location)).toEqual([
+			'model:m/view:v/dimension:a',
+			'model:m/view:v/dimension:b',
+		]);
+	});
+
+	it('supports expr_init alone without a reducer', () => {
+		const messages = checkCustomRule({
+			$name: 'INIT_ONLY',
+			before_all: {
+				model_count: {
+					expr_init: `($get? ($object-keys ($get? project "model")) "length")`,
+				},
+			},
+			match: `$.model.*.view.*.dimension.*`,
+			expr_rule: `(=== ($get? before_all "model_count") 1)`,
+		}, project);
+		expect(messages.filter((m) => m.level === 'error')).toHaveLength(0);
+	});
+
+	it('supports JS initFn and reduceFn', () => {
+		const messages = checkCustomRule({
+			$name: 'JS_BEFORE_ALL',
+			before_all: {
+				dim_names: {
+					initFn: () => [],
+					match: `$.model.*.view.*.dimension.*`,
+					reduceFn: (acc, m) => [...acc, m.$name],
+				},
+			},
+			match: `$.model.*.view.*.dimension.*`,
+			ruleFn: (dim, _path, _proj, _opts, beforeAll) => beforeAll.dim_names.includes(dim.$name),
+		}, project);
+		expect(messages.filter((m) => m.level === 'error')).toHaveLength(0);
+	});
+
+	it('errors when expr_reduce is provided without match', () => {
+		const messages = checkCustomRule({
+			$name: 'MISSING_MATCH',
+			before_all: {
+				bad: {
+					expr_init: `(# )`,
+					expr_reduce: `acc`,
+				},
+			},
+			match: `$.model.*.view.*.dimension.*`,
+			expr_rule: `true`,
+		}, project);
+		const errors = messages.filter((m) => m.level === 'error');
+		expect(errors).toHaveLength(1);
+		expect(errors[0].description).toMatch(/Missing `match` in before_all:bad/);
 	});
 });

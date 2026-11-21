@@ -1,0 +1,6 @@
+{
+	"id": "f12",
+	"category": "other-fields",
+	"order": 9,
+	"summary": "Field aliases should not conflict with other aliases or field names"
+}

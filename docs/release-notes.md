@@ -192,6 +192,8 @@ Patches:
 - Added rule `F9`: Enforces a configurable maximum length (default 30 characters) on non-hidden field names/labels.
 - Added rule `F10`: Validates that `suggest_explore` and `suggest_dimension` reference explores and dimensions available in the model.
 - Added rules `F11` and `E8`: Validate that `"NOT NULL"` vs `"-NULL"` filter expressions match the target field's type (string vs numeric) in filtered measures and explore `always_filter`/`conditionally_filter`.
+- Added rule `F12`: Checks field `alias` declarations (including `dimension_group` expansions) for conflicts with other aliases or field names within the same view.
+- Added `before_all` (`expr_init`, `match`, `expr_reduce`) support for pre-computing shared state/indexes once per rule run in custom and built-in rules.
 - Added rules `T3` (`T3.1`–`T3.3`) and `E4`: Table-backed views (`sql_table_name` or PDTs) exposed as the base of a non-hidden explore should declare `#LAMS required_filter: <field_name>` (or assert a maximum row count via a data test), and explores based on such views must enforce that filter via `always_filter`.
 - Added rule `T11`: Requires unguarded `MIN`, `MAX`, and `ANY`/`ANY_VALUE` aggregates in derived tables to use an explicit alias indicating min/max/any (configurable via `min_fragments`, `max_fragments`, `any_fragments` options).
 - Added rule `T14`: Disallows Liquid/dynamic SQL in persisted derived tables (except `{{_model._name}}`).

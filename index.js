@@ -135,11 +135,11 @@ module.exports = async function(
 				continue;
 			}
 			if (builtInRuleNames.includes(rule.$name) && !rule.custom) { // Built-in rule
-				if (rule.match || rule.expr_rule || rule.description) {
+				if (rule.match || rule.expr_rule || rule.before_all || rule.description) {
 					messages.push({
 						rule: 'LAMS3',
 						level: 'info',
-						description: `Rule ${rule.$name} is a built-in rule. Some rule declaration properties (e.g. match, rule_expr) have been ignored.`,
+						description: `Rule ${rule.$name} is a built-in rule. Some rule declaration properties (e.g. match, expr_rule, before_all) have been ignored.`,
 					});
 				}
 				try {

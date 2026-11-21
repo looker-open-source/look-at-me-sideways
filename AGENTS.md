@@ -12,7 +12,7 @@ Customers run LAMS in their CI pipelines, where any `error`-level finding causes
 
 
 # Rule implementation
-
+- Despite the "custom" naming within the codebase, all new built-in rules should be able to use the checkCustomRule (/lib/custom-rule/custom-rule.js) interface. It is more succinct and is sufficiently flexible to handle all rules. 
 - When feasible, prefer implementing rules using LIYAD (a Lisp-based DSL)
     - This is so that customers wanting to implement their own custom rules have a good foundation of examples and built-in functions available
     - Broadly re-usable JS functions and methods can be added to LIYAD. See `lib/custom-rule/custom-rule-parser.js`. Functions should only be added to LIYAD only be added when safe for the untrusted code to call.
