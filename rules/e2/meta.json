@@ -2,5 +2,7 @@
 	"id": "e2",
 	"category": "explores",
 	"order": 2,
+	"shortSummary": "Join on PK for \"one\" joins",
+	"sampleOptions": {"strict_mode": true},
 	"summary": "The \"one\" table in any join should be joined on equality constraints on all of the Primary Key Dimensions"
 }

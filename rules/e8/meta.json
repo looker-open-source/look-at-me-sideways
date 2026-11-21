@@ -2,5 +2,6 @@
 	"id": "e8",
 	"category": "explores",
 	"order": 5,
+	"shortSummary": "Correct NOT NULL / -NULL in explore filters",
 	"summary": "Explore <code>always_filter</code> and <code>conditionally_filter</code> should use <code>\"-NULL\"</code> for string fields and <code>\"NOT NULL\"</code> for numeric fields"
 }

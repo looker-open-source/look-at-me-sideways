@@ -2,5 +2,6 @@
 	"id": "f11",
 	"category": "other-fields",
 	"order": 8,
+	"shortSummary": "Correct NOT NULL / -NULL in measure filters",
 	"summary": "Filtered measures should use <code>\"-NULL\"</code> for string fields and <code>\"NOT NULL\"</code> for numeric fields"
 }

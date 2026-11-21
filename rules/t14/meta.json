@@ -2,5 +2,6 @@
 	"id": "t14",
 	"category": "derived-tables",
 	"order": 14,
+	"shortSummary": "No Liquid/dynamic SQL in PDTs",
 	"summary": "Persisted derived tables should not use Liquid or dynamic SQL"
 }

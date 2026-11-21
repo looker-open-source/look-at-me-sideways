@@ -2,5 +2,6 @@
 	"id": "e6",
 	"category": "explores",
 	"order": 3,
+	"shortSummary": "FK joins are m:1",
 	"summary": "If using a <code>foreign_key</code> based join, do not use a *-to-many relationship"
 }

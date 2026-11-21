@@ -2,5 +2,6 @@
 	"id": "h5",
 	"category": "hierarchy",
 	"order": 5,
+	"shortSummary": "Hoist main view",
 	"summary": "Hoist main view"
 }

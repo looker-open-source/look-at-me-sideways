@@ -2,5 +2,6 @@
 	"id": "f8",
 	"category": "other-fields",
 	"order": 5,
+	"shortSummary": "Numeric ID/USD value_format_name",
 	"summary": "Numeric fields of type <code>number</code> that appear to be IDs or USD currency should specify <code>value_format_name</code>."
 }

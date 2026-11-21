@@ -2,5 +2,6 @@
 	"id": "w1",
 	"category": "whitespace",
 	"order": 1,
+	"shortSummary": "Block indentation",
 	"summary": "Block Indentation"
 }

@@ -2,5 +2,6 @@
 	"id": "e1",
 	"category": "explores",
 	"order": 1,
+	"shortSummary": "Join with subst'n operator",
 	"summary": "All join fields should be referenced using the substitution operator, <code>${view_name.field_name}</code>"
 }

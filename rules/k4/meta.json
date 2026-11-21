@@ -2,5 +2,6 @@
 	"id": "k4",
 	"category": "key-dimensions",
 	"order": 3,
+	"shortSummary": "Primary keys hidden",
 	"summary": "Primary Keys Dimensions should be hidden"
 }

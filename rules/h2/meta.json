@@ -2,5 +2,6 @@
 	"id": "h2",
 	"category": "hierarchy",
 	"order": 2,
+	"shortSummary": "Group fields",
 	"summary": "Group fields, when too many"
 }

@@ -2,5 +2,6 @@
 	"id": "f4",
 	"category": "other-fields",
 	"order": 4,
+	"shortSummary": "Description or hidden",
 	"summary": "Non-hidden fields should have descriptions"
 }

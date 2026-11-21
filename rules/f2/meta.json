@@ -2,5 +2,6 @@
 	"id": "f2",
 	"category": "other-fields",
 	"order": 2,
+	"shortSummary": "No view-labeled fields",
 	"summary": "Fields should not contain a <code>view_label</code>."
 }

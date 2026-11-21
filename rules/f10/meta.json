@@ -2,5 +2,6 @@
 	"id": "f10",
 	"category": "other-fields",
 	"order": 7,
+	"shortSummary": "Valid suggest_explore / suggest_dimension",
 	"summary": "<code>suggest_explore</code> and <code>suggest_dimension</code> must reference available explores and dimensions in the model"
 }

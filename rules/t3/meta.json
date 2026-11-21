@@ -2,6 +2,12 @@
 	"id": "t3",
 	"category": "derived-tables",
 	"order": 3,
+	"shortSummary": "Table views require filter or row-count test",
+	"subRuleShortSummaries": {
+		"T3.1": "Table views require filter or row-count test",
+		"T3.2": "required_filter references valid view field",
+		"T3.3": "PDT required_filter matches first key"
+	},
 	"summary": "Table-backed views exposed by a non-hidden explore should declare a valid <code>required_filter</code> (or assert a small row count via a data test)",
 	"subRules": ["T3.1", "T3.2", "T3.3"]
 }

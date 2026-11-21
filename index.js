@@ -115,10 +115,15 @@ module.exports = async function(
 		let builtInRuleNames = builtInRules.map((r) => r.name);
 		let builtInSubRuleNames = builtInRules.flatMap((r) => r.subRules);
 
+		const allRulesDocUrl = 'https://github.com/looker-open-source/look-at-me-sideways/blob/master/docs/all-rules.md';
 		if (!project.manifest) {
-			console.log(' > No project manifest available in which to find rule declarations/settings.');
+			const msgText = `No project manifest available in which to find rule declarations/settings. As of LAMS v3, built-in rules must be opted-in to. See ${allRulesDocUrl}`;
+			console.log(` > ${msgText}`);
+			messages.push({rule: 'LAMS5', level: 'info', location: 'project', description: msgText});
 		} else if (!project.manifest.rule) {
-			console.log(' > No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to.');
+			const msgText = `No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to. See ${allRulesDocUrl}`;
+			console.log(` > ${msgText}`);
+			messages.push({rule: 'LAMS5', level: 'info', location: 'manifest', description: msgText});
 		}
 
 		const manifestRules = project.manifest && project.manifest.rule || {};

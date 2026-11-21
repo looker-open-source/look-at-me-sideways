@@ -30,58 +30,9 @@ Interested? See a video of LAMS in action!
 
 The linter comes with built-in rules that can enforce some rules from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
 
-As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to use the built-in rules. Since the rules are opinionated, you likely want to pick and choose the ones that make sense for you. Here is an example declaration opting in to all the currently available built-in rules:
+As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to use the built-in rules. Since the rules are opinionated, you likely want to pick and choose the ones that make sense for you.
 
-```lkml
-#LAMS
-## Parser rules
-#rule: P0{} # Generic parser errors (default enabled)
-#rule: P1{} # LookML syntax errors (default enabled)
-#rule: P2{} # Duplicate singular property errors
-#rule: P3{} # Invalid property type errors
-#rule: P4{} # Missing required property errors
-## Primary Key rules
-#rule: K1{} # Primary key naming
-#rule: K3{} # Primary keys first
-#rule: K4{} # Primary keys hidden
-#rule: K7{} # Provide one `primary_key`
-#rule: K8{} # `primary_key` uses PK dims
-## Field rules
-#rule: F1{} # No cross-view fields
-#rule: F2{} # No view-labeled fields
-#rule: F3{} # Count fields filtered
-#rule: F4{} # Description or hidden
-#rule: F8{} # Numeric ID/USD value_format_name
-#rule: F9{} # Field label 30-char max
-#rule: F10{} # Valid suggest_explore / suggest_dimension
-#rule: F11{} # Correct NOT NULL / -NULL in measure filters
-## Explore rules
-#rule: E1{} # Join with subst'n operator
-#rule: E2 { options: { strict_mode: yes } } # Join on PK for "one" joins
-#rule: E4{} # Enforce base view required_filter
-#rule: E5{} # Avoid multiplicative fanout
-#rule: E6{} # FK joins are m:1
-#rule: E7{} # Explore label 25-char max
-#rule: E8{} # Correct NOT NULL / -NULL in explore filters
-## Transformation & Table rules
-#rule: T1{} # Triggers use datagroups 
-#rule: T2{} # Primary keys in DT
-#rule: T3.1{} # Table views require filter or row-count test
-#rule: T3.2{} # required_filter references valid view field
-#rule: T3.3{} # PDT required_filter matches first key
-#rule: T11{} # Assert or explicitly alias MIN/MAX/ANY
-#rule: T14{} # No Liquid/dynamic SQL in PDTs
-#rule: T15{} # Prefer UNION ALL over bare UNION
-## Hierarchy rules
-#rule: H1{} # Hoist identifiers
-#rule: H2{} # Group fields
-#rule: H3{} # Sort-group groups
-#rule: H4{} # Group more
-#rule: H5{} # Hoist main view
-#rule: H6{} # Sort-group views
-## Whitespace rules
-#rule: W1{} # Block indentation
-```
+> **[See all available built-in rules (LookML & YAML opt-in snippets)](https://looker-open-source.github.io/look-at-me-sideways/all-rules)** (source: [docs/all-rules.md](docs/all-rules.md))
 
 ### Custom Rules
 

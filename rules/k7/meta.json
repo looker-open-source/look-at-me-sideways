@@ -2,5 +2,6 @@
 	"id": "k7",
 	"category": "key-dimensions",
 	"order": 4,
+	"shortSummary": "Provide one primary_key",
 	"summary": "Views should declare exactly one <code>primary_key</code> dimension"
 }

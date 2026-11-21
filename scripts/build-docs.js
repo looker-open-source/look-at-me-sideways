@@ -155,3 +155,79 @@ ${deprecatedRulesHtml}
 
 fs.writeFileSync(outputPath, html);
 console.log(`Built ${outputPath} with ${rules.length} rules across ${categories.length} categories.`);
+
+/**
+ * Format an options object as a compact LookML block string (e.g. ` { options: { strict_mode: yes } }`).
+ * @param {object=} opts
+ * @return {string}
+ */
+function formatLookmlOptions(opts) {
+	if (!opts || !Object.keys(opts).length) return '{}';
+	const inner = Object.entries(opts)
+		.map(([k, v]) => `${k}: ${typeof v === 'boolean' ? (v ? 'yes' : 'no') : JSON.stringify(v)}`)
+		.join(' ');
+	return ` { options: { ${inner} } }`;
+}
+
+/**
+ * Build the LookML and YAML opt-in snippets for all built-in rules.
+ * @return {string}
+ */
+function buildAllRulesDoc() {
+	const lookmlLines = ['#LAMS'];
+	const yamlLines = ['rule:'];
+
+	for (const cat of categories) {
+		const catRules = rulesByCategory[cat.id] || [];
+		if (!catRules.length) continue;
+		lookmlLines.push(`## ${cat.title}`);
+		yamlLines.push(`  # ${cat.title}`);
+		for (const rule of catRules) {
+			if (Array.isArray(rule.subRules) && rule.subRules.length && rule.subRuleShortSummaries) {
+				for (const subId of rule.subRules) {
+					const comment = rule.subRuleShortSummaries[subId] || rule.shortSummary || '';
+					lookmlLines.push(`#rule: ${subId}{} # ${comment}`);
+					yamlLines.push(`  ${subId}: {} # ${comment}`);
+				}
+			} else {
+				const id = rule.id.toUpperCase();
+				const comment = rule.shortSummary || '';
+				lookmlLines.push(`#rule: ${id}${formatLookmlOptions(rule.sampleOptions)} # ${comment}`);
+				if (rule.sampleOptions && Object.keys(rule.sampleOptions).length) {
+					yamlLines.push(`  ${id}: # ${comment}`);
+					yamlLines.push(`    options:`);
+					for (const [k, v] of Object.entries(rule.sampleOptions)) {
+						yamlLines.push(`      ${k}: ${JSON.stringify(v)}`);
+					}
+				} else {
+					yamlLines.push(`  ${id}: {} # ${comment}`);
+				}
+			}
+		}
+	}
+
+	return `---
+favicon: img/logo.png
+---
+<!-- This file is generated, and any manual changes will be overwritten. See scripts/build-docs.js -->
+# Opting In to Built-in Rules
+
+As of LAMS v3, built-in rules must be opted in to via your project's manifest (except \`P0\` and \`P1\`, which are enabled by default). Since the rules are opinionated, you should pick and choose the ones that make sense for your project.
+
+## LookML (\`manifest.lkml\`)
+
+\`\`\`lkml
+${lookmlLines.join('\n')}
+\`\`\`
+
+## YAML (for \`manifest\` CLI / config)
+
+\`\`\`yaml
+${yamlLines.join('\n')}
+\`\`\`
+`;
+}
+
+const allRulesPath = path.join(rootDir, 'docs', 'all-rules.md');
+fs.writeFileSync(allRulesPath, buildAllRulesDoc());
+console.log(`Built ${allRulesPath}.`);

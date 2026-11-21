@@ -2,5 +2,6 @@
 	"id": "h3",
 	"category": "hierarchy",
 	"order": 3,
+	"shortSummary": "Sort-group groups",
 	"summary": "Sort-group groups, when too many"
 }
