@@ -1,0 +1,1 @@
+../../../node_modules/lookml-parser/.agents/skills/remote-lookml-validation/SKILL.md

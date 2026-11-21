@@ -55,11 +55,16 @@ Here is what each part of the rule definition means:
 - **options:** (Optional) An object containing rule-specific key-value pairs that further specify rule behavior. Typically relevant for built-in rules that wish to allow for some degree of flexibility.
 - **match:** A [JSONpath expression](https://www.npmjs.com/package/jsonpath-plus) that describes which LookML constructs to check. This usually matches multiple times within the project, and the rule is checked once for each such match. See [Rule Matching](#rule-matching) below for more details and example match patterns.
 - **expr_rule:** A [Liyad](https://github.com/shellyln/liyad) expression that defines the logic of the rule.
-  - **Arguments:** Four arguments are made available to the expression:
+  - **Arguments:** Five arguments are made available to the expression:
     - `match`: The value matched by the match expression. (The expression is invoked once for each time the pattern is matched in your project)
     - `path`: An array containing the path to the matched LookML. For example, `['$','model','my_model']`
     - `project`: The entire LookML project, in case you need to further reference any data from it within each match
     - `options`: An object containing any options defined in the rule configuration.
+    - `before_all`: An object mapping each `before_all` block name to its pre-computed value (if any `before_all` blocks are defined).
+- **before_all:** (Optional) One or more named blocks (`before_all: my_index { ... }`) that run **once** before per-match `expr_rule` evaluation, allowing you to pre-compute shared state or lookup indexes in O(n) time instead of repeating O(n²) scans per match. Each block supports:
+  - `expr_init`: (Optional) A Liyad expression receiving `(project options)` that returns the initial value (or the final value when no reducer is used).
+  - `match`: A JSONPath expression selecting nodes to fold over (required when `expr_reduce` is provided).
+  - `expr_reduce`: (Optional) A Liyad expression receiving `(acc match path project options)` that returns the updated accumulator for each matched node.
   - **Return value**
     - **true** - If your expression returns true, the test will be passed
     - **false** - If your expression returns false, the test will be failed
@@ -92,6 +97,8 @@ Note that while you can use unrooted paths to match things a bit more concisely 
 | `$.model[?(@.persist_for)]`                 | All models that declare persist_for               |
 
 ### Expression Examples
+
+See our [LIYAD rules agent skill](https://github.com/looker-open-source/look-at-me-sideways/blob/master/.agents/skills/liyad-rules/SKILL.md) for a practical reference.
 
 #### Equality
 

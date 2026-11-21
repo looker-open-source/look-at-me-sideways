@@ -6,9 +6,6 @@ const defaultProcess = process;
  * LAMS main function
  *
  * @param {object}	options - options
- * @param {string=}	options.reporting - One of yes, no, save-yes, or save-no. Program terminates with a warning if omitted. See PRIVACY.md for details
- * @param {string=}	options.reportUser - Optional user email address. See PRIVACY.md for details
- * @param {string=}	options.reportLicenseKey - Optional Looker License Key. See PRIVACY.md for details
  * @param {string=}	options.output - Comma-separated string of output modes from among: lines (default), markdown, markdown-developer, jenkins, legacy-cli
  * @param {string=}	options.source - An optional glob specifying which files to read
  * @param {string=}	options.ignore - An optional glob specifying patterns to ignore. Defaults to `node_modules/**`
@@ -26,7 +23,6 @@ const defaultProcess = process;
  * @param {object=} io.console.warn
  * @param {object=} io.console.error
  * @param {object=} io.fs
- * @param {object=} io.tracker Object compatible with ./lib/tracking.js
  * @param {object=} io.process Object with cwd() and exit()
  * @param {function=} io.get function that takes a URL and returns the contents
  * @return Returns undefined or calls process.exit
@@ -39,26 +35,15 @@ module.exports = async function(
 		process = defaultProcess,
 		fs,
 		get,
-		tracker,
 	} = {},
 ) {
 	let messages = [];
 	try {
 		fs = fs || require('fs');
 		get = get || require('./lib/https-get.js');
-		tracker = tracker || require('./lib/tracking')({
-			cliArgs: {
-				reporting: options.reporting,
-				reportLicenseKey: options.reportLicenseKey,
-				reportUser: options.reportUser,
-			},
-			gaPropertyId: 'UA-96247573-2',
-		});
 		const path = require('path');
 		const parser = require('lookml-parser');
 		const checkCustomRule = require('./lib/custom-rule/custom-rule.js');
-		const {msg} = require('./lib/message/message.js');
-		const loc = require('./lib/message/location-template-literal.js');
 
 		const cwd = options.cwd || process.cwd();
 		const ignore = options.ignore || 'node_modules/**';
@@ -81,28 +66,6 @@ module.exports = async function(
 		});
 		if (project.error) { // Fatal error
 			throw (project.error);
-		}
-
-		if (project.errors) {
-			console.log('> Issues occurred during parsing (containing files will not be considered. See messages for details.)');
-			messages = messages.concat(project.errors.map((e) => {
-				const exception = e && e.error && e.error.exception || {};
-				const messageDefault = {
-					rule: 'P0',
-					location: loc`file:${e.$file_path}`,
-					level: 'error',
-					description: `Parsing error: ${exception.message || e}`,
-					path: e.$file_path,
-				};
-				if (exception.name === 'SyntaxError') {
-					return msg({
-						...messageDefault,
-						rule: 'P1',
-						hint: exception.context,
-					});
-				}
-				return msg(messageDefault);
-			}));
 		}
 		console.log('> Parsing done!');
 
@@ -137,34 +100,56 @@ module.exports = async function(
 
 		console.log('Checking rules... ');
 
-		let builtInRuleNames =
-		fs.readdirSync(path.join(__dirname, 'rules'))
-			.map((fileName) => fileName.match(/^(.*)\.js$/))
-			.filter(Boolean)
-			.map((match) => match[1].toUpperCase());
+		let builtInRules =
+		fs.readdirSync(path.join(__dirname, 'rules'), {withFileTypes: true})
+			.filter((dirent) => dirent.isDirectory() && fs.existsSync(path.join(__dirname, 'rules', dirent.name, 'index.js')))
+			.map((dirent) => {
+				const metaPath = path.join(__dirname, 'rules', dirent.name, 'meta.json');
+				const meta = fs.existsSync(metaPath) ? JSON.parse(fs.readFileSync(metaPath, 'utf8')) : {};
+				return {
+					name: dirent.name.toUpperCase(),
+					defaultEnabled: Boolean(meta.defaultEnabled),
+					subRules: Array.isArray(meta.subRules) ? meta.subRules : [],
+				};
+			});
+		let builtInRuleNames = builtInRules.map((r) => r.name);
+		let builtInSubRuleNames = builtInRules.flatMap((r) => r.subRules);
 
+		const allRulesDocUrl = 'https://github.com/looker-open-source/look-at-me-sideways/blob/master/docs/all-rules.md';
 		if (!project.manifest) {
-			console.log(' > No project manifest available in which to find rule declarations/settings.');
+			const msgText = `No project manifest available in which to find rule declarations/settings. As of LAMS v3, built-in rules must be opted-in to. See ${allRulesDocUrl}`;
+			console.log(` > ${msgText}`);
+			messages.push({rule: 'LAMS5', level: 'info', location: 'project', description: msgText});
 		} else if (!project.manifest.rule) {
-			console.log(' > No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to.');
+			const msgText = `No rules specified in manifest. As of LAMS v3, built-in rules must be opted-in to. See ${allRulesDocUrl}`;
+			console.log(` > ${msgText}`);
+			messages.push({rule: 'LAMS5', level: 'info', location: 'manifest', description: msgText});
 		}
 
-		for (let rule of Object.values(project.manifest && project.manifest.rule || {})) {
+		const manifestRules = project.manifest && project.manifest.rule || {};
+		const defaultRules = builtInRules
+			.filter((r) => r.defaultEnabled && !Object.prototype.hasOwnProperty.call(manifestRules, r.name))
+			.map((r) => ({$name: r.name, _defaultOnly: true}));
+
+		for (let rule of [...defaultRules, ...Object.values(manifestRules)]) {
 			console.log('> ' + rule.$name);
 			if (rule.enabled === false) {
 				continue;
 			}
+			if (builtInSubRuleNames.includes(rule.$name) && !rule.custom && !rule.match && !rule.expr_rule) {
+				continue;
+			}
 			if (builtInRuleNames.includes(rule.$name) && !rule.custom) { // Built-in rule
-				if (rule.match || rule.expr_rule || rule.description) {
+				if (rule.match || rule.expr_rule || rule.before_all || rule.description) {
 					messages.push({
 						rule: 'LAMS3',
 						level: 'info',
-						description: `Rule ${rule.$name} is a built-in rule. Some rule declaration properties (e.g. match, rule_expr) have been ignored.`,
+						description: `Rule ${rule.$name} is a built-in rule. Some rule declaration properties (e.g. match, expr_rule, before_all) have been ignored.`,
 					});
 				}
 				try {
-					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '.js');
-					let result = ruleModule(project);
+					let ruleModule = require('./rules/' + rule.$name.toLowerCase() + '/index.js');
+					let result = ruleModule(project, rule);
 					rule.match = rule.match ?? result.rule?.match;
 					rule.description = rule.description ?? result.rule?.description;
 					messages = messages.concat(result.messages);
@@ -225,6 +210,9 @@ module.exports = async function(
 			}
 		}
 
+		// Filter out any messages for rules/sub-rules explicitly disabled in manifest
+		messages = messages.filter((m) => manifestRules[m.rule]?.enabled !== false);
+
 		// Output
 		const outputters = require('./lib/outputters/index.js');
 		let errors = messages.filter((msg) => {
@@ -277,34 +265,13 @@ module.exports = async function(
 			}
 		}
 
-		if (tracker.enabled) {
-			await Promise.race([
-				tracker.track({messages, errors: []}),
-				new Promise((res) => setTimeout(res, 2000)),
-			]);
-		}
-
 		if (errors.length) {
 			process.exit(1);
 		}
 
 		return messages;
 	} catch (e) {
-		try {
-			console.error(e);
-			if (!tracker.valid) {
-				throw new Error('Unknown error');
-			}
-			if (tracker.enabled) {
-				e.isFatalError = true;
-				tracker.track({messages, errors: [e]});
-			} else {
-				console.warn(`Error reporting is disabled. Run with --reporting=yes to report, or see PRIVACY.md for more info`);
-			}
-		} catch (e) {
-			console.error(e);
-			console.error(`Error reporting is not available	. Please submit an issue to https://github.com/looker-open-source/look-at-me-sideways/issues`);
-		}
+		console.error(e);
 		process.exit(1);
 	}
 

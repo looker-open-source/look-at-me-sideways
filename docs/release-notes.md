@@ -1,0 +1,207 @@
+# v2.0
+
+## v2 Prologue
+
+v1 of LAMS was developed at a time when few LookML developers had continuous integration (CI) infrastructure set up for their LookML projects. As a result, LAMS targeted a markdown output format for maximum interoperability from Looker's IDE.
+
+In addition, it tried to fit several distinct use cases into that markdown output: reporting issues/recommendtions, summarizing exemptions, and listing tables by primary key (ostensibly for organizational & navigational benefits).
+
+As more LookML developers adopted a CI pipeline, it became clear that most consumers were looking primarily for a pass/fail indicator and an a listing of failures that was easily consumable via their CI tooling. 
+
+With the v2 release of LAMS, the possible output modes have been expanded and modularized, so that consumers can explicity state which output mode(s) are best for them. In addition, LAMS will emphasize a new output mode that is designed to be more accessible from a typical CI tooling context: output goes to the command line's standard output, rather than to a file, and with a tabular human-readable output with one message on each line, instead of markdown.
+
+## Highlighted changes
+
+- **Changes to output**
+	- New `output` parameter to toggle between output modes
+	- New `lines` output mode: human-readable tabular output to the CLI with 1 line per message
+	- Default output mode set to the new `lines` mode. To preserve v1 functionality, use `--output=markdown,developerMarkdown`
+- **LookML parsing errors are now consistent with other errors.** They are reported to the selected output mode with other errors, instead of logging to the command-line during execution, and will fail the run by default. To preserve the default v1 functionality (where parsing errors do not result in run errors), you may pass `--on-parser-error=info`
+- **All warnings are now errors.** Despite the initial intentions behind the style guide and LAMS, warnings were not meaningfully different from errors, so the distinction has been dropped in the interest of simplicity and intuitiveness.
+- **Removed reporting of exemptions.**  As alluded to in the prologue, the markdown output was handling many use cases, each in a subpar way. The reporting of exemptions was an example of this. In the future, a more considered exemption report may be added back with a dedicated output mode.
+
+## Other changes
+
+- Ability to pass in additional manifest options via a JSON encoded `manifest` CLI argument
+- Fix for finding manifest file when the filesystem returns absolute paths in certain cases
+- Additional informational messages, in output modes that display informational messages
+- Fixed bug where rule F1 was not being enforced within singtleton link declarations
+
+# v2.1
+
+- Adds an 'ignore' parameter to exclude certain file paths. It works as per the ignore parameter exposed by [glob](https://www.npmjs.com/package/glob). The default value is `node_modules/**`, for cases where LAMS may be installed as a local dependency, so that its own test files will not be picked up.
+- T2 is now an "umbrella" rule covering T3-T10. Exempting T2 is sufficient, and users no longer need to exempt each "sub rule". Errors that were previously reported as T2 are now reported as T3.
+- Bugfix: Rules T2-10, K1-4, and F3 can now be exempted via a global exemption (in the manifest file)
+- Docs: Added a Rule Sandbox micro-app for testing custom rules
+
+# v2.1.4
+
+- Fix [parser error](https://github.com/fabio-looker/node-lookml-parser/issues/17) on leading commas in lists
+
+# v2.1.5
+- Fix [E2 handling of pk's of implicit size 1](https://github.com/looker-open-source/look-at-me-sideways/issues/106)
+- Relax [application of K1-4 rules for extended views](https://github.com/looker-open-source/look-at-me-sideways/issues/105)
+
+# v2.1.6
+
+- Fix bug in rule F1 with `_rendered_value`. See [issue 118](https://github.com/looker-open-source/look-at-me-sideways/issues/119)
+- Fix oversight in rule F4. See [issue 19](https://github.com/looker-open-source/look-at-me-sideways/issues/119). As a new error condition, this would be a breaking change, and so it requires opt-in via `manifest.rule.F4.options.v3_dimension_groups:yes`
+
+# v2.1.7
+
+- Allow `_link` in rule F1.
+- Dependency updates
+
+# v3.0
+
+## v3 Prologue
+
+V3 of LAMS is a big change that brings on board many of the underlying LookML Parser's output options that have accumulated over time: whitespace awareness, extension/refinement support, a simplified file representation, and imported project support.
+
+The broad overhaul that this required for built-in rules also presented an opportunty. Many of the built-in rules have been made more streamlined and consistent. But, most importantly as of 3.0, built-in rules will be opt-in rather than opt-out. These two changes will greatly improve the ability to publish new built-in rules and patch existing built-in rules without unduly burdening existing LAMS users.
+
+As a result, users upgrading to 3.0 should expect to paste a simple declaration into their manifest to opt-in to each built-in rule.
+
+Beyond that rote change, the primary impact will be to LAMS users who have implemented [custom rules](https://looker-open-source.github.io/look-at-me-sideways/customizing-lams), who may have to update their rules for the updated LookML representations.
+
+Usage of LAMS that only uses the built-in style guide rules should not see a large impact, except that some rules may now work correctly based on extensions/refinements, whereas they may have thrown "false positive" errors previously because the parser did not apply any extensions/refinements.
+
+## Highlighted changes
+
+- **Extensions/refinements awareness:** LAMS now supports the ability to lint over logical declarations that are the result of extends/refinements, rather than only lexical declarations. All existing built-in rules except K3 have been updated to check extended/refined objects. In addition, custom rules can take advantage of this - since extension/refinements work at the model scope, these representations can be found under the `model` construct. The `file` construct continues to provide the lexical / "as written" representation. 
+- **Whitespace/comment awareness available:** Rules may now elect to evaluate whitespace by looking at the `$strings` property within each object. An initial built-in rule pertaining to whitespce, W1, is also included in the initial release as an example.
+- **File representation simplification:** Files were previously represented as an array. The ordering was not particularly significant. The lack of a meaningful key made the location returned in custom rules opaque and necessitated workarounds. Now, files are represented by an object, keyed by the filepath.
+
+## Changelist
+- Parser updates
+	- `$strings` whitespace data is now available
+	- Parsed file representation is now "by name" (instead of array) 
+	- Extension/refinement support
+	- Support for imported projects (must be locally cloned before invoking LAMS)
+- Built-in rules are now opt-in
+	- Add `#LAMS` declarations, like `rule: F1 {}` to opt-in to a rule. A sample declaration to opt-in to all rules is provided in the readme.
+	- Although rules named like `[A-Z][0-9]+` are nominally reserved for built-in rules, if you've written a custom rule whose name overlaps with a built-in rule, you can mark the rule as `custom: yes` to disambiguate.
+- Built-in rule updates
+	- F1: Rule F1 previously evaluated over view declarations in view files. It now evaluates over assembled views in models.
+	- F2: Rule F2 previously evaluated over view declarations in view files. It now evaluates over assembled views in models.
+	- F3: Rule F3 previously evaluated over view declarations in view files. It now evaluates over assembled views in models.
+	- F4: Rule F4 previously evaluated over view declarations in view files. It now evaluates over assembled views in models.
+	- K1: Rule K1 previously evaluated over view declarations in view files. It now evaluates over assembled views in models. It now also contains logic that was previously identified as K2.
+	- K2: Rule identifier K2 is deprecated, and its rule logic is applied under K1.
+	- K4: Rule K4 previously evaluated over view declarations in view files. It now evaluates over assembled views in models.
+	- T1: Rule T1 previously evaluated over view declarations in view files. It now evaluates over assembled views in models.
+	- T2-T10: These were stated as separate rules in the style guide, but evaluated by one rule in the linter. The are being bundled up as one rule, `T2`. You may still apply exemptions for individual sub-rules if you wish, though in some cases, dependencies between the sub-rules means that not all parts of the rule will always be evaluated.
+	- W1: Rule W1 is added as an initial rule demonstrating the ability to operate on whitespace.
+- JSON Path library update
+	- The JSON Path library has been migrated from `jsonpath`, which was rarely maintained, to `jsonpath-plus`. This is primarily to address the old library's failure to correctly match union expressions, which were a common use case for expressions like `$.model.*['dimension','measure'].*`
+	- Javascript expressions within path components are strictly limited to a single existence check or equality check against a literal
+- Minor bugfixes
+	- Fixes [issue 123](https://github.com/looker-open-source/look-at-me-sideways/issues/123) where exemptions declared directly on the matched object were ignored by custom rules
+
+## Migration Guidelines
+
+For any error not detailed below, please submit an issue!
+
+- Opt-in to any built-in rules that you want! See example in [LAMS' Readme](../README.md)
+- If you are providing any custom rules that iterate over file matches
+	- Change your match from `$.files.*` to `$.file.*`. Note that the path/location will now contain the filename.
+- If you have newly-erroring views that were previously unchecked due to their being declared in a non-view file
+	- You may wish to update the view to comply with the style guide, or apply exemptions for the relevant rule(s)
+- If you have opted out of rules T2-T10
+	- These rules are now all bundled under rule T2. For a global exemption, you may simply omit rule T2 from your manifest. For local exemptions, or exemptions to the subrules, you may still exempt these individually, although the ID's of the rules have been updated. (For example, rule "T3" is now "T2.1")
+
+# v3.1
+
+This update introduces, as beta features, centrally managed exemptions, and an `add-exemptions` output mode. Together, these features serve to enable incremental linting use cases.
+
+Feedback on these beta features and the overall incremental linting use case is welcome in [issue #142](https://github.com/looker-open-source/look-at-me-sideways/issues/142).
+
+- **Centrally-managed exemptions**: (BETA) In addition to locally specified exemptions, LAMS can now also use exemptions in `lams-exemptions.ndjson` in a newline-delimited JSON format.
+- **Add exemptions as output**: (BETA) `output=add-exemptions` can append any errors from the current run as new exemptions in the `lams-exemptions.ndjson` file.
+- **New rules available.** Make sure to add them to your manifest.lkml to opt-in. An updated sample snippet to opt-in to all rules is provided on the main README page.
+
+- K7 - Provide one `primary_key`. [K7 details](https://looker-open-source.github.io/look-at-me-sideways/rules.html#k7)
+- K8 - `primary_key` must be or use PK-named dimension(s). [K8 details](https://looker-open-source.github.io/look-at-me-sideways/rules.html#k8)
+- E6 - `foreign_key`-based joins are many_to_one. [E6 details](https://looker-open-source.github.io/look-at-me-sideways/rules.html#e6)
+- E7 - Explore labels are 25 characters max. [E7 details](https://looker-open-source.github.io/look-at-me-sideways/rules.html#e7)
+
+Patches:
+
+- v3.1.1 - Change usage of Node-native readline module for greater Node version compatibility
+- v3.1.2
+	- Fix license metadata to consistently reflect MIT license
+	- Update vulnerable dependencies (both in root package and tools/rule-sandbox)
+- v3.1.3 - Fix rule F1 logic to check all references when there are multiple in a field ([Issue 167](https://github.com/looker-open-source/look-at-me-sideways/issues/167) [PR 168](https://github.com/looker-open-source/look-at-me-sideways/pull/168))
+- v3.1.4
+	- Fix handling of "../" patterns in includes
+	- Fix error when attempting to include one model file into another model file
+
+# v3.2
+
+LookML Dashboards are now supported. This functionality is disabled by default. To enable it, also install `js-yaml`, and including dashboard file pattern into your `source` argument. (Note: no built-in rules currently relate to dashboards, but you may apply custom rules to them)
+
+# v3.3
+
+- Enhance the manifest argument to accept paths to lkml, json, or yaml (with js-yaml)
+- Add manifest-defaults argument
+
+# v3.4
+
+- Add rule `allow_exemptions` argument for rules to specify if they do not want to allow exemptions
+- Add support for more compact exemption syntax. The older `rule_exemptions: {rule: "reason"}` syntax is still supported, though no longer emphasized
+
+Patches:
+
+- v3.4.1 - Dependency updates in LAMS for jsonpath-plus. Dependency updates in Rule Sandbox for webpack and sub-dependencies.
+- v3.4.2 - v3.4.0 had introduced a change in behavior at the intersection of conditional comments and whitespace rule W1. Since whitespace behavior for conditional comments had not been formally defined or desrcribed, this release defines the conditional comment whitespace handling going forward, primarily chosen to mirror the in-Looker IDE behavior when a block is commented via the Ctrl+/ shortcut. 
+- v3.4.3 - Reverts v3.4.2, leaving whitespace handling as-is. New whitespace handling will be introduced as a breaking change in v4.
+
+# v4
+
+v3.4.0 had introduced a change in behavior at the intersection of conditional comments and whitespace rule W1. Since whitespace behavior for conditional comments had not been formally defined or desrcribed, this release defines the conditional comment whitespace handling going forward, primarily chosen to mirror the in-Looker IDE behavior when a block is commented via the Ctrl+/ shortcut. Conditional comments will preserve the whitespace before the comment, consume the comment character and up to one space or tab character following the comment character and/or conditional comment token.
+
+# 4.1
+
+- Add "Hierarchy" rules: H1, H2, H3, H4, H5, H6. These rules provide suggested labeling patterns to increase organization at various levels from the field to the explore.
+- Fix file inclusion when an imported project includes a file using a "project root" (single `/` ) path
+- Fix typos in output strings (manifest loader, rule K1)
+- Allow custom rules to accept `options`
+- Added information about parser errors to the Style Guide
+
+Patches:
+
+- v4.1.1 - Fixed the error message in K8 when no primary key dims were found, from a generic JS execution error to an actually useful message
+- v4.1.2 - Fixed attempts to lint over "abstract" objects (refinements, extension:required) that were unintentionally left toggled on
+- v4.1.3 - Dependency update for security patches
+
+# 5.0
+
+⚡ icons below indicate breaking changes.
+
+- Adds a new output method, `github-job-summary` for GitHub users
+- ⚡ The `onParserError` option was removed. Parsing errors now always result in error-level messages. For use cases where parsing errors should be ignored, users can instead use global or central exemptions on rules P0 and P1.
+- ⚡ for custom rules: The underlying LookML representation has removed the additional `model` object inserted into the top-level of model files (i.e., under the `file` object). For example, previously, the output may have contained a path like `$.file['my_model.model'].model.my_model.explore.foo`, and would now simply contain a path like `$.file['my_model.model'].explore.foo`. Any custom rules that attempted to match this previous construct should be updated. That said, I expect most use cases will instead use the top-level (non-file) `model` object, rather than the `file` object.
+- ⚡ for custom rules: The underlying LookML representation has removed the ancestry metadata (e.g. $model, $view, $explore) added to child objects. Any custom rules that used this information should instead source it from the `path` argument.
+- ⚡ (beta) - Central exemptions in lams-exemptions.ndjson relied on a location string that was ambiguous when path elements contained `/` or `:` characters, which notably may be present in file paths. All path elements in `location` properties must now escape any `/`, `:`, or `\` characters with a preceding backslash (`\`)
+
+# 5.1
+
+- Updated `lookml-parser` to `^9.3.1`.
+- Parser-reported errors are now surfaced under built-in rule `P` (`P0`–`P4`): `P0` and `P1` remain enabled by default, while `P2`, `P3`, and `P4` are opt-in via `manifest.lkml`.
+- Added rule `F8`: Suggests `value_format_name` (`id` or `usd_*`) for non-hidden numeric fields that appear to be IDs or USD currency values.
+- Added rule `F9`: Enforces a configurable maximum length (default 30 characters) on non-hidden field names/labels.
+- Added rule `F10`: Validates that `suggest_explore` and `suggest_dimension` reference explores and dimensions available in the model.
+- Added rules `F11` and `E8`: Validate that `"NOT NULL"` vs `"-NULL"` filter expressions match the target field's type (string vs numeric) in filtered measures and explore `always_filter`/`conditionally_filter`.
+- Added rule `F12`: Checks field `alias` declarations (including `dimension_group` expansions) for conflicts with other aliases or field names within the same view.
+- Added `before_all` (`expr_init`, `match`, `expr_reduce`) support for pre-computing shared state/indexes once per rule run in custom and built-in rules.
+- Added rules `T3` (`T3.1`–`T3.3`) and `E4`: Table-backed views (`sql_table_name` or PDTs) exposed as the base of a non-hidden explore should declare `#LAMS required_filter: <field_name>` (or assert a maximum row count via a data test), and explores based on such views must enforce that filter via `always_filter`.
+- Added rule `T11`: Requires unguarded `MIN`, `MAX`, and `ANY`/`ANY_VALUE` aggregates in derived tables to use an explicit alias indicating min/max/any (configurable via `min_fragments`, `max_fragments`, `any_fragments` options).
+- Added rule `T14`: Disallows Liquid/dynamic SQL in persisted derived tables (except `{{_model._name}}`).
+- Added rule `T15`: Flags bare `UNION` in derived tables and `sql_table_name` subqueries unless `UNION ALL`, `UNION DISTINCT`, or an accompanying comment (such as `UNION /*DISTINCT*/`) is used.
+- Added rule `E5`: Flags `many_to_many` joins and branching `one_to_many` join paths within an explore to prevent multiplicative fanout.
+- Added `??` coalesce shorthand, `$get?` optional chaining, and `$is-hidden` (respecting `fields_hidden_by_default`) for custom rules written in LIYAD.
+- Rules `F4`, `F8`, `F9`, and `K4` now respect view-level `fields_hidden_by_default`.
+- Rule `K1`: Allow `dimension_group` with `raw` timeframe to satisfy the primary key naming convention.
+- Rule `K3`: Allow a `primary_key: yes` dimension to be declared before `pk{n}_` primary key dimensions.
+- Rule `E2`: Allow `UNNEST(...)` joins (via `join.sql` or `join.sql_table_name`) without requiring primary key equality constraints, and default to `strict_mode: no` (accepting `primary_key: yes` dimensions and DT `GROUP BY`/`SELECT DISTINCT` column sets in addition to `pk{n}_` naming; set `options: { strict_mode: yes }` for legacy strict behavior).
+- Rule `K7`: Fixed a runtime error (`Cannot convert undefined or null to object`) when a table-backed view has no dimensions.

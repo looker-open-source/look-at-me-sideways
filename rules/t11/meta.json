@@ -1,0 +1,7 @@
+{
+	"id": "t11",
+	"category": "derived-tables",
+	"order": 11,
+	"shortSummary": "Assert or explicitly alias MIN/MAX/ANY",
+	"summary": "MIN, MAX, and ANY aggregates should be asserted or explicitly aliased"
+}

@@ -1,0 +1,7 @@
+{
+	"id": "t1",
+	"category": "derived-tables",
+	"order": 1,
+	"shortSummary": "Triggers use datagroups",
+	"summary": "Triggered PDTs should use datagroups"
+}

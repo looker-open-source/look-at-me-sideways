@@ -1,0 +1,7 @@
+{
+	"id": "t15",
+	"category": "derived-tables",
+	"order": 15,
+	"shortSummary": "Prefer UNION ALL over bare UNION",
+	"summary": "UNION should not be used where UNION ALL is needed or sufficient"
+}

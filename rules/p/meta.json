@@ -1,0 +1,16 @@
+{
+	"id": "p",
+	"category": "parser-errors",
+	"order": 1,
+	"defaultEnabled": true,
+	"subRules": ["P0", "P1", "P2", "P3", "P4"],
+	"shortSummary": "Parser & schema validation errors",
+	"subRuleShortSummaries": {
+		"P0": "Generic parser errors (default enabled)",
+		"P1": "LookML syntax errors (default enabled)",
+		"P2": "Duplicate singular property errors",
+		"P3": "Invalid property type errors",
+		"P4": "Missing required property errors"
+	},
+	"summary": "LookML files should parse without parser or schema validation errors."
+}

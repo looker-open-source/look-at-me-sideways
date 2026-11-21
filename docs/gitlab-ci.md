@@ -3,7 +3,7 @@ favicon: img/logo.png
 ---
 # Running LAMS via GitLab CI
 
-**Note:** This example was prepared for v1 of LAMS, though updating it for v2 should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/release-notes/v2) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
+**Note:** This example was prepared for v1 of LAMS, though updating it for v2 should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/look-at-me-sideways/release-notes#v20) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
 
 This example shows how to run LAMS with GitLab CI and was contributed by [PieterjanCriel](https://github.com/PieterjanCriel). Thanks!
 
@@ -37,8 +37,7 @@ Lint:
     name: registry.example.com/look-at-me-sideways-bot
     entrypoint: [""]
   script:
-  # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
-  - lams --reporting=... --output-to-cli
+  - lams --output-to-cli
   artifacts:
     expire_in: 2 weeks
     when: always

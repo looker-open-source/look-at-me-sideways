@@ -1,0 +1,7 @@
+{
+	"id": "h1",
+	"category": "hierarchy",
+	"order": 1,
+	"shortSummary": "Hoist identifiers",
+	"summary": "Hoist identifier dimensions via labeling"
+}

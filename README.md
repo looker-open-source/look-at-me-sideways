@@ -30,33 +30,9 @@ Interested? See a video of LAMS in action!
 
 The linter comes with built-in rules that can enforce some rules from the [style guide](https://looker-open-source.github.io/look-at-me-sideways/rules.html).
 
-As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to use the built-in rules. Since the rules are opinionated, you likely want to pick and choose the ones that make sense for you. Here is an example declaration opting in to all the currently available built-in rules:
+As of LAMS v3, you must opt-in via your [manifest](#manifest-configurations) to use the built-in rules. Since the rules are opinionated, you likely want to pick and choose the ones that make sense for you.
 
-```lkml
-#LAMS
-#rule: K1{} # Primary key naming
-#rule: K3{} # Primary keys first
-#rule: K4{} # Primary keys hidden
-#rule: K7{} # Provide one `primary_key`
-#rule: K8{} # `primary_key` uses PK dims
-#rule: F1{} # No cross-view fields
-#rule: F2{} # No view-labeled fields
-#rule: F3{} # Count fields filtered
-#rule: F4{} # Description or hidden
-#rule: E1{} # Join with subst'n operator
-#rule: E2{} # Join on PK for "one" joins
-#rule: E6{} # FK joins are m:1
-#rule: E7{} # Explore label 25-char max
-#rule: T1{} # Triggers use datagroups 
-#rule: T2{} # Primary keys in DT
-#rule: H1{} # Hoist identifiers
-#rule: H2{} # Group fields
-#rule: H3{} # Sort-group groups
-#rule: H4{} # Group more
-#rule: H5{} # Hoist main view
-#rule: H6{} # Sort-group views
-#rule: W1{} # Block indentation
-```
+> **[See all available built-in rules (LookML & YAML opt-in snippets)](https://looker-open-source.github.io/look-at-me-sideways/all-rules)** (source: [docs/all-rules.md](docs/all-rules.md))
 
 ### Custom Rules
 
@@ -113,7 +89,7 @@ lams
 
 - **[Github Action](https://looker-open-source.github.io/look-at-me-sideways/github-action)** - This option is commonly used among LAMS users, and has an up-to-date and convenient deployment example.
 
-The remaining examples were prepared for v1 of LAMS, though updating them for v2+ should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
+The remaining examples were prepared for v1 of LAMS, though updating them for v2+ should be straightforward. Please review [v2 release notes](https://looker-open-source.github.io/look-at-me-sideways/release-notes#v20) for details. In particular, look for error messages on the console's standard output rather than a file output to be committed back to the repo. 
 
 - **[GitLab CI](https://looker-open-source.github.io/look-at-me-sideways/gitlab-ci)** - A community-contributed configuration for GitLab, which offers similarly low overhead as our dockerized Jenkins configuration
 - **[Dockerized Jenkins Server](https://github.com/looker-open-source/look-at-me-sideways/blob/master/docker/README.md)** - We have provided a Docker image with an end-to-end configuration including a Jenkins server, LAMS, and Github protected branches & status checks configuration. 
@@ -123,9 +99,6 @@ The remaining examples were prepared for v1 of LAMS, though updating them for v2
 
 ### Command-line arguments
 
-- **reporting** - Required. One of `yes`, `no`, `save-yes`, or `save-no`. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
-- **report-user** - An email address to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
-- **report-license-key** - A Looker license key to use in reporting. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
 - **output** - A comma-separated string of output modes from among: `lines` (default), `github-job-summary`, `markdown`, `markdown-developer`, `jenkins`, `legacy-cli`, or (BETA) `add-exemptions`
 - **source** - A glob specifying which files to read. Defaults to `**/{*.model,*.explore,*.view,manifest}.lkml`.
 - **cwd** - A path for LAMS to use as its current working directory. Useful if you are not invoking lams from your LookML repo directory.
@@ -162,12 +135,7 @@ The manifest can provide the following declarations:
 
 ### Release Notes
 
-- [v2](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v2)
-- [v3+](https://looker-open-source.github.io/look-at-me-sideways/release-notes/v3)
-
-### Privacy Policy
-
-LAMS respects user privacy. See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md) for details.
+- [v2+](https://looker-open-source.github.io/look-at-me-sideways/release-notes)
 
 ### License
 
@@ -190,22 +158,18 @@ Trying to install LAMS for development?
 ```bash
 git clone git@github.com:looker-open-source/look-at-me-sideways.git
 cd look-at-me-sideways
-mv npm-shrinkwrap.dev.json npm-shrinkwrap.json 
 npm install
 ```
 
-Publishing an update? The following hooks will run:
+Publishing an update?
 
 ```bash
-npm version {minor|major|patch}
-> Pre-verion: npm run lint-fix
-> Pre-verion: npm run test
-
+npm version {minor|major|patch} --no-git-tag-version
+# > Pre-version: npm run lint-fix && npm run test
+npm install --package-lock-only && mv package-lock.json npm-shrinkwrap.json
+git add -A && git commit -m "Release vX.Y.Z"
+# Merge to main, tag vX.Y.Z, then on main:
 npm publish
-> Pre-publish: npm shrinkwrap
-> Pre-publish: mv npm-shrinkwrap.json npm-shrinkwrap.dev.json
-> Pre-publish: npm prune --prod
-> Pre-publish: npm shrinkwrap
 ```
 
 ### Code of Conduct

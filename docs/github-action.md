@@ -32,9 +32,8 @@ jobs:
     - name: Install LAMS
       run: npm install -g @looker/look-at-me-sideways@5
     - name: Run LAMS
-      # See [PRIVACY.md](https://github.com/looker-open-source/look-at-me-sideways/blob/master/PRIVACY.md)
       # output=github-job-summary is available as of LAMS v5. Older versions can use output=lines
-      run: lams --reporting=XXXXX --report-license-key=XXXXX --report-user=XXXXX --output=github-job-summary
+      run: lams --output=github-job-summary
 
 ```
 <!-- {% endraw %}) -->

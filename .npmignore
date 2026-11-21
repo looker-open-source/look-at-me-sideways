@@ -9,3 +9,4 @@ tools
 npm-shrinkwrap.dev.json
 *.tgz
 __tests__
+*.test.js

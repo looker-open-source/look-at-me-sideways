@@ -1,0 +1,1 @@
+<p>Each LookML block within a file should add one level of indentation for any inner line breaks, except for the line containin the block's closing brace, which should be at the prior indentation.</p>

@@ -1,0 +1,7 @@
+{
+	"id": "e5",
+	"category": "explores",
+	"order": 3,
+	"shortSummary": "Avoid multiplicative fanout",
+	"summary": "Explores' joins should not cause multiplicative fanout or spurious relationships"
+}

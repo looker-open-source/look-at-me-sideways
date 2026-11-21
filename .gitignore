@@ -4,3 +4,4 @@ developer.md
 issues.md
 .DS_Store
 *.tgz
+.env.dev

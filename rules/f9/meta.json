@@ -1,0 +1,7 @@
+{
+	"id": "f9",
+	"category": "other-fields",
+	"order": 6,
+	"shortSummary": "Field label 30-char max",
+	"summary": "Field labels should be no longer than 30 characters"
+}

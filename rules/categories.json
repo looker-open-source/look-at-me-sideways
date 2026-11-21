@@ -1,0 +1,44 @@
+[
+	{
+		"id": "key-dimensions",
+		"title": "Key Dimensions",
+		"order": 1,
+		"intro": "<p><b>Summary:</b> Implement consistent dimensions to communicate information about views' keys to developers who use the view</p>"
+	},
+	{
+		"id": "other-fields",
+		"title": "Other Fields",
+		"order": 2,
+		"intro": "<p><b>Summary:</b> Implement fields in ways which (a) maximize the ability of developers to reuse them in the future, and (b) maximize the usability of explores for end users</p>"
+	},
+	{
+		"id": "derived-tables",
+		"title": "Transformations & Tables",
+		"order": 3,
+		"intro": "<p><b>Summary:</b> Restrict the ways in which you write the SQL for derived tables in order to make them more modular and their results more realiable and understandable.</p>\n<p><b>Note:</b> These rules may seem hard to comply with at first. Although they may represent a large change from your usual way of writing SQL, the change also brings a large positive impact.</p>"
+	},
+	{
+		"id": "explores",
+		"title": "Explores",
+		"order": 4,
+		"intro": ""
+	},
+	{
+		"id": "hierarchy",
+		"title": "Hierarchy",
+		"order": 5,
+		"intro": "<p>A key principle to avoid overwhelming users and to help them quickly find what they need is to limit the number of available options at any given time. Besides entirely hiding things, the best way to do this is by adding hierarchy.</p>\n<p>This section provides a set of rules across different objects to suggest introducing hierarchy whenever the number of object/sub objects grows large.</p>"
+	},
+	{
+		"id": "whitespace",
+		"title": "Whitespace",
+		"order": 6,
+		"intro": "<p><b>Note:</b> To enable the linter to effectively enforce whitespace-related rules, you may have to consider how conditional comments (e.g. `#LAMS`) will be pre-processed. The parser will preserve whitespace before the comment on each line, and will consume the comment character (#), the conditional comment token, and up to one space or tab character. For multi-line commented blocks, it will visually appear that there is one additional level of indentation. See <a href=\"https://github.com/looker-open-source/look-at-me-sideways/blob/master/__tests__/dummy-projects/33-w1-tests/\">test project #33</a> for an example.</p>"
+	},
+	{
+		"id": "parser-errors",
+		"title": "Parser Errors & Validation",
+		"order": 7,
+		"intro": ""
+	}
+]
