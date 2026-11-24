@@ -186,7 +186,16 @@ Patches:
 
 # 5.1
 
-- Updated `lookml-parser` to `^9.3.1`.
+- ⚠️ **Deprecated on npm.** `5.1.0` accidentally included breaking `lookml-parser` representation changes for custom rules and has been re-released as `6.0.0`. Please upgrade to `6.0.0` (or pin to `5.0.x` if you are not ready to update custom rules).
+
+# 6.0
+
+⚡ icons below indicate breaking changes.
+
+- ⚡ Updated `lookml-parser` to `^9.3.1`. This introduces breaking LookML representation changes for custom rules
+	- Repeatable properties now always output as arrays.
+	- `$strings` metadata has a redesigned structure.
+	- See the [`lookml-parser` changelog](https://github.com/fabio-looker/node-lookml-parser/blob/master/changelog.md) for all changes and details.
 - Parser-reported errors are now surfaced under built-in rule `P` (`P0`–`P4`): `P0` and `P1` remain enabled by default, while `P2`, `P3`, and `P4` are opt-in via `manifest.lkml`.
 - Added rule `F8`: Suggests `value_format_name` (`id` or `usd_*`) for non-hidden numeric fields that appear to be IDs or USD currency values.
 - Added rule `F9`: Enforces a configurable maximum length (default 30 characters) on non-hidden field names/labels.
