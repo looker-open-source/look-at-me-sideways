@@ -3,6 +3,7 @@
 Customers run LAMS in their CI pipelines, where any `error`-level finding causes a non-zero exit code and fails builds. Therefore:
 
 - **Any net new error finding for an unmodified LookML project is considered a breaking change.**
+- **Any `lookml-parser` major bump or LookML representation change is a breaking change** for custom rules (even if all built-in rules pass) and requires a `major` version bump.
 - New error-level rules or newly surfaced error-level messages (including new parser validation checks being passed through) must be **opt-in** via `manifest.lkml` unless updating the major version.
 - Only error conditions that were already surfaced by default, such as due to an effect of our implementation, may use `defaultEnabled: true`.
 
